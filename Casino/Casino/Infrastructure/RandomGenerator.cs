@@ -8,7 +8,7 @@ public sealed class RandomGenerator : IRandomGenerator
     {
     }
 
-    public RandomGenerator(Random random)
+    private RandomGenerator(Random random)
     {
         ArgumentNullException.ThrowIfNull(random);
         _random = random;
@@ -18,7 +18,7 @@ public sealed class RandomGenerator : IRandomGenerator
     {
         if (min > max)
         {
-            throw new ArgumentException("min must be less than or equal to max");
+            throw new ArgumentException("Минимальное должно быть меньше или равно максимальному");
         }
         
         return _random.Next(min, max + 1);

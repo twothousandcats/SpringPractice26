@@ -19,13 +19,15 @@ public sealed class Game
         {
             throw new ArgumentOutOfRangeException(
                 nameof(initialBalance),
-                "Initial balance cannot be negative"
+                "Баланс не может быть отрицательным"
             );
         }
+
         if (multiplicator <= 0)
         {
             throw new ArgumentOutOfRangeException(
-                nameof(multiplicator), "Multiplicator must be positive"
+                nameof(multiplicator),
+                "Мультипликатор должен быть положиетльным"
             );
         }
 
@@ -53,19 +55,25 @@ public sealed class Game
     {
         if (bet <= 0)
         {
-            throw new ArgumentOutOfRangeException(nameof(bet), "Bet cannot be negative");
+            throw new ArgumentOutOfRangeException(
+                nameof(bet),
+                "Ставка не может быть отрицательной"
+            );
         }
 
         if (bet > _balance)
         {
-            throw new ArgumentOutOfRangeException(nameof(bet), "Bet cannot be greater than balance");
+            throw new ArgumentOutOfRangeException(
+                nameof(bet),
+                "Ставка не может быть больше баланса"
+            );
         }
     }
 
     private decimal CalculateWinPayout(decimal bet, int rollNumber)
     {
         // bet * (1 + (multiplicator * rolledNumber) % 17)
-        int remainder = (_multiplicator * rollNumber) % PayoutDivisor;
+        var remainder = (_multiplicator * rollNumber) % PayoutDivisor;
         return bet * (1 + remainder);
     }
 }
