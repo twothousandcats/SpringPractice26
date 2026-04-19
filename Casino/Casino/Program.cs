@@ -3,6 +3,7 @@ using System.Globalization;
 using Casino.Domain;
 using Casino.Infrastructure;
 using Casino.Menu;
+using Casino.Menu.Commands;
 
 public class Program
 {
@@ -18,6 +19,12 @@ public class Program
         Game game = new Game(balance, DefaultMultiplicator, rng);
 
         Menu menu = new Menu(io);
+        menu.Add(new StartCommand(io, game));
+        menu.Add(new ShowBalanceCommand(io, game));
+        menu.Add(new PlayRoundCommand(io, game));
+        menu.Add(new ExitCommand(io, menu.RequestExit));
+        
+        menu.Run();
     }
 
     private static decimal ReadInitialBalance(IInputOutput io)

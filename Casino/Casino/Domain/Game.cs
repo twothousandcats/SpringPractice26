@@ -15,7 +15,6 @@ public sealed class Game
 
     public Game(decimal initialBalance, int multiplicator, IRandomGenerator randomGenerator)
     {
-        // validation
         if (initialBalance < 0)
         {
             throw new ArgumentOutOfRangeException(
@@ -23,7 +22,6 @@ public sealed class Game
                 "Initial balance cannot be negative"
             );
         }
-
         if (multiplicator <= 0)
         {
             throw new ArgumentOutOfRangeException(
@@ -43,20 +41,10 @@ public sealed class Game
     public RoundResult PlayRound(decimal bet)
     {
         EnsureBetIsValid(bet);
-
-        int rolled = _randomGenerator.NextInclusive(MinRoll, MaxRoll);
-        bool isWin = rolled >= FirstWinningNumber;
-        decimal payout;
-        if (isWin)
-        {
-            payout = CalculateWinPayout(bet, rolled);
-            _balance += payout;
-        }
-        else
-        {
-            payout = -bet;
-            _balance -= payout;
-        }
+        var rolled = _randomGenerator.NextInclusive(MinRoll, MaxRoll);
+        var isWin = rolled >= FirstWinningNumber;
+        var payout = isWin ? CalculateWinPayout(bet, rolled) : -bet;
+        _balance += payout;
 
         return new RoundResult(rolled, isWin, bet, payout, _balance);
     }
@@ -77,7 +65,7 @@ public sealed class Game
     private decimal CalculateWinPayout(decimal bet, int rollNumber)
     {
         // bet * (1 + (multiplicator * rolledNumber) % 17)
-        int remainder = (_multiplicator * rollNumber) % 17;
+        int remainder = (_multiplicator * rollNumber) % PayoutDivisor;
         return bet * (1 + remainder);
     }
 }
