@@ -5,34 +5,70 @@ namespace Casino.Menu;
 public sealed class Menu
 {
     private readonly IInputOutput _io;
-
-    // commands
-    //private bool _shouldExit;
+    private readonly List<IMenuCommand> _commands;
+    private bool _shouldExit;
 
     public Menu(IInputOutput io)
     {
         ArgumentNullException.ThrowIfNull(io);
         _io = io;
+        _commands = new List<IMenuCommand>();
     }
 
-    // public void Add(command)
-    // {
-    //     
-    // }
-    //public void RequestExit() => _shouldExit = true;
+    public void RequestExit() => _shouldExit = true;
 
-    // public void Run()
-    // {
-    //     
-    // }
+    public void Add(IMenuCommand command)
+    {
+        ArgumentNullException.ThrowIfNull(command);
+        _commands.Add(command);
+    }
 
-    // public void PrintOptions()
-    // {
-    //     
-    // }
+    public void Run()
+    {
+        if (_commands.Count == 0)
+        {
+            throw new InvalidOperationException("В меню нет комманд!");
+        }
 
-    // private int? ReadChoice()
-    // {
-    //     
-    // }
+        while (!_shouldExit)
+        {
+            PrintOptions();
+            int? choice = ReadChoice();
+            if (choice is null)
+            {
+                _io.WriteLine("Некорректный ввод. Попробоуйте снова.");
+                continue;
+            }
+
+            _commands[choice.Value - 1].Execute();
+        }
+    }
+
+    private void PrintOptions()
+    {
+        _io.WriteLine(string.Empty);
+        _io.WriteLine("Меню");
+        for (var i = 0; i < _commands.Count; i++)
+        {
+            _io.WriteLine($"{i + 1}. {_commands[i].Title}");
+        }
+
+        _io.WriteLine("Выберите команду: ");
+    }
+
+    private int? ReadChoice()
+    {
+        string? input = _io.ReadLine();
+        if (!int.TryParse(input, out var choice))
+        {
+            return null;
+        }
+
+        if (choice < 1 || choice > _commands.Count)
+        {
+            return null;
+        }
+
+        return choice;
+    }
 }
