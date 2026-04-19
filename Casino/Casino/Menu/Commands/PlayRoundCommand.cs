@@ -33,7 +33,7 @@ public sealed class PlayRoundCommand : IMenuCommand
             var result = _game.PlayRound(bet);
             ReportResult(result);
         }
-        catch (InvalidOperationException ex)
+        catch (ArgumentException ex)
         {
             _io.WriteLine($"Не удалось сыгарть: {ex.Message}");
         }

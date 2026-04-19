@@ -14,11 +14,11 @@ public class Program
         IInputOutput io = new ConsoleInputOutput();
         Banner.Print(io);
         
-        decimal balance = ReadInitialBalance(io);
+        var balance = ReadInitialBalance(io);
         IRandomGenerator rng = new RandomGenerator();
-        Game game = new Game(balance, DefaultMultiplicator, rng);
+        var game = new Game(balance, DefaultMultiplicator, rng);
 
-        Menu menu = new Menu(io);
+        var menu = new Menu(io);
         menu.Add(new StartCommand(io, game));
         menu.Add(new ShowBalanceCommand(io, game));
         menu.Add(new PlayRoundCommand(io, game));

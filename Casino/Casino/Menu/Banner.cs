@@ -4,7 +4,7 @@ namespace Casino.Menu;
 
 public static class Banner
 {
-    private static readonly string[] _heading =
+    private static readonly string[] Headings = 
     {
         " #####    ###    ####   #   #   #   ###  ",
         "#        #   #  #           ##  #  #   # ",
@@ -16,7 +16,7 @@ public static class Banner
     public static void Print(IInputOutput io)
     {
         ArgumentNullException.ThrowIfNull(io);
-        foreach (string heading in _heading)
+        foreach (var heading in Headings)
         {
             io.WriteLine(heading);
         }
