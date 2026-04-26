@@ -10,8 +10,8 @@ internal static class Program
     {
         Console.OutputEncoding = System.Text.Encoding.UTF8;
 
-        var ui = new ConsoleUserInterface();
-        var service = new OrderService(ui);
+        ConsoleUserInterface ui = new ConsoleUserInterface();
+        OrderService service = new (ui);
         service.PlaceOrder();
     }
 }

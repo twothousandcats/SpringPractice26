@@ -6,7 +6,7 @@ namespace OrderManager.Services;
 
 public sealed class OrderService
 {
-    private const int DeliveryDaysFromNow = 3;
+    private const int _deliveryDaysFromNow = 3;
     private readonly IUserInterface _ui;
 
     public OrderService(IUserInterface ui)
@@ -16,7 +16,7 @@ public sealed class OrderService
 
     public void PlaceOrder()
     {
-        var order = CollectOrder();
+        Order order = CollectOrder();
         if (ConfirmOrder(order))
         {
             AnnounceSuccess(order);
@@ -29,7 +29,7 @@ public sealed class OrderService
 
     private Order CollectOrder()
     {
-        var builder = new OrderBuilder();
+        OrderBuilder builder = new ();
         builder.WithProductName(PromptForNonEmpty("Введите название товара: "));
         builder.WithQuantity(PromptForPositiveInt("Введите количество товара: "));
         builder.WithCustomerName(PromptForNonEmpty("Введите ваше имя: "));
@@ -49,7 +49,7 @@ public sealed class OrderService
 
     private void AnnounceSuccess(Order order)
     {
-        var deliveryDate = DateTime.Today.AddDays(DeliveryDaysFromNow);
+        DateTime deliveryDate = DateTime.Today.AddDays(_deliveryDaysFromNow);
         _ui.WriteLine(
             $"{order.CustomerName}! Ваш заказ {order.ProductName} в количестве " +
             $"{order.Quantity} оформлен! Ожидайте доставку по адресу {order.Address} " +
@@ -61,7 +61,7 @@ public sealed class OrderService
     {
         while (true)
         {
-            var input = _ui.ReadLine(prompt);
+            string input = _ui.ReadLine(prompt);
             if (!string.IsNullOrWhiteSpace(input))
             {
                 return input.Trim();
@@ -75,8 +75,8 @@ public sealed class OrderService
     {
         while (true)
         {
-            var input = _ui.ReadLine(prompt);
-            if (int.TryParse(input, out var value) && value > 0)
+            string input = _ui.ReadLine(prompt);
+            if (int.TryParse(input, out int value) && value > 0)
             {
                 return value;
             }
