@@ -9,10 +9,10 @@ public sealed class PlayRoundCommand : IMenuCommand
     private readonly IInputOutput _io;
     private readonly Game _game;
 
-    public PlayRoundCommand(IInputOutput io, Game game)
+    public PlayRoundCommand( IInputOutput io, Game game )
     {
-        ArgumentNullException.ThrowIfNull(io);
-        ArgumentNullException.ThrowIfNull(game);
+        ArgumentNullException.ThrowIfNull( io );
+        ArgumentNullException.ThrowIfNull( game );
         _io = io;
         _game = game;
     }
@@ -21,53 +21,53 @@ public sealed class PlayRoundCommand : IMenuCommand
 
     public void Execute()
     {
-        if (_game.Balance <= 0)
+        if ( _game.Balance <= 0 )
         {
-            _io.WriteLine("Ваш баланс пуст. Вы не можете сделать ставку.");
+            _io.WriteLine( "Ваш баланс пуст. Вы не можете сделать ставку." );
             return;
         }
 
         decimal bet = ReadBet();
         try
         {
-            RoundResult result = _game.PlayRound(bet);
-            ReportResult(result);
+            RoundResult result = _game.PlayRound( bet );
+            ReportResult( result );
         }
-        catch (ArgumentException ex)
+        catch ( ArgumentException ex )
         {
-            _io.WriteLine($"Не удалось сыгарть: {ex.Message}");
+            _io.WriteLine( $"Не удалось сыгарть: {ex.Message}" );
         }
     }
 
     private decimal ReadBet()
     {
-        while (true)
+        while ( true )
         {
-            _io.Write($"Введите вашу ставку (доступно для ставки: {_game.Balance:0.##}): ");
+            _io.Write( $"Введите вашу ставку (доступно для ставки: {_game.Balance:0.##}): " );
             string? input = _io.ReadLine();
-            if (TryParseBet(input, out decimal bet))
+            if ( TryParseBet( input, out decimal bet ) )
             {
                 return bet;
             }
 
-            _io.WriteLine("Некорректная ставка. Пожалуйста введите положительное число.");
+            _io.WriteLine( "Некорректная ставка. Пожалуйста введите положительное число." );
         }
     }
 
-    private static bool TryParseBet(string? input, out decimal bet)
+    private static bool TryParseBet( string? input, out decimal bet )
     {
         bet = 0m;
-        if (string.IsNullOrWhiteSpace(input))
+        if ( string.IsNullOrWhiteSpace( input ) )
         {
             return false;
         }
 
-        if (!decimal.TryParse(input, NumberStyles.Number, CultureInfo.InvariantCulture, out var parsed))
+        if ( !decimal.TryParse( input, NumberStyles.Number, CultureInfo.InvariantCulture, out var parsed ) )
         {
             return false;
         }
 
-        if (parsed <= 0)
+        if ( parsed <= 0 )
         {
             return false;
         }
@@ -76,14 +76,14 @@ public sealed class PlayRoundCommand : IMenuCommand
         return true;
     }
 
-    private void ReportResult(RoundResult result)
+    private void ReportResult( RoundResult result )
     {
-        _io.WriteLine($"Выпал номер: {result.RolledNumber}");
+        _io.WriteLine( $"Выпал номер: {result.RolledNumber}" );
         _io.WriteLine(
             result.IsWin
                 ? $"Вы выиграли: {result.Payout:0.##}!"
                 : $"Вы проиграли вашу ставку {result.BetAmount:0.##}!"
         );
-        _io.WriteLine($"Ваш баланс: {result.NewBalance:0.##}");
+        _io.WriteLine( $"Ваш баланс: {result.NewBalance:0.##}" );
     }
 }

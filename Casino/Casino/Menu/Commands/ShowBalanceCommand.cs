@@ -8,10 +8,10 @@ public sealed class ShowBalanceCommand : IMenuCommand
     private readonly IInputOutput _io;
     private readonly Game _game;
 
-    public ShowBalanceCommand(IInputOutput io, Game game)
+    public ShowBalanceCommand( IInputOutput io, Game game )
     {
-        ArgumentNullException.ThrowIfNull(io);
-        ArgumentNullException.ThrowIfNull(game);
+        ArgumentNullException.ThrowIfNull( io );
+        ArgumentNullException.ThrowIfNull( game );
         _io = io;
         _game = game;
     }
@@ -20,6 +20,6 @@ public sealed class ShowBalanceCommand : IMenuCommand
 
     public void Execute()
     {
-        _io.WriteLine($"Текущий баланс: {_game.Balance:0.##}");
+        _io.WriteLine( $"Текущий баланс: {_game.Balance:0.##}" );
     }
 }

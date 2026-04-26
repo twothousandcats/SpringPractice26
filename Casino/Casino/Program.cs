@@ -11,34 +11,34 @@ public class Program
     public static void Main()
     {
         IInputOutput io = new ConsoleInputOutput();
-        Banner.Print(io);
-        
-        var balance = ReadInitialBalance(io);
-        IRandomGenerator rng = new RandomGenerator();
-        var game = new Game(balance, _defaultMultiplicator, rng);
+        Banner.Print( io );
 
-        var menu = new Menu(io);
-        menu.Add(new StartCommand(io, game));
-        menu.Add(new ShowBalanceCommand(io, game));
-        menu.Add(new PlayRoundCommand(io, game));
-        menu.Add(new ExitCommand(io, menu.RequestExit));
-        
+        var balance = ReadInitialBalance( io );
+        IRandomGenerator rng = new RandomGenerator();
+        var game = new Game( balance, _defaultMultiplicator, rng );
+
+        var menu = new Menu( io );
+        menu.Add( new StartCommand( io, game ) );
+        menu.Add( new ShowBalanceCommand( io, game ) );
+        menu.Add( new PlayRoundCommand( io, game ) );
+        menu.Add( new ExitCommand( io, menu.RequestExit ) );
+
         menu.Run();
     }
 
-    private static decimal ReadInitialBalance(IInputOutput io)
+    private static decimal ReadInitialBalance( IInputOutput io )
     {
-        while (true)
+        while ( true )
         {
-            io.WriteLine("Введите начальный баланс: ");
+            io.WriteLine( "Введите начальный баланс: " );
             string? input = io.ReadLine();
-            if (decimal.TryParse(input, NumberStyles.Number, CultureInfo.InvariantCulture, out decimal balance) &&
-                balance >= 0)
+            if ( decimal.TryParse( input, NumberStyles.Number, CultureInfo.InvariantCulture, out decimal balance ) &&
+                 balance >= 0 )
             {
                 return balance;
             }
-            
-            io.WriteLine("Некорректное значение! Введите положительный баланс: ");
+
+            io.WriteLine( "Некорректное значение! Введите положительный баланс: " );
         }
     }
 }

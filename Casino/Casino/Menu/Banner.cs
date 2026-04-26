@@ -13,13 +13,14 @@ public static class Banner
         " #####   #   #  ####    #   #   #   ###  ",
     };
 
-    public static void Print(IInputOutput io)
+    public static void Print( IInputOutput io )
     {
-        ArgumentNullException.ThrowIfNull(io);
-        foreach (string heading in _heading)
+        ArgumentNullException.ThrowIfNull( io );
+        foreach ( string heading in _heading )
         {
-            io.WriteLine(heading);
+            io.WriteLine( heading );
         }
-        io.WriteLine(string.Empty);
+
+        io.WriteLine( string.Empty );
     }
 }
