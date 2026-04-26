@@ -6,6 +6,6 @@ public interface IMenuCommand
     {
         get;
     }
-    
+
     void Execute();
 }

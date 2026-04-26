@@ -8,10 +8,10 @@ public sealed class ExitCommand : IMenuCommand
     private readonly IInputOutput _io;
     private readonly Action _onExit;
 
-    public ExitCommand(IInputOutput io, Action onExit)
+    public ExitCommand( IInputOutput io, Action onExit )
     {
-        ArgumentNullException.ThrowIfNull(io);
-        ArgumentNullException.ThrowIfNull(onExit);
+        ArgumentNullException.ThrowIfNull( io );
+        ArgumentNullException.ThrowIfNull( onExit );
         _io = io;
         _onExit = onExit;
     }
@@ -20,7 +20,7 @@ public sealed class ExitCommand : IMenuCommand
 
     public void Execute()
     {
-        _io.WriteLine($"Спасибо за игру!");
+        _io.WriteLine( $"Спасибо за игру!" );
         _onExit();
     }
 }
