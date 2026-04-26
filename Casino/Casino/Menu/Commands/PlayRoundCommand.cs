@@ -27,10 +27,10 @@ public sealed class PlayRoundCommand : IMenuCommand
             return;
         }
 
-        var bet = ReadBet();
+        decimal bet = ReadBet();
         try
         {
-            var result = _game.PlayRound(bet);
+            RoundResult result = _game.PlayRound(bet);
             ReportResult(result);
         }
         catch (ArgumentException ex)
@@ -45,7 +45,7 @@ public sealed class PlayRoundCommand : IMenuCommand
         {
             _io.Write($"Введите вашу ставку (доступно для ставки: {_game.Balance:0.##}): ");
             string? input = _io.ReadLine();
-            if (TryParseBet(input, out var bet))
+            if (TryParseBet(input, out decimal bet))
             {
                 return bet;
             }
@@ -54,7 +54,7 @@ public sealed class PlayRoundCommand : IMenuCommand
         }
     }
 
-    private bool TryParseBet(string? input, out decimal bet)
+    private static bool TryParseBet(string? input, out decimal bet)
     {
         bet = 0m;
         if (string.IsNullOrWhiteSpace(input))
