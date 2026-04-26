@@ -4,23 +4,23 @@ namespace OrderManager.UI;
 
 public sealed class ConsoleUserInterface : IUserInterface
 {
-    public string ReadLine(string prompt)
+    public string ReadLine( string prompt )
     {
-        Console.Write(prompt);
+        Console.Write( prompt );
         return Console.ReadLine() ?? string.Empty;
     }
 
-    public void WriteLine(string message)
+    public void WriteLine( string message )
     {
-        Console.WriteLine(message);
+        Console.WriteLine( message );
     }
 
-    public bool AskYesNoQuestion(string prompt)
+    public bool AskYesNoQuestion( string prompt )
     {
-        while (true)
+        while ( true )
         {
-            var answer = ReadLine(prompt).Trim().ToLowerInvariant();
-            switch (answer)
+            var answer = ReadLine( prompt ).Trim().ToLowerInvariant();
+            switch ( answer )
             {
                 case "y":
                 case "yes":
@@ -33,7 +33,7 @@ public sealed class ConsoleUserInterface : IUserInterface
                 case "нет":
                     return false;
                 default:
-                    WriteLine("Пожалуйста, введите 'y' (да) или 'n' (нет).");
+                    WriteLine( "Пожалуйста, введите 'y' (да) или 'n' (нет)." );
                     break;
             }
         }
