@@ -48,7 +48,7 @@ public sealed class Menu
     {
         _io.WriteLine(string.Empty);
         _io.WriteLine("Меню");
-        for (var i = 0; i < _commands.Count; i++)
+        for (int i = 0; i < _commands.Count; i++)
         {
             _io.WriteLine($"{i + 1}. {_commands[i].Title}");
         }
@@ -59,7 +59,7 @@ public sealed class Menu
     private int? ReadChoice()
     {
         string? input = _io.ReadLine();
-        if (!int.TryParse(input, out var choice))
+        if (!int.TryParse(input, out int choice))
         {
             return null;
         }

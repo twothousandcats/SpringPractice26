@@ -4,10 +4,10 @@ namespace Casino.Domain;
 
 public sealed class Game
 {
-    private const int MinRoll = 1;
-    private const int MaxRoll = 20;
-    private const int FirstWinningNumber = 18;
-    private const int PayoutDivisor = 17;
+    private const int _minRoll = 1;
+    private const int _maxRoll = 20;
+    private const int _firstWinningNumber = 18;
+    private const int _payoutDivisor = 17;
 
     private readonly IRandomGenerator _randomGenerator;
     private readonly int _multiplicator;
@@ -43,9 +43,9 @@ public sealed class Game
     public RoundResult PlayRound(decimal bet)
     {
         EnsureBetIsValid(bet);
-        var rolled = _randomGenerator.NextInclusive(MinRoll, MaxRoll);
-        var isWin = rolled >= FirstWinningNumber;
-        var payout = isWin ? CalculateWinPayout(bet, rolled) : -bet;
+        int rolled = _randomGenerator.NextInclusive(_minRoll, _maxRoll);
+        bool isWin = rolled >= _firstWinningNumber;
+        decimal payout = isWin ? CalculateWinPayout(bet, rolled) : -bet;
         _balance += payout;
 
         return new RoundResult(rolled, isWin, bet, payout, _balance);
@@ -73,7 +73,7 @@ public sealed class Game
     private decimal CalculateWinPayout(decimal bet, int rollNumber)
     {
         // bet * (1 + (multiplicator * rolledNumber) % 17)
-        var remainder = (_multiplicator * rollNumber) % PayoutDivisor;
+        int remainder = (_multiplicator * rollNumber) % _payoutDivisor;
         return bet * (1 + remainder);
     }
 }

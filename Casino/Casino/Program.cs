@@ -1,4 +1,3 @@
-using System;
 using System.Globalization;
 using Casino.Domain;
 using Casino.Infrastructure;
@@ -7,7 +6,7 @@ using Casino.Menu.Commands;
 
 public class Program
 {
-    private const int DefaultMultiplicator = 3;
+    private const int _defaultMultiplicator = 3;
 
     public static void Main()
     {
@@ -16,7 +15,7 @@ public class Program
         
         var balance = ReadInitialBalance(io);
         IRandomGenerator rng = new RandomGenerator();
-        var game = new Game(balance, DefaultMultiplicator, rng);
+        var game = new Game(balance, _defaultMultiplicator, rng);
 
         var menu = new Menu(io);
         menu.Add(new StartCommand(io, game));
@@ -33,7 +32,7 @@ public class Program
         {
             io.WriteLine("Введите начальный баланс: ");
             string? input = io.ReadLine();
-            if (decimal.TryParse(input, NumberStyles.Number, CultureInfo.InvariantCulture, out var balance) &&
+            if (decimal.TryParse(input, NumberStyles.Number, CultureInfo.InvariantCulture, out decimal balance) &&
                 balance >= 0)
             {
                 return balance;
