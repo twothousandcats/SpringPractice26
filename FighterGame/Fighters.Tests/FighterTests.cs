@@ -24,7 +24,7 @@ namespace Fighters.Tests
 
             int maxHealth = fighter.GetMaxHealth();
 
-            Assert.That(maxHealth, Is.EqualTo(5));
+            Assert.That(maxHealth, Is.EqualTo(150));
         }
 
         [Test]

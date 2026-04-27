@@ -1,8 +1,8 @@
 namespace Fighters.Models.Weapons
 {
-    public class Stuff : IWeapon
+    public class Staff : IWeapon
     {
-        public string Name => "Stuff";
+        public string Name => "Staff";
         public int Damage => 8;
     }
 }

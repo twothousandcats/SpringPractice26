@@ -23,7 +23,7 @@ namespace Fighters.Models.Fighters
         {
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentException("Fighter must not be empty", nameof(name));
+                throw new ArgumentException("Fighter name must not be empty", nameof(name));
             }
 
             Name = name;
@@ -70,7 +70,7 @@ namespace Fighters.Models.Fighters
             }
 
             int newHealth = _currentHealth - damage;
-            _currentHealth = newHealth < 0 ? 0 : _currentHealth;
+            _currentHealth = newHealth < 0 ? 0 : newHealth;
         }
     }
 }

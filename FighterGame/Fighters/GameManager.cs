@@ -20,7 +20,7 @@ namespace Fighters
             ArgumentNullException.ThrowIfNull(first);
             ArgumentNullException.ThrowIfNull(second);
 
-            for (var round = 1; round < MaxRounds; round++)
+            for (var round = 1; round <= MaxRounds; round++)
             {
                 _logger.RoundStarted(round);
                 ExchangeBlows(first, second);

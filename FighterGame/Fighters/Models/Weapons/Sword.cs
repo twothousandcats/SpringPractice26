@@ -1,5 +1,3 @@
-using Fighters.Models.Weapons;
-
 namespace Fighters.Models.Weapons
 {
     public class Sword : IWeapon

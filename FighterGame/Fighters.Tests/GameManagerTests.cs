@@ -51,7 +51,7 @@ namespace Fighters.Tests
             var winner = gameManager.Play(strong, weak);
 
             Assert.That(winner.Name, Is.EqualTo(strong.Name));
-            Assert.That(weak.IsAlive, Is.False);
+            Assert.That(weak.IsAlive(), Is.False);
         }
     }
 }
