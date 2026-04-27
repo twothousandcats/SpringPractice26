@@ -37,6 +37,8 @@ namespace Fighters.Models.Fighters
 
         public string Name { get; }
 
+        public int Initiative => _race.Initiative;
+
         public int GetCurrentHealth()
         {
             return _currentHealth;
