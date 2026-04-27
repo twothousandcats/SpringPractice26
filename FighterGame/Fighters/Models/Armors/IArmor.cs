@@ -2,6 +2,7 @@ namespace Fighters.Models.Armors
 {
     public interface IArmor
     {
-        public int Armor { get; }
+        string Name { get; }
+        int Armor { get; }
     }
 }

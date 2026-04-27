@@ -1,35 +1,81 @@
-﻿using Fighters.Models.Fighters;
+﻿using Fighters.Models.Armors;
+using Fighters.Models.Classes;
+using Fighters.Models.Fighters;
 using Fighters.Models.Races;
+using Fighters.Models.Weapons;
 using NUnit.Framework;
 
 namespace Fighters.Tests
 {
     [TestFixture]
-    public class GameManagerTests
+    public class FighterTests
     {
         [Test]
-        public void Play_TwoEqualFighters_FirstFighterWins()
+        public void MaxHealth_IsRacePlusClassHealth()
         {
-            var gameManager = new GameManager();
-            var fighterA = new Knight("FighterA", new Human());
-            var fighterB = new Knight("FighterB", new Human());
+            // AAA
+            Fighter fighter = new Fighter(
+                "Hero",
+                new Human(),
+                new Knight(),
+                new Fists(),
+                new NoArmor()
+            );
 
-            var winner = gameManager.Play(fighterA, fighterB);
+            int maxHealth = fighter.GetMaxHealth();
 
-            Assert.That(winner.Name, Is.EqualTo(fighterA.Name));
+            Assert.That(maxHealth, Is.EqualTo(5));
         }
 
         [Test]
-        public void Play_TwoEqualFighters_SecondFighterDies()
+        public void Damage_IsRacePlusClassPlusWeapon()
         {
-            var gameManager = new GameManager();
-            var fighterA = new Knight("FighterA", new Human());
-            var fighterB = new Knight("FighterB", new Human());
+            Fighter fighter = new Fighter(
+                "Hero",
+                new Human(),
+                new Knight(),
+                new Sword(),
+                new NoArmor()
+            );
 
-            gameManager.Play(fighterA, fighterB);
+            int damageTaken = fighter.CalculateDamage();
 
-            Assert.That(fighterA.GetCurrentHealth(), Is.GreaterThan(0));
-            Assert.That(fighterB.GetCurrentHealth(), Is.EqualTo(0));
+            Assert.That(damageTaken, Is.EqualTo(1 + 5 + 15));
+        }
+
+        [Test]
+        public void Armor_IsRacePlusArmor()
+        {
+            Fighter fighter = new Fighter(
+                "Dude",
+                new Dwarf(),
+                new Knight(),
+                new Fists(),
+                new PlateArmor()
+            );
+
+            int armor = fighter.CalculateArmor();
+
+            Assert.That(armor, Is.EqualTo(3 + 15));
+        }
+
+        [Test]
+        public void TakeDamage_ReducesHealth_NeverBelowZero()
+        {
+            Fighter fighter = new Fighter(
+                "Dude",
+                new Dwarf(),
+                new Knight(),
+                new Fists(),
+                new PlateArmor()
+            );
+
+            fighter.TakeDamage(99999);
+            int currentHealth = fighter.GetCurrentHealth();
+            bool isAlive = fighter.IsAlive();
+
+            Assert.That(currentHealth, Is.EqualTo(0));
+            Assert.That(isAlive, Is.False);
         }
     }
 }
