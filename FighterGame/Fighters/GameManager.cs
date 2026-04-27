@@ -36,6 +36,68 @@ namespace Fighters
             throw new InvalidOperationException("Battle did not finish within the round limit!");
         }
 
+        public IFighter Play(IReadOnlyList<IFighter> fighters)
+        {
+            ArgumentNullException.ThrowIfNull(fighters);
+
+            var arena = new List<IFighter>(fighters);
+
+            for (var round = 1; round <= MaxRounds; round++)
+            {
+                _logger.RoundStarted(round);
+                IEnumerable<IFighter> fightersTurnOrder = arena
+                    .OrderByDescending(f => f.Initiative)
+                    .ToArray();
+
+                foreach (IFighter attacker in fightersTurnOrder)
+                {
+                    if (!attacker.IsAlive())
+                    {
+                        continue;
+                    }
+
+                    IFighter? target = PickWeakestOpponent(attacker, arena);
+                    if (target is null)
+                    {
+                        _logger.FighterWon(attacker);
+                        return attacker;
+                    }
+
+                    int dealt = ApplyAttack(attacker, target);
+                    var received = target.IsAlive()
+                        ? ApplyAttack(target, attacker)
+                        : 0;
+                    _logger.AttackPerformed(attacker, target, dealt, received);
+
+                    if (!target.IsAlive())
+                    {
+                        _logger.FighterWon(target);
+                    }
+                }
+            }
+
+            throw new InvalidOperationException("Battle did not finish within the round limit!");
+        }
+
+        private static IFighter? PickWeakestOpponent(IFighter self, IReadOnlyList<IFighter> fighters)
+        {
+            IFighter? weakestOpponent = null;
+            foreach (var fighter in fighters)
+            {
+                if (!fighter.IsAlive() || ReferenceEquals(fighter, self))
+                {
+                    continue;
+                }
+
+                if (weakestOpponent is null || fighter.GetCurrentHealth() < weakestOpponent.GetCurrentHealth())
+                {
+                    weakestOpponent = fighter;
+                }
+            }
+
+            return weakestOpponent;
+        }
+
         private IFighter? GetWinner(IFighter first, IFighter second)
         {
             if (!second.IsAlive())

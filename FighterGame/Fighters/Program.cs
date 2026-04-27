@@ -43,7 +43,7 @@ namespace Fighters
                         continue;
                     }
 
-                    gameManager.Play(arena[0], arena[1]);
+                    gameManager.Play(arena);
                     arena.Clear();
                 }
                 else
