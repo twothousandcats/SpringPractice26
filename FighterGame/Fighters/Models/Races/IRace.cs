@@ -6,5 +6,6 @@ namespace Fighters.Models.Races
         int Damage { get; }
         int Health { get; }
         int Armor { get; }
+        int Initiative { get; }
     }
 }

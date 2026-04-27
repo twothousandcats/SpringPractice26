@@ -11,5 +11,6 @@ namespace Fighters.Models.Fighters
 
         bool IsAlive();
         void TakeDamage(int damage);
+        int Initiative { get; }
     }
 }

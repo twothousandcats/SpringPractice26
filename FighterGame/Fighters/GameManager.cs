@@ -9,7 +9,8 @@ namespace Fighters
 
         private readonly IBattleLogger _logger;
 
-        public GameManager() : this(new ConsoleBattleLogger()) {}
+        public GameManager() : this(new ConsoleBattleLogger()) { }
+
         public GameManager(IBattleLogger logger)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -58,8 +59,15 @@ namespace Fighters
             _logger.FighterWon(winner);
         }
 
-        private void ExchangeBlows(IFighter attacker, IFighter defender)
+        private void ExchangeBlows(IFighter first, IFighter second)
         {
+            IFighter attacker = first.Initiative >= second.Initiative
+                ? first
+                : second;
+            IFighter defender = ReferenceEquals(attacker, first)
+                ? second
+                : first;
+
             var dealt = ApplyAttack(attacker, defender);
             var received = defender.IsAlive()
                 ? ApplyAttack(defender, attacker)
