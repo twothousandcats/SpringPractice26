@@ -1,8 +1,7 @@
 namespace Fighters.Models.Races
 {
-    public interface IRace
+    public interface IRace : IName
     {
-        string Name { get; }
         int Damage { get; }
         int Health { get; }
         int Armor { get; }

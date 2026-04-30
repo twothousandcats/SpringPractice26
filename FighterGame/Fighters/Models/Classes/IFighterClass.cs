@@ -1,8 +1,7 @@
 namespace Fighters.Models.Classes
 {
-    public interface IFighterClass
+    public interface IFighterClass : IName
     {
-        string Name { get; }
         int Damage { get; }
         int Health { get; }
     }

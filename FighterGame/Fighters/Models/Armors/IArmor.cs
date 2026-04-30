@@ -1,8 +1,7 @@
 namespace Fighters.Models.Armors
 {
-    public interface IArmor
+    public interface IArmor : IName
     {
-        string Name { get; }
         int Armor { get; }
     }
 }

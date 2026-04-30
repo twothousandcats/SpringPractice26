@@ -1,9 +1,7 @@
 namespace Fighters.Models.Fighters
 {
-    public interface IFighter
+    public interface IFighter : IName
     {
-        string Name { get; }
-
         int GetCurrentHealth();
         int GetMaxHealth();
         int CalculateDamage();
