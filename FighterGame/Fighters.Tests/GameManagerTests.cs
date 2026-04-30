@@ -19,7 +19,7 @@ namespace Fighters.Tests
         [Test]
         public void Play_TwoEqualFighters_FirstFighterWins()
         {
-            var gameManager = new GameManager(new SilentBattleLogger());
+            var gameManager = new GameManager(new SilentBattleLogger(), new WeakestTargetSelector());
             var fighterA = CreateFighter("fighterA");
             var fighterB = CreateFighter("fighterB");
 
@@ -31,7 +31,7 @@ namespace Fighters.Tests
         [Test]
         public void Play_TwoEqualFighters_SecondFighterDies()
         {
-            var gameManager = new GameManager(new SilentBattleLogger());
+            var gameManager = new GameManager(new SilentBattleLogger(), new WeakestTargetSelector());
             var fighterA = CreateFighter("fighterA");
             var fighterB = CreateFighter("fighterB");
 
@@ -44,7 +44,7 @@ namespace Fighters.Tests
         [Test]
         public void Play_StrongerFighterWins()
         {
-            var gameManager = new GameManager(new SilentBattleLogger());
+            var gameManager = new GameManager(new SilentBattleLogger(), new WeakestTargetSelector());
             var weak = new Fighter("Weak", new Human(), new Knight(), new Fists(), new NoArmor());
             var strong = new Fighter("Strong", new Orc(), new Mercenary(), new Axe(), new PlateArmor());
 

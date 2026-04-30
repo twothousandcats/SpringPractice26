@@ -8,12 +8,14 @@ namespace Fighters
         private const int MaxRounds = 1000;
 
         private readonly IBattleLogger _logger;
+        private readonly ITargetSelector _targetSelector;
 
-        public GameManager() : this(new ConsoleBattleLogger()) { }
+        public GameManager() : this(new ConsoleBattleLogger(), new WeakestTargetSelector()) { }
 
-        public GameManager(IBattleLogger logger)
+        public GameManager(IBattleLogger logger, ITargetSelector targetSelector)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _targetSelector = targetSelector ?? throw new ArgumentNullException(nameof(targetSelector));
         }
 
         public IFighter Play(IReadOnlyList<IFighter> fighters)
@@ -41,7 +43,7 @@ namespace Fighters
                         continue;
                     }
 
-                    IFighter? target = PickWeakestOpponent(attacker, arena);
+                    IFighter? target = _targetSelector.Pick(attacker, arena);
                     if (target is null)
                     {
                         _logger.FighterWon(attacker);
@@ -59,25 +61,6 @@ namespace Fighters
             }
 
             throw new InvalidOperationException("Battle did not finish within the round limit!");
-        }
-
-        private static IFighter? PickWeakestOpponent(IFighter self, IReadOnlyList<IFighter> arena)
-        {
-            IFighter? weakest = null;
-            foreach (IFighter candidate in arena)
-            {
-                if (!candidate.IsAlive || ReferenceEquals(candidate, self))
-                {
-                    continue;
-                }
-
-                if (weakest is null || candidate.CurrentHealth < weakest.CurrentHealth)
-                {
-                    weakest = candidate;
-                }
-            }
-
-            return weakest;
         }
 
         private static int ApplyAttack(IFighter attacker, IFighter defender)
