@@ -19,11 +19,12 @@ namespace Fighters.Tests
         [Test]
         public void Play_TwoEqualFighters_FirstFighterWins()
         {
-            var gameManager = new GameManager(new SilentBattleLogger(), new WeakestTargetSelector());
+            var gameManager = new GameManager(new SilentBattleLogger(), new WeakestTargetSelector(),
+                new BaseDamageCalculator());
             var fighterA = CreateFighter("fighterA");
             var fighterB = CreateFighter("fighterB");
 
-            var winner = gameManager.Play(new   [] { fighterA, fighterB });
+            var winner = gameManager.Play(new[] { fighterA, fighterB });
 
             Assert.That(winner.Name, Is.EqualTo(fighterA.Name));
         }
@@ -31,11 +32,12 @@ namespace Fighters.Tests
         [Test]
         public void Play_TwoEqualFighters_SecondFighterDies()
         {
-            var gameManager = new GameManager(new SilentBattleLogger(), new WeakestTargetSelector());
+            var gameManager = new GameManager(new SilentBattleLogger(), new WeakestTargetSelector(),
+                new BaseDamageCalculator());
             var fighterA = CreateFighter("fighterA");
             var fighterB = CreateFighter("fighterB");
 
-            gameManager.Play(new [] { fighterA, fighterB });
+            gameManager.Play(new[] { fighterA, fighterB });
 
             Assert.That(fighterA.CurrentHealth, Is.GreaterThan(0));
             Assert.That(fighterB.CurrentHealth, Is.EqualTo(0));
@@ -44,11 +46,12 @@ namespace Fighters.Tests
         [Test]
         public void Play_StrongerFighterWins()
         {
-            var gameManager = new GameManager(new SilentBattleLogger(), new WeakestTargetSelector());
+            var gameManager = new GameManager(new SilentBattleLogger(), new WeakestTargetSelector(),
+                new BaseDamageCalculator());
             var weak = new Fighter("Weak", new Human(), new Knight(), new Fists(), new NoArmor());
             var strong = new Fighter("Strong", new Orc(), new Mercenary(), new Axe(), new PlateArmor());
 
-            var winner = gameManager.Play(new  [] { weak, strong });
+            var winner = gameManager.Play(new[] { weak, strong });
 
             Assert.That(winner.Name, Is.EqualTo(strong.Name));
             Assert.That(weak.IsAlive, Is.False);

@@ -9,13 +9,15 @@ namespace Fighters
 
         private readonly IBattleLogger _logger;
         private readonly ITargetSelector _targetSelector;
+        private readonly IDamageCalculator _damageCalculator;
 
-        public GameManager() : this(new ConsoleBattleLogger(), new WeakestTargetSelector()) { }
+        public GameManager() : this(new ConsoleBattleLogger(), new WeakestTargetSelector(), new BaseDamageCalculator()) { }
 
-        public GameManager(IBattleLogger logger, ITargetSelector targetSelector)
+        public GameManager(IBattleLogger logger, ITargetSelector targetSelector, IDamageCalculator damageCalculator)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _targetSelector = targetSelector ?? throw new ArgumentNullException(nameof(targetSelector));
+            _damageCalculator = damageCalculator ?? throw new ArgumentNullException(nameof(damageCalculator));
         }
 
         public IFighter Play(IReadOnlyList<IFighter> fighters)
@@ -63,9 +65,9 @@ namespace Fighters
             throw new InvalidOperationException("Battle did not finish within the round limit!");
         }
 
-        private static int ApplyAttack(IFighter attacker, IFighter defender)
+        private int ApplyAttack(IFighter attacker, IFighter defender)
         {
-            int damage = Math.Max(attacker.Damage - defender.Armor, 0);
+            int damage = _damageCalculator.Calculate(attacker, defender);
             defender.TakeDamage(damage);
             return damage;
         }
