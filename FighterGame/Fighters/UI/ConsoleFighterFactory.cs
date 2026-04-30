@@ -1,3 +1,4 @@
+using Fighters.Models;
 using Fighters.Models.Armors;
 using Fighters.Models.Classes;
 using Fighters.Models.Fighters;
@@ -6,88 +7,73 @@ using Fighters.Models.Weapons;
 
 namespace Fighters.UI
 {
-    public class ConsoleFighterFactory
+    public class ConsoleFighterFactory : IFighterFactory
     {
-        public static IFighter CreateFromConsole()
+        private readonly IConsole _console;
+        private readonly IReadOnlyList<Func<IArmor>> _armors;
+        private readonly IReadOnlyList<Func<IFighterClass>> _classes;
+        private readonly IReadOnlyList<Func<IRace>> _races;
+        private readonly IReadOnlyList<Func<IWeapon>> _weapons;
+
+        public ConsoleFighterFactory(
+            IConsole console,
+            IReadOnlyList<Func<IArmor>> armors,
+            IReadOnlyList<Func<IFighterClass>> classes,
+            IReadOnlyList<Func<IRace>> races,
+            IReadOnlyList<Func<IWeapon>> weapons
+        )
         {
-            string name = ReadName();
-            IRace race = ReadRace();
-            IFighterClass fighterClass = ReadClass();
-            IWeapon weapon = ReadWeapon();
-            IArmor armor = ReadArmor();
-            return new Fighter(name, race, fighterClass, weapon, armor);
+            _console = console ?? throw new ArgumentNullException(nameof(console));
+            _races = races ?? throw new ArgumentNullException(nameof(races));
+            _classes = classes ?? throw new ArgumentNullException(nameof(classes));
+            _weapons = weapons ?? throw new ArgumentNullException(nameof(weapons));
+            _armors = armors ?? throw new ArgumentNullException(nameof(armors));
         }
 
-        private static string ReadName()
+        public IFighter Create()
+        {
+            string name = ReadName();
+            IRace race = ReadFromList("Choose race: ", _races);
+            IFighterClass classes = ReadFromList("Choose class: ", _classes);
+            IWeapon weapons = ReadFromList("Choose weapon: ", _weapons);
+            IArmor armor = ReadFromList("Choose armor: ", _armors);
+
+            return new Fighter(name, race, classes, weapons, armor);
+        }
+
+        private string ReadName()
         {
             while (true)
             {
-                Console.WriteLine("Enter fighter name:");
-                string? value = Console.ReadLine();
-                if (!string.IsNullOrWhiteSpace(value))
+                _console.WriteLine("Enter fighter name:");
+                string? name = _console.ReadLine();
+                if (!string.IsNullOrWhiteSpace(name))
                 {
-                    return value.Trim();
+                    return name;
                 }
 
-                Console.WriteLine("Name must not be empty.");
+                _console.WriteLine("Name cant be empty!");
             }
         }
 
-        private static IRace ReadRace()
+        private T ReadFromList<T>(string title, IReadOnlyList<Func<T>> options) where T : IName
         {
-            Console.WriteLine("Available fighters: 1 - Human, 2 - Elf, 3 - Orc, 4 - Dwarf");
-            return ReadChoice<IRace>(new()
-            {
-                ["1"] = () => new Human(), ["2"] = () => new Elf(), ["3"] = () => new Orc(), ["4"] = () => new Dwarf(),
-            });
-        }
-
-        private static IFighterClass ReadClass()
-        {
-            Console.WriteLine("Available classes: 1 - Knight, 2 - Mercenary, 3 - Mage");
-            return ReadChoice<IFighterClass>(new()
-            {
-                ["1"] = () => new Knight(), ["2"] = () => new Mercenary(), ["3"] = () => new Mage(),
-            });
-        }
-
-        private static IWeapon ReadWeapon()
-        {
-            Console.WriteLine("Available weapons: 1 - Fists, 2 - Sword, 3 - Bow, 4 - Axe, 5 - Staff");
-            return ReadChoice<IWeapon>(new()
-            {
-                ["1"] = () => new Fists(),
-                ["2"] = () => new Sword(),
-                ["3"] = () => new Bow(),
-                ["4"] = () => new Axe(),
-                ["5"] = () => new Staff(),
-            });
-        }
-
-        private static IArmor ReadArmor()
-        {
-            Console.WriteLine("Available armors: 1 - No armor, 2 - Simple clothes, 3 - Leather, 4 - Chain, 5 - Plate");
-            return ReadChoice<IArmor>(new()
-            {
-                ["1"] = () => new NoArmor(),
-                ["2"] = () => new SimpleClothes(),
-                ["3"] = () => new LeatherArmor(),
-                ["4"] = () => new ChainArmor(),
-                ["5"] = () => new PlateArmor(),
-            });
-        }
-
-        private static T ReadChoice<T>(Dictionary<string, Func<T>> options)
-        {
+            T[] samples = options.Select(f => f()).ToArray();
             while (true)
             {
-                string? value = Console.ReadLine()?.Trim();
-                if (value is not null && options.TryGetValue(value, out Func<T>? factory))
+                _console.WriteLine(title);
+                for (int i = 0; i < samples.Length; i++)
                 {
-                    return factory();
+                    _console.WriteLine($"{i + 1} - {samples[i].Name}");
                 }
 
-                Console.WriteLine("Invalid option, try again.");
+                string? input = _console.ReadLine();
+                if (int.TryParse(input, out int choice) && choice >= 1 && choice <= options.Count)
+                {
+                    return options[choice - 1]();
+                }
+
+                _console.WriteLine("Invalid option. Try again.");
             }
         }
     }
