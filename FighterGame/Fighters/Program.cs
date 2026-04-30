@@ -46,6 +46,7 @@ namespace Fighters
                 quit
             ];
 
+            registry = new CommandRegistry(commands);
             new CommandLoop(registry, quit, console).Run();
         }
     }
