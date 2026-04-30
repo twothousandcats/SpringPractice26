@@ -9,8 +9,7 @@ namespace Fighters.Battle
         void AttackPerformed(
             IFighter attacker,
             IFighter target,
-            int dealtDamage,
-            int receivedDamage
+            int dealtDamage
         );
 
         void FighterDied(IFighter fighter);

@@ -9,10 +9,10 @@ namespace Fighters.Battle
             Console.WriteLine("Round " + roundNumber);
         }
 
-        public void AttackPerformed(IFighter attacker, IFighter target, int dealtDamage, int receivedDamage)
+        public void AttackPerformed(IFighter attacker, IFighter target, int dealtDamage)
         {
             Console.WriteLine(
-                $"{attacker.Name} deals {dealtDamage} damage, {target.Name} received {receivedDamage} damage."
+                $"{attacker.Name} deals {dealtDamage} damage, to {target.Name}."
             );
         }
 

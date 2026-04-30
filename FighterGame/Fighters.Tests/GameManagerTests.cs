@@ -23,7 +23,7 @@ namespace Fighters.Tests
             var fighterA = CreateFighter("fighterA");
             var fighterB = CreateFighter("fighterB");
 
-            var winner = gameManager.Play(fighterA, fighterB);
+            var winner = gameManager.Play(new   [] { fighterA, fighterB });
 
             Assert.That(winner.Name, Is.EqualTo(fighterA.Name));
         }
@@ -35,7 +35,7 @@ namespace Fighters.Tests
             var fighterA = CreateFighter("fighterA");
             var fighterB = CreateFighter("fighterB");
 
-            gameManager.Play(fighterA, fighterB);
+            gameManager.Play(new [] { fighterA, fighterB });
 
             Assert.That(fighterA.CurrentHealth, Is.GreaterThan(0));
             Assert.That(fighterB.CurrentHealth, Is.EqualTo(0));
@@ -48,7 +48,7 @@ namespace Fighters.Tests
             var weak = new Fighter("Weak", new Human(), new Knight(), new Fists(), new NoArmor());
             var strong = new Fighter("Strong", new Orc(), new Mercenary(), new Axe(), new PlateArmor());
 
-            var winner = gameManager.Play(strong, weak);
+            var winner = gameManager.Play(new  [] { weak, strong });
 
             Assert.That(winner.Name, Is.EqualTo(strong.Name));
             Assert.That(weak.IsAlive, Is.False);
