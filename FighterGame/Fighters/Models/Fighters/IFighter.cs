@@ -2,13 +2,13 @@ namespace Fighters.Models.Fighters
 {
     public interface IFighter : IName
     {
-        int GetCurrentHealth();
-        int GetMaxHealth();
-        int CalculateDamage();
-        int CalculateArmor();
-
-        bool IsAlive();
-        void TakeDamage(int damage);
+        int CurrentHealth { get; }
+        int MaxHealth { get; }
+        int Damage { get; }
+        int Armor { get; }
+        bool IsAlive { get; }
         int Initiative { get; }
+
+        void TakeDamage(int damage);
     }
 }

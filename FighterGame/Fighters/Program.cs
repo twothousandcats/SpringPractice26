@@ -7,8 +7,8 @@ namespace Fighters
     {
         public static void Main(string[] args)
         {
-            var arena = new List<IFighter>();
-            var gameManager = new GameManager();
+            List<IFighter> arena = new List<IFighter>();
+            GameManager gameManager = new GameManager();
 
             Console.WriteLine("Commands: add-fighter, play, quit");
 

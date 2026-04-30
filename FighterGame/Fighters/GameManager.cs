@@ -21,12 +21,12 @@ namespace Fighters
             ArgumentNullException.ThrowIfNull(first);
             ArgumentNullException.ThrowIfNull(second);
 
-            for (var round = 1; round <= MaxRounds; round++)
+            for (int round = 1; round <= MaxRounds; round++)
             {
                 _logger.RoundStarted(round);
                 ExchangeBlows(first, second);
 
-                var winner = GetWinner(first, second);
+                IFighter? winner = GetWinner(first, second);
                 if (winner != null)
                 {
                     return winner;
@@ -40,9 +40,9 @@ namespace Fighters
         {
             ArgumentNullException.ThrowIfNull(fighters);
 
-            var arena = new List<IFighter>(fighters);
+            List<IFighter> arena = new List<IFighter>(fighters);
 
-            for (var round = 1; round <= MaxRounds; round++)
+            for (int round = 1; round <= MaxRounds; round++)
             {
                 _logger.RoundStarted(round);
                 IEnumerable<IFighter> fightersTurnOrder = arena
@@ -51,7 +51,7 @@ namespace Fighters
 
                 foreach (IFighter attacker in fightersTurnOrder)
                 {
-                    if (!attacker.IsAlive())
+                    if (!attacker.IsAlive)
                     {
                         continue;
                     }
@@ -64,12 +64,12 @@ namespace Fighters
                     }
 
                     int dealt = ApplyAttack(attacker, target);
-                    var received = target.IsAlive()
+                    int received = target.IsAlive
                         ? ApplyAttack(target, attacker)
                         : 0;
                     _logger.AttackPerformed(attacker, target, dealt, received);
 
-                    if (!target.IsAlive())
+                    if (!target.IsAlive)
                     {
                         _logger.FighterWon(target);
                     }
@@ -82,14 +82,14 @@ namespace Fighters
         private static IFighter? PickWeakestOpponent(IFighter self, IReadOnlyList<IFighter> fighters)
         {
             IFighter? weakestOpponent = null;
-            foreach (var fighter in fighters)
+            foreach (IFighter fighter in fighters)
             {
-                if (!fighter.IsAlive() || ReferenceEquals(fighter, self))
+                if (!fighter.IsAlive || ReferenceEquals(fighter, self))
                 {
                     continue;
                 }
 
-                if (weakestOpponent is null || fighter.GetCurrentHealth() < weakestOpponent.GetCurrentHealth())
+                if (weakestOpponent is null || fighter.CurrentHealth < weakestOpponent.CurrentHealth)
                 {
                     weakestOpponent = fighter;
                 }
@@ -100,13 +100,13 @@ namespace Fighters
 
         private IFighter? GetWinner(IFighter first, IFighter second)
         {
-            if (!second.IsAlive())
+            if (!second.IsAlive)
             {
                 Result(first, second);
                 return first;
             }
 
-            if (!first.IsAlive())
+            if (!first.IsAlive)
             {
                 Result(second, first);
                 return second;
@@ -130,8 +130,8 @@ namespace Fighters
                 ? second
                 : first;
 
-            var dealt = ApplyAttack(attacker, defender);
-            var received = defender.IsAlive()
+            int dealt = ApplyAttack(attacker, defender);
+            int received = defender.IsAlive
                 ? ApplyAttack(defender, attacker)
                 : 0;
 
@@ -140,7 +140,7 @@ namespace Fighters
 
         private static int ApplyAttack(IFighter attacker, IFighter defender)
         {
-            var damage = Math.Max(attacker.CalculateDamage() - defender.CalculateArmor(), 0);
+            int damage = Math.Max(attacker.Damage - defender.Damage, 0);
             defender.TakeDamage(damage);
             return damage;
         }

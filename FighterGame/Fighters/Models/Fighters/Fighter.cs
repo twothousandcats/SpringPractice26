@@ -32,37 +32,16 @@ namespace Fighters.Models.Fighters
             _weapon = weapon ?? throw new ArgumentNullException(nameof(weapon));
             _armor = armor ?? throw new ArgumentNullException(nameof(armor));
 
-            _currentHealth = GetMaxHealth();
+            _currentHealth = MaxHealth;
         }
 
         public string Name { get; }
-
+        public int CurrentHealth { get; private set; }
+        public int MaxHealth => _race.Health + _class.Health;
+        public int Damage => _race.Damage + _class.Damage + _weapon.Damage;
+        public int Armor => _race.Armor + _armor.Armor;
         public int Initiative => _race.Initiative;
-
-        public int GetCurrentHealth()
-        {
-            return _currentHealth;
-        }
-
-        public int GetMaxHealth()
-        {
-            return _race.Health + _class.Health;
-        }
-
-        public int CalculateDamage()
-        {
-            return _race.Damage + _class.Damage + _weapon.Damage;
-        }
-
-        public int CalculateArmor()
-        {
-            return _race.Armor + _armor.Armor;
-        }
-
-        public bool IsAlive()
-        {
-            return _currentHealth > 0;
-        }
+        public bool IsAlive => CurrentHealth > 0;
 
         public void TakeDamage(int damage)
         {

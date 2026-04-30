@@ -22,7 +22,7 @@ namespace Fighters.Tests
                 new NoArmor()
             );
 
-            int maxHealth = fighter.GetMaxHealth();
+            int maxHealth = fighter.MaxHealth;
 
             Assert.That(maxHealth, Is.EqualTo(150));
         }
@@ -38,7 +38,7 @@ namespace Fighters.Tests
                 new NoArmor()
             );
 
-            int damageTaken = fighter.CalculateDamage();
+            int damageTaken = fighter.Damage;
 
             Assert.That(damageTaken, Is.EqualTo(1 + 5 + 15));
         }
@@ -54,7 +54,7 @@ namespace Fighters.Tests
                 new PlateArmor()
             );
 
-            int armor = fighter.CalculateArmor();
+            int armor = fighter.Armor;
 
             Assert.That(armor, Is.EqualTo(3 + 15));
         }
@@ -71,8 +71,8 @@ namespace Fighters.Tests
             );
 
             fighter.TakeDamage(99999);
-            int currentHealth = fighter.GetCurrentHealth();
-            bool isAlive = fighter.IsAlive();
+            int currentHealth = fighter.CurrentHealth;
+            bool isAlive = fighter.IsAlive;
 
             Assert.That(currentHealth, Is.EqualTo(0));
             Assert.That(isAlive, Is.False);

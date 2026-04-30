@@ -37,8 +37,8 @@ namespace Fighters.Tests
 
             gameManager.Play(fighterA, fighterB);
 
-            Assert.That(fighterA.GetCurrentHealth(), Is.GreaterThan(0));
-            Assert.That(fighterB.GetCurrentHealth(), Is.EqualTo(0));
+            Assert.That(fighterA.CurrentHealth, Is.GreaterThan(0));
+            Assert.That(fighterB.CurrentHealth, Is.EqualTo(0));
         }
 
         [Test]
@@ -51,7 +51,7 @@ namespace Fighters.Tests
             var winner = gameManager.Play(strong, weak);
 
             Assert.That(winner.Name, Is.EqualTo(strong.Name));
-            Assert.That(weak.IsAlive(), Is.False);
+            Assert.That(weak.IsAlive, Is.False);
         }
     }
 }
