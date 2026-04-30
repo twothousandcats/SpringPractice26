@@ -36,6 +36,10 @@ namespace Fighters.Models.Fighters
         }
 
         public string Name { get; }
+
+        public string Description =>
+            $"{Name} ({_race.Name}, {_class.Name}, {_weapon.Name}, {_armor.Name}) HP: {CurrentHealth / MaxHealth}";
+
         public int CurrentHealth { get; private set; }
         public int MaxHealth => _race.Health + _class.Health;
         public int Damage => _race.Damage + _class.Damage + _weapon.Damage;

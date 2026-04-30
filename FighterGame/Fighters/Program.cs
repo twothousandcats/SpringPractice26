@@ -34,14 +34,18 @@ namespace Fighters
             );
 
             ExitCommand quit = new();
+            CommandRegistry registry = null!;
+            HelpCommand help = new(() => registry.All, console);
             ICommand[] commands =
             [
                 new AddFighterCommand(arena, fighterFactory, console),
+                new ListFightersCommand(arena, console),
+                new RemoveFighterCommand(arena, console),
                 new PlayCommand(arena, gameManager, console),
-                quit,
+                help,
+                quit
             ];
 
-            CommandRegistry registry = new(commands);
             new CommandLoop(registry, quit, console).Run();
         }
     }

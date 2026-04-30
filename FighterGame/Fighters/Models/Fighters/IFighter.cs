@@ -8,6 +8,7 @@ namespace Fighters.Models.Fighters
         int Armor { get; }
         bool IsAlive { get; }
         int Initiative { get; }
+        string Description { get; }
 
         void TakeDamage(int damage);
     }

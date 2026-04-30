@@ -1,0 +1,35 @@
+using Fighters.Models.Fighters;
+using Fighters.UI;
+
+namespace Fighters.Commands
+{
+    public class RemoveFighterCommand : ICommand
+    {
+        private readonly List<IFighter> _arena;
+        private readonly IConsole _console;
+
+        public RemoveFighterCommand(List<IFighter> arena, IConsole console)
+        {
+            _arena = arena ?? throw new ArgumentNullException(nameof(arena));
+            _console = console ?? throw new ArgumentNullException(nameof(console));
+        }
+
+        public string Name => "Remove";
+        public string Description => "Removes a fighter";
+
+        public void Execute()
+        {
+            _console.WriteLine("Enter fighter index:");
+            string? fighterIdx = _console.ReadLine(); // from 1
+            if (!int.TryParse(fighterIdx, out int index) || index < 0 || index > _arena.Count)
+            {
+                _console.WriteLine("Invalid fighter index");
+                return;
+            }
+
+            IFighter fighter = _arena[index - 1];
+            _arena.Remove(fighter);
+            _console.WriteLine($"Removed fighter: {fighter.Name}");
+        }
+    }
+}
