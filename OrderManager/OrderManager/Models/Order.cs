@@ -14,26 +14,6 @@ public sealed class Order
 
     internal Order(string productName, int quantity, string customerName, string address)
     {
-        if (string.IsNullOrWhiteSpace(productName))
-        {
-            throw new ArgumentException("Product name cannot be empty. ", nameof(productName));
-        }
-
-        if (quantity <= 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(quantity), " Quantity must be positive.");
-        }
-
-        if (string.IsNullOrWhiteSpace(customerName))
-        {
-            throw new ArgumentException("Customer name cannot be empty. ", nameof(customerName));
-        }
-
-        if (string.IsNullOrWhiteSpace(address))
-        {
-            throw new ArgumentException("Address cannot be empty. ", nameof(address));
-        }
-
         ProductName = productName;
         Quantity = quantity;
         CustomerName = customerName;
