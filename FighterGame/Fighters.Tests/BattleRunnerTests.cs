@@ -9,7 +9,7 @@ using NUnit.Framework;
 namespace Fighters.Tests
 {
     [TestFixture]
-    public class GameManagerTests
+    public class BattleRunnerTests
     {
         private static Fighter CreateFighter(string Name)
         {
@@ -19,8 +19,8 @@ namespace Fighters.Tests
         [Test]
         public void Play_TwoEqualFighters_FirstFighterWins()
         {
-            var gameManager = new GameManager(new SilentBattleLogger(), new WeakestTargetSelector(),
-                new BaseDamageCalculator());
+            var gameManager = new BattleRunner(new SilentBattleLogger(), new WeakestTargetSelector(),
+                new PlainDamageCalculator());
             var fighterA = CreateFighter("fighterA");
             var fighterB = CreateFighter("fighterB");
 
@@ -32,8 +32,8 @@ namespace Fighters.Tests
         [Test]
         public void Play_TwoEqualFighters_SecondFighterDies()
         {
-            var gameManager = new GameManager(new SilentBattleLogger(), new WeakestTargetSelector(),
-                new BaseDamageCalculator());
+            var gameManager = new BattleRunner(new SilentBattleLogger(), new WeakestTargetSelector(),
+                new PlainDamageCalculator());
             var fighterA = CreateFighter("fighterA");
             var fighterB = CreateFighter("fighterB");
 
@@ -46,8 +46,8 @@ namespace Fighters.Tests
         [Test]
         public void Play_StrongerFighterWins()
         {
-            var gameManager = new GameManager(new SilentBattleLogger(), new WeakestTargetSelector(),
-                new BaseDamageCalculator());
+            var gameManager = new BattleRunner(new SilentBattleLogger(), new WeakestTargetSelector(),
+                new PlainDamageCalculator());
             var weak = new Fighter("Weak", new Human(), new Knight(), new Fists(), new NoArmor());
             var strong = new Fighter("Strong", new Orc(), new Mercenary(), new Axe(), new PlateArmor());
 

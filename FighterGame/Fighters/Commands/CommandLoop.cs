@@ -5,19 +5,19 @@ namespace Fighters.Commands
     public class CommandLoop
     {
         private readonly CommandRegistry _registry;
-        private readonly ExitCommand _exit;
+        private readonly IApplicationLifetime _appLifetime;
         private readonly IConsole _console;
 
-        public CommandLoop(CommandRegistry registry, ExitCommand exit, IConsole console)
+        public CommandLoop(CommandRegistry registry, IApplicationLifetime appLifetime, IConsole console)
         {
             _registry = registry ?? throw new ArgumentNullException(nameof(registry));
-            _exit = exit ?? throw new ArgumentNullException(nameof(exit));
+            _appLifetime = appLifetime ?? throw new ArgumentNullException(nameof(appLifetime));
             _console = console ?? throw new ArgumentNullException(nameof(console));
         }
 
         public void Run()
         {
-            while (!_exit.Requested)
+            while (!_appLifetime.ShouldStop)
             {
                 _console.WriteLine("");
                 _console.WriteLine("Enter command");
@@ -29,7 +29,7 @@ namespace Fighters.Commands
                     continue;
                 }
 
-                if (!_registry.TryToGet(input, out var command))
+                if (!_registry.TryGet(input, out var command))
                 {
                     _console.WriteLine("Unknown command");
                     continue;

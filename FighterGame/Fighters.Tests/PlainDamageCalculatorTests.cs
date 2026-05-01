@@ -9,7 +9,7 @@ using NUnit.Framework;
 namespace Fighters.Tests
 {
     [TestFixture]
-    public class BaseDamageCalculatorTests
+    public class PlainDamageCalculatorTests
     {
         private static Fighter Make(string name)
         {
@@ -19,7 +19,7 @@ namespace Fighters.Tests
         [Test]
         public void Calculate_ReturnsCorrectDamageValue()
         {
-            BaseDamageCalculator calculator = new BaseDamageCalculator();
+            PlainDamageCalculator calculator = new PlainDamageCalculator();
             Fighter attacker = Make("A");
             Fighter defender = Make("B");
 
@@ -31,7 +31,7 @@ namespace Fighters.Tests
         [Test]
         public void Calculate_ReturnsZeroWhenArmonGreaterThanDamage()
         {
-            BaseDamageCalculator calculator = new BaseDamageCalculator();
+            PlainDamageCalculator calculator = new PlainDamageCalculator();
             Fighter attacker = Make("A");
             Fighter defender = new Fighter("B", new Dwarf(), new Knight(), new Fists(), new PlateArmor());
 

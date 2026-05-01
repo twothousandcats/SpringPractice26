@@ -3,7 +3,7 @@ using Fighters.Models.Fighters;
 
 namespace Fighters
 {
-    public class GameManager
+    public class BattleRunner
     {
         private const int MaxRounds = 1000;
 
@@ -11,7 +11,7 @@ namespace Fighters
         private readonly ITargetSelector _targetSelector;
         private readonly IDamageCalculator _damageCalculator;
 
-        public GameManager(IBattleLogger logger, ITargetSelector targetSelector, IDamageCalculator damageCalculator)
+        public BattleRunner(IBattleLogger logger, ITargetSelector targetSelector, IDamageCalculator damageCalculator)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _targetSelector = targetSelector ?? throw new ArgumentNullException(nameof(targetSelector));
@@ -64,7 +64,7 @@ namespace Fighters
                 if (totalDamageThisRound == 0)
                 {
                     IFighter[] survivors = arena.Where(f => f.IsAlive).ToArray();
-                    _logger.Stalemate(survivors);
+                    _logger.StalemateReached(survivors);
                     throw new InvalidOperationException("Battle ended in stalemate.");
                 }
             }

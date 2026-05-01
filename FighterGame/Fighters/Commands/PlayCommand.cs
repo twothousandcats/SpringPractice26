@@ -6,13 +6,13 @@ namespace Fighters.Commands
     public class PlayCommand : ICommand
     {
         private readonly List<IFighter> _arena;
-        private readonly GameManager _gameManager;
+        private readonly BattleRunner _battleRunner;
         private readonly IConsole _console;
 
-        public PlayCommand(List<IFighter> arena, GameManager gameManager, IConsole console)
+        public PlayCommand(List<IFighter> arena, BattleRunner battleRunner, IConsole console)
         {
             _arena = arena ?? throw new ArgumentNullException(nameof(arena));
-            _gameManager = gameManager ?? throw new ArgumentNullException(nameof(gameManager));
+            _battleRunner = battleRunner ?? throw new ArgumentNullException(nameof(battleRunner));
             _console = console ?? throw new ArgumentNullException(nameof(console));
         }
 
@@ -27,7 +27,7 @@ namespace Fighters.Commands
                 return;
             }
 
-            _gameManager.Play(_arena);
+            _battleRunner.Play(_arena);
             _arena.Clear();
         }
     }

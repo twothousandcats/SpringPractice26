@@ -34,11 +34,11 @@ namespace Fighters.UI
         {
             string name = ReadName();
             IRace race = ReadFromList("Choose race: ", _races);
-            IFighterClass classes = ReadFromList("Choose class: ", _classes);
-            IWeapon weapons = ReadFromList("Choose weapon: ", _weapons);
+            IFighterClass fighterClass = ReadFromList("Choose class: ", _classes);
+            IWeapon weapon = ReadFromList("Choose weapon: ", _weapons);
             IArmor armor = ReadFromList("Choose armor: ", _armors);
 
-            return new Fighter(name, race, classes, weapons, armor);
+            return new Fighter(name, race, fighterClass, weapon, armor);
         }
 
         private string ReadName()

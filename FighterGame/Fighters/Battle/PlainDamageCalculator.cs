@@ -2,7 +2,7 @@ using Fighters.Models.Fighters;
 
 namespace Fighters.Battle
 {
-    public class BaseDamageCalculator : IDamageCalculator
+    public class PlainDamageCalculator : IDamageCalculator
     {
         public int Calculate(IFighter attacker, IFighter defender)
         {

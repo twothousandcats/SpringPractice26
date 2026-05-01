@@ -15,11 +15,11 @@ namespace Fighters
 
             IDamageCalculator damageCalc =
                 new CriticalHitDamageCalculator(
-                    new RandomVarianceDamageCalculator(new BaseDamageCalculator(), rng),
+                    new RandomVarianceDamageCalculator(new PlainDamageCalculator(), rng),
                     rng
                 );
 
-            GameManager gameManager = new(
+            BattleRunner battleRunner = new(
                 new ConsoleBattleLogger(console),
                 new WeakestTargetSelector(),
                 damageCalc
@@ -33,21 +33,16 @@ namespace Fighters
                 FighterOptionsRegistry.Weapons
             );
 
-            ExitCommand quit = new();
-            CommandRegistry registry = null!;
-            HelpCommand help = new(() => registry.All, console);
-            ICommand[] commands =
-            [
-                new AddFighterCommand(arena, fighterFactory, console),
-                new ListFightersCommand(arena, console),
-                new RemoveFighterCommand(arena, console),
-                new PlayCommand(arena, gameManager, console),
-                help,
-                quit
-            ];
+            IApplicationLifetime lifetime = new ApplicationLifetime();
+            CommandRegistry registry = new();
+            registry.Register(new AddFighterCommand(arena, fighterFactory, console));
+            registry.Register(new ListFightersCommand(arena, console));
+            registry.Register(new RemoveFighterCommand(arena, console));
+            registry.Register(new PlayCommand(arena, battleRunner, console));
+            registry.Register(new HelpCommand(registry, console));
+            registry.Register(new ExitCommand(lifetime));
 
-            registry = new CommandRegistry(commands);
-            new CommandLoop(registry, quit, console).Run();
+            new CommandLoop(registry, lifetime, console).Run();
         }
     }
 }

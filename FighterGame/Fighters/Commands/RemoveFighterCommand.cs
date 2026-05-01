@@ -20,8 +20,8 @@ namespace Fighters.Commands
         public void Execute()
         {
             _console.WriteLine("Enter fighter index:");
-            string? fighterIdx = _console.ReadLine(); // from 1
-            if (!int.TryParse(fighterIdx, out int index) || index < 0 || index > _arena.Count)
+            string? input = _console.ReadLine(); // from 1
+            if (!int.TryParse(input, out int index) || index < 0 || index > _arena.Count)
             {
                 _console.WriteLine("Invalid fighter index");
                 return;

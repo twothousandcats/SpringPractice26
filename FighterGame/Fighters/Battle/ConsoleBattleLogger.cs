@@ -24,7 +24,7 @@ namespace Fighters.Battle
             );
         }
 
-        public void Stalemate(IReadOnlyList<IFighter> fighters)
+        public void StalemateReached(IReadOnlyList<IFighter> fighters)
         {
             string names = string.Join(", ", fighters.Select(f => f.Name));
             _console.WriteLine($"Stalemate: nobody dealt damage this round ({names}).");
