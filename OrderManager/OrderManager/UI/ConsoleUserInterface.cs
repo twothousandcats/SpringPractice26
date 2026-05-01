@@ -15,11 +15,11 @@ public sealed class ConsoleUserInterface : IUserInterface
         Console.WriteLine( message );
     }
 
-    public bool AskYesNoQuestion( string prompt )
+    public bool ObtainConsent( string prompt )
     {
         while ( true )
         {
-            var answer = ReadLine( prompt ).Trim().ToLowerInvariant();
+            string answer = ReadLine( prompt ).Trim().ToLowerInvariant();
             switch ( answer )
             {
                 case "y":

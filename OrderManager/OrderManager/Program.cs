@@ -1,5 +1,5 @@
 using System;
-using OrderManager.Services;
+using OrderManager.Controllers;
 using OrderManager.UI;
 
 namespace OrderManager;
@@ -11,7 +11,7 @@ internal static class Program
         Console.OutputEncoding = System.Text.Encoding.UTF8;
 
         ConsoleUserInterface ui = new ConsoleUserInterface();
-        OrderService service = new( ui );
-        service.PlaceOrder();
+        OrderController controller = new(ui);
+        controller.PlaceOrder();
     }
 }
