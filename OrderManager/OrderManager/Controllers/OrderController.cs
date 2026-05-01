@@ -29,7 +29,6 @@ namespace OrderManager.Controllers
         private Order CollectOrder()
         {
             string productName = PromptForNonEmpty("Введите название товара: ");
-            int quantity = PromptForPositive("Введите количество товара: ");
             string customerName = PromptForNonEmpty("Введите ваше имя: ");
             string address = PromptForNonEmpty("Введите ваш адрес: ");
 
@@ -69,7 +68,6 @@ namespace OrderManager.Controllers
             }
         }
 
-        private int PromptForPositive(string prompt)
         {
             while (true)
             {
