@@ -10,8 +10,8 @@ namespace Fighters.Commands
 
         public ListFightersCommand(List<IFighter> arena, IConsole console)
         {
-            _arena = arena ?? throw new ArgumentNullException(nameof(arena));
-            _console = console ?? throw new ArgumentNullException(nameof(console));
+            _arena = arena;
+            _console = console;
         }
 
         public string Name => "List";

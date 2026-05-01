@@ -13,9 +13,9 @@ namespace Fighters
 
         public BattleRunner(IBattleLogger logger, ITargetSelector targetSelector, IDamageCalculator damageCalculator)
         {
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _targetSelector = targetSelector ?? throw new ArgumentNullException(nameof(targetSelector));
-            _damageCalculator = damageCalculator ?? throw new ArgumentNullException(nameof(damageCalculator));
+            _logger = logger;
+            _targetSelector = targetSelector;
+            _damageCalculator = damageCalculator;
         }
 
         public IFighter Play(IReadOnlyList<IFighter> fighters)

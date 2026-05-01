@@ -6,9 +6,6 @@ namespace Fighters.Battle
     {
         public int Calculate(IFighter attacker, IFighter defender)
         {
-            ArgumentNullException.ThrowIfNull(attacker);
-            ArgumentNullException.ThrowIfNull(defender);
-
             return Math.Max(attacker.Damage - defender.Armor, 0);
         }
     }

@@ -12,8 +12,8 @@ namespace Fighters.Battle
 
         public RandomVarianceDamageCalculator(IDamageCalculator inner, Random random)
         {
-            _inner = inner ??  throw new ArgumentNullException(nameof(inner));
-            _random = random ?? throw new ArgumentNullException(nameof(random));
+            _inner = inner;
+            _random = random;
         }
 
         public int Calculate(IFighter attacker, IFighter defender)

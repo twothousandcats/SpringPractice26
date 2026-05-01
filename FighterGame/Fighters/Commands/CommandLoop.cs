@@ -10,9 +10,9 @@ namespace Fighters.Commands
 
         public CommandLoop(CommandRegistry registry, IApplicationLifetime appLifetime, IConsole console)
         {
-            _registry = registry ?? throw new ArgumentNullException(nameof(registry));
-            _appLifetime = appLifetime ?? throw new ArgumentNullException(nameof(appLifetime));
-            _console = console ?? throw new ArgumentNullException(nameof(console));
+            _registry = registry;
+            _appLifetime = appLifetime;
+            _console = console;
         }
 
         public void Run()

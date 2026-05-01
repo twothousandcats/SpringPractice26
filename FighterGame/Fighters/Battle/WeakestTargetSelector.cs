@@ -6,9 +6,6 @@ namespace Fighters.Battle
     {
         public IFighter? Pick(IFighter attacker, IReadOnlyList<IFighter> arena)
         {
-            ArgumentNullException.ThrowIfNull(attacker);
-            ArgumentNullException.ThrowIfNull(arena);
-
             IFighter? weakest = null;
             foreach (IFighter target in arena)
             {

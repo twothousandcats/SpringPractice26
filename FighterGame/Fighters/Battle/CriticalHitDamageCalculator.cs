@@ -26,8 +26,8 @@ namespace Fighters.Battle
                 throw new ArgumentOutOfRangeException(nameof(multiplier), "Multiplier must be >= 1");
             }
 
-            _inner = inner ?? throw new ArgumentNullException(nameof(inner));
-            _random = random ?? throw new ArgumentNullException(nameof(random));
+            _inner = inner;
+            _random = random;
             _chance = chance;
             _multiplier = multiplier;
         }

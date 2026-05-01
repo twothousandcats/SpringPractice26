@@ -23,11 +23,11 @@ namespace Fighters.UI
             IReadOnlyList<Func<IWeapon>> weapons
         )
         {
-            _console = console ?? throw new ArgumentNullException(nameof(console));
-            _races = races ?? throw new ArgumentNullException(nameof(races));
-            _classes = classes ?? throw new ArgumentNullException(nameof(classes));
-            _weapons = weapons ?? throw new ArgumentNullException(nameof(weapons));
-            _armors = armors ?? throw new ArgumentNullException(nameof(armors));
+            _console = console;
+            _races = races;
+            _classes = classes;
+            _weapons = weapons;
+            _armors = armors;
         }
 
         public IFighter Create()

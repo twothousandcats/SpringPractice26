@@ -11,9 +11,9 @@ namespace Fighters.Commands
 
         public PlayCommand(List<IFighter> arena, BattleRunner battleRunner, IConsole console)
         {
-            _arena = arena ?? throw new ArgumentNullException(nameof(arena));
-            _battleRunner = battleRunner ?? throw new ArgumentNullException(nameof(battleRunner));
-            _console = console ?? throw new ArgumentNullException(nameof(console));
+            _arena = arena;
+            _battleRunner = battleRunner;
+            _console = console;
         }
 
         public string Name => "Play";

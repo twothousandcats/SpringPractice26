@@ -11,9 +11,9 @@ namespace Fighters.Commands
 
         public AddFighterCommand(List<IFighter> arena, IFighterFactory factory, IConsole console)
         {
-            _arena = arena ?? throw new ArgumentNullException(nameof(arena));
-            _factory = factory ?? throw new ArgumentNullException(nameof(factory));
-            _console = console ?? throw new ArgumentNullException(nameof(console));
+            _arena = arena;
+            _factory = factory;
+            _console = console;
         }
 
         public string Name => "Add";
