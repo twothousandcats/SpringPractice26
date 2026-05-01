@@ -14,7 +14,7 @@ namespace Fighters.Tests
         [Test]
         public void MaxHealth_IsRacePlusClassHealth()
         {
-            Fighter fighter = new Fighter(
+            IFighter fighter = new Fighter(
                 "Hero",
                 new Human(),
                 new Knight(),
@@ -30,7 +30,7 @@ namespace Fighters.Tests
         [Test]
         public void Damage_IsRacePlusClassPlusWeapon()
         {
-            Fighter fighter = new Fighter(
+            IFighter fighter = new Fighter(
                 "Hero",
                 new Human(),
                 new Knight(),
@@ -46,7 +46,7 @@ namespace Fighters.Tests
         [Test]
         public void Armor_IsRacePlusArmor()
         {
-            Fighter fighter = new Fighter(
+            IFighter fighter = new Fighter(
                 "Dude",
                 new Dwarf(),
                 new Knight(),
@@ -62,7 +62,7 @@ namespace Fighters.Tests
         [Test]
         public void TakeDamage_ReducesHealth_NeverBelowZero()
         {
-            Fighter fighter = new Fighter(
+            IFighter fighter = new Fighter(
                 "Dude",
                 new Dwarf(),
                 new Knight(),
@@ -76,6 +76,62 @@ namespace Fighters.Tests
 
             Assert.That(currentHealth, Is.EqualTo(0));
             Assert.That(isAlive, Is.False);
+        }
+
+        [Test]
+        public void Constructor_ThrowsOnEmptyName()
+        {
+            Assert.That(
+                () => new Fighter("  ", new Human(), new Knight(), new Fists(), new NoArmor()),
+                Throws.ArgumentException
+            );
+        }
+
+        [Test]
+        public void Constructor_StartsAtFullHealth()
+        {
+            IFighter fighter = new Fighter("Hero", new Human(), new Knight(), new Fists(), new NoArmor());
+
+            int curHp = fighter.CurrentHealth;
+            bool isFighterAlive = fighter.IsAlive;
+
+            Assert.That(isFighterAlive, Is.True);
+            Assert.That(curHp, Is.EqualTo(fighter.MaxHealth));
+        }
+
+        [Test]
+        public void TakeDamage_NegativeAmount_Throws()
+        {
+            IFighter fighter = new Fighter("Hero", new Human(), new Knight(), new Fists(), new NoArmor());
+
+            Assert.That(() => fighter.TakeDamage(-1), Throws.TypeOf<ArgumentOutOfRangeException>());
+        }
+
+        [Test]
+        public void TakeDamage_PartialDamage_ReducesHealthByExactAmount()
+        {
+            const int FixedDamage = 30;
+            IFighter fighter = new Fighter("Hero", new Human(), new Knight(), new Fists(), new NoArmor());
+            int before = fighter.CurrentHealth;
+
+            fighter.TakeDamage(FixedDamage);
+
+            Assert.That(fighter.CurrentHealth, Is.EqualTo(before - FixedDamage));
+        }
+
+        [Test]
+        public void Description_ContainsAllPartsAndHealth()
+        {
+            IFighter fighter = new Fighter("Hero", new Human(), new Knight(), new Sword(), new PlateArmor());
+
+            string description = fighter.Description;
+
+            Assert.That(description, Does.Contain("Hero"));
+            Assert.That(description, Does.Contain("Human"));
+            Assert.That(description, Does.Contain("Knight"));
+            Assert.That(description, Does.Contain("Sword"));
+            Assert.That(description, Does.Contain("Plate Armor"));
+            Assert.That(description, Does.Contain("150 / 150"));
         }
     }
 }

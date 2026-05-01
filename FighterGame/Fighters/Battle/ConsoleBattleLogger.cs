@@ -20,7 +20,7 @@ namespace Fighters.Battle
         public void AttackPerformed(IFighter attacker, IFighter target, int dealtDamage)
         {
             _console.WriteLine(
-                $"{attacker.Name} deals {dealtDamage} damage, to {target.Name}."
+                $"{attacker.Name} deals {dealtDamage} damage to {target.Name}."
             );
         }
 
