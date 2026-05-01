@@ -21,7 +21,7 @@ namespace Fighters.Commands
         {
             _console.WriteLine("Enter fighter index:");
             string? input = _console.ReadLine(); // from 1
-            if (!int.TryParse(input, out int index) || index < 0 || index > _arena.Count)
+            if (!int.TryParse(input, out int index) || index < 1 || index > _arena.Count)
             {
                 _console.WriteLine("Invalid fighter index");
                 return;

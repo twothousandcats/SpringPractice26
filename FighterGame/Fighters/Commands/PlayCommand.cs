@@ -23,7 +23,7 @@ namespace Fighters.Commands
         {
             if (_arena.Count < 2)
             {
-                _console.WriteLine("You must add at least 2 arena to play");
+                _console.WriteLine("You must add at least 2 fighters to play");
                 return;
             }
 
