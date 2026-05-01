@@ -12,7 +12,7 @@ namespace Fighters.Battle
             IFighter? weakest = null;
             foreach (IFighter target in arena)
             {
-                if (!target.IsAlive)
+                if (!target.IsAlive || ReferenceEquals(target, attacker))
                 {
                     continue;
                 }
@@ -23,7 +23,7 @@ namespace Fighters.Battle
                 }
             }
 
-            return  weakest;
+            return weakest;
         }
     }
 }
