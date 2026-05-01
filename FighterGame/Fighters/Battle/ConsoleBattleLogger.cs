@@ -1,17 +1,25 @@
 using Fighters.Models.Fighters;
+using Fighters.UI;
 
 namespace Fighters.Battle
 {
     public class ConsoleBattleLogger : IBattleLogger
     {
+        private readonly IConsole _console;
+
+        public ConsoleBattleLogger(IConsole console)
+        {
+            _console = console;
+        }
+
         public void RoundStarted(int roundNumber)
         {
-            Console.WriteLine("Round " + roundNumber);
+            _console.WriteLine("Round " + roundNumber);
         }
 
         public void AttackPerformed(IFighter attacker, IFighter target, int dealtDamage)
         {
-            Console.WriteLine(
+            _console.WriteLine(
                 $"{attacker.Name} deals {dealtDamage} damage, to {target.Name}."
             );
         }
@@ -19,17 +27,17 @@ namespace Fighters.Battle
         public void Stalemate(IReadOnlyList<IFighter> fighters)
         {
             string names = string.Join(", ", fighters.Select(f => f.Name));
-            Console.WriteLine($"Stalemate: nobody dealt damage this round ({names}).");
+            _console.WriteLine($"Stalemate: nobody dealt damage this round ({names}).");
         }
 
         public void FighterDied(IFighter fighter)
         {
-            Console.WriteLine($"{fighter.Name} dies.");
+            _console.WriteLine($"{fighter.Name} dies.");
         }
 
         public void FighterWon(IFighter fighter)
         {
-            Console.WriteLine($"{fighter.Name} wins.");
+            _console.WriteLine($"{fighter.Name} wins.");
         }
     }
 }

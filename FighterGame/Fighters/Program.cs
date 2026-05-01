@@ -20,7 +20,7 @@ namespace Fighters
                 );
 
             GameManager gameManager = new(
-                new ConsoleBattleLogger(),
+                new ConsoleBattleLogger(console),
                 new WeakestTargetSelector(),
                 damageCalc
             );

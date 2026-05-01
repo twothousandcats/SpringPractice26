@@ -11,10 +11,6 @@ namespace Fighters
         private readonly ITargetSelector _targetSelector;
         private readonly IDamageCalculator _damageCalculator;
 
-        public GameManager() : this(new ConsoleBattleLogger(), new WeakestTargetSelector(), new BaseDamageCalculator())
-        {
-        }
-
         public GameManager(IBattleLogger logger, ITargetSelector targetSelector, IDamageCalculator damageCalculator)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
