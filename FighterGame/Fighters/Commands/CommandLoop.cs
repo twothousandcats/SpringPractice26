@@ -29,7 +29,7 @@ namespace Fighters.Commands
                     continue;
                 }
 
-                if (!_registry.TryGet(input, out var command))
+                if (!_registry.TryGet(input, out ICommand command))
                 {
                     _console.WriteLine("Unknown command");
                     continue;

@@ -26,7 +26,7 @@ namespace Fighters
                 throw new ArgumentException("At least two fighters are required", nameof(fighters));
             }
 
-            var arena = new List<IFighter>(fighters);
+            List<IFighter> arena = new List<IFighter>(fighters);
 
             for (int round = 1; round <= MaxRounds; round++)
             {
