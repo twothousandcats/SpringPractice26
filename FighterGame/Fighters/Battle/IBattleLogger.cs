@@ -11,6 +11,7 @@ namespace Fighters.Battle
             IFighter target,
             int dealtDamage
         );
+        void Stalemate(IReadOnlyList<IFighter> fighters);
 
         void FighterDied(IFighter fighter);
         void FighterWon(IFighter fighter);

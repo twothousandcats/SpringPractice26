@@ -11,7 +11,9 @@ namespace Fighters
         private readonly ITargetSelector _targetSelector;
         private readonly IDamageCalculator _damageCalculator;
 
-        public GameManager() : this(new ConsoleBattleLogger(), new WeakestTargetSelector(), new BaseDamageCalculator()) { }
+        public GameManager() : this(new ConsoleBattleLogger(), new WeakestTargetSelector(), new BaseDamageCalculator())
+        {
+        }
 
         public GameManager(IBattleLogger logger, ITargetSelector targetSelector, IDamageCalculator damageCalculator)
         {
@@ -33,6 +35,7 @@ namespace Fighters
             for (int round = 1; round <= MaxRounds; round++)
             {
                 _logger.RoundStarted(round);
+                int totalDamageThisRound = 0;
 
                 IEnumerable<IFighter> turnOrder = arena
                     .OrderByDescending(f => f.Initiative)
@@ -53,12 +56,20 @@ namespace Fighters
                     }
 
                     int dealt = ApplyAttack(attacker, target);
+                    totalDamageThisRound += dealt;
                     _logger.AttackPerformed(attacker, target, dealt);
 
                     if (!target.IsAlive)
                     {
                         _logger.FighterDied(target);
                     }
+                }
+
+                if (totalDamageThisRound == 0)
+                {
+                    IFighter[] survivors = arena.Where(f => f.IsAlive).ToArray();
+                    _logger.Stalemate(survivors);
+                    throw new InvalidOperationException("Battle ended in stalemate.");
                 }
             }
 

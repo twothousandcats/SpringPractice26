@@ -19,8 +19,9 @@ namespace Fighters.Commands
         {
             while (!_exit.Requested)
             {
+                _console.WriteLine("");
                 _console.WriteLine("Enter command");
-                _console.WriteLine("> ");
+                _console.Write("> ");
                 string? input = _console.ReadLine();
                 if (string.IsNullOrEmpty(input))
                 {

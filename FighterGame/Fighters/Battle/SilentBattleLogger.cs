@@ -6,6 +6,7 @@ namespace Fighters.Battle
     {
         public void RoundStarted(int roundNumber) { }
         public void AttackPerformed(IFighter attacker, IFighter target, int dealtDamage) { }
+        public void Stalemate(IReadOnlyList<IFighter> fighters) { }
         public void FighterDied(IFighter fighter) { }
         public void FighterWon(IFighter fighter) { }
     }
