@@ -1,8 +1,8 @@
-namespace Fighters.Models.Weapons
+namespace Fighters.Models.Weapons;
+
+public class Fists : IWeapon
 {
-    public class Fists : IWeapon
-    {
-        public string Name => "Fists";
-        public int Damage => 1;
-    }
+    public string Name => "Fists";
+
+    public int Damage => 1;
 }

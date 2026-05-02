@@ -1,9 +1,8 @@
-namespace Fighters.UI
+namespace Fighters.UI;
+
+public interface IConsole
 {
-    public interface IConsole
-    {
-        string? ReadLine();
-        void WriteLine(string message);
-        void Write(string message);
-    }
+    string? ReadLine();
+    void WriteLine( string message );
+    void Write( string message );
 }

@@ -1,56 +1,57 @@
 using Fighters.UI;
 
-namespace Fighters.Commands
+namespace Fighters.Commands;
+
+public class CommandLoop
 {
-    public class CommandLoop
+    private readonly CommandRegistry _registry;
+
+    private readonly IGameLoop _gameLoop;
+
+    private readonly IConsole _console;
+
+    public CommandLoop( CommandRegistry registry, IGameLoop gameLoop, IConsole console )
     {
-        private readonly CommandRegistry _registry;
-        private readonly IApplicationLifetime _appLifetime;
-        private readonly IConsole _console;
+        _registry = registry;
+        _gameLoop = gameLoop;
+        _console = console;
+    }
 
-        public CommandLoop(CommandRegistry registry, IApplicationLifetime appLifetime, IConsole console)
+    public void Run()
+    {
+        while ( _gameLoop.IsRunning )
         {
-            _registry = registry;
-            _appLifetime = appLifetime;
-            _console = console;
-        }
-
-        public void Run()
-        {
-            while (!_appLifetime.ShouldStop)
+            _console.WriteLine( "" );
+            _console.WriteLine( "Enter command" );
+            _console.Write( "> " );
+            string? input = _console.ReadLine();
+            if ( string.IsNullOrEmpty( input ) )
             {
-                _console.WriteLine("");
-                _console.WriteLine("Enter command");
-                _console.Write("> ");
-                string? input = _console.ReadLine();
-                if (string.IsNullOrEmpty(input))
-                {
-                    _console.WriteLine("Unknown command");
-                    continue;
-                }
+                _console.WriteLine( "Unknown command" );
+                continue;
+            }
 
-                if (!_registry.TryGet(input, out ICommand command))
-                {
-                    _console.WriteLine("Unknown command");
-                    continue;
-                }
+            if ( !_registry.TryGet( input, out IConsoleCommand command ) )
+            {
+                _console.WriteLine( "Unknown command" );
+                continue;
+            }
 
-                try
-                {
-                    command.Execute();
-                }
-                catch (ArgumentException ex)
-                {
-                    _console.WriteLine($"Bad argument: {ex.Message}");
-                }
-                catch (InvalidOperationException ex)
-                {
-                    _console.WriteLine($"Operation failed: {ex.Message}");
-                }
-                catch (FormatException ex)
-                {
-                    _console.WriteLine($"Bad input: {ex.Message}");
-                }
+            try
+            {
+                command.Execute();
+            }
+            catch ( ArgumentException ex )
+            {
+                _console.WriteLine( $"Bad argument: {ex.Message}" );
+            }
+            catch ( InvalidOperationException ex )
+            {
+                _console.WriteLine( $"Operation failed: {ex.Message}" );
+            }
+            catch ( FormatException ex )
+            {
+                _console.WriteLine( $"Bad input: {ex.Message}" );
             }
         }
     }

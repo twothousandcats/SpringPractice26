@@ -1,9 +1,8 @@
 using Fighters.Models.Fighters;
 
-namespace Fighters.Battle
+namespace Fighters.Battle;
+
+public interface ITargetSelector
 {
-    public interface ITargetSelector
-    {
-        IFighter? Pick(IFighter attacker, IReadOnlyList<IFighter> arena);
-    }
+    IFighter? Pick( IFighter attacker, IReadOnlyList<IFighter> arena );
 }

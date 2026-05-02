@@ -1,19 +1,19 @@
 using Fighters.Models.Fighters;
 
-namespace Fighters.Battle
+namespace Fighters.Battle;
+
+public interface IBattleLogger
 {
-    public interface IBattleLogger
-    {
-        void RoundStarted(int roundNumber);
+    void RoundStarted( int roundNumber );
 
-        void AttackPerformed(
-            IFighter attacker,
-            IFighter target,
-            int dealtDamage
-        );
-        void StalemateReached(IReadOnlyList<IFighter> fighters);
+    void AttackPerformed(
+        IFighter attacker,
+        IFighter target,
+        int dealtDamage
+    );
 
-        void FighterDied(IFighter fighter);
-        void FighterWon(IFighter fighter);
-    }
+    void StalemateReached( IReadOnlyList<IFighter> fighters );
+
+    void FighterDied( IFighter fighter );
+    void FighterWon( IFighter fighter );
 }

@@ -1,9 +1,8 @@
 using Fighters.Models.Fighters;
 
-namespace Fighters.Battle
+namespace Fighters.Battle;
+
+public interface IDamageCalculator
 {
-    public interface IDamageCalculator
-    {
-        int Calculate(IFighter attacker, IFighter defender);
-    }
+    int Calculate( IFighter attacker, IFighter defender );
 }

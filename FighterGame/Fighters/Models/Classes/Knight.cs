@@ -1,9 +1,10 @@
-namespace Fighters.Models.Classes
+namespace Fighters.Models.Classes;
+
+public class Knight : IFighterClass
 {
-    public class Knight : IFighterClass
-    {
-        public string Name => "Knight";
-        public int Damage => 5;
-        public int Health => 50;
-    }
+    public string Name => "Knight";
+
+    public int Damage => 5;
+
+    public int Health => 50;
 }

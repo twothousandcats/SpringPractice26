@@ -1,22 +1,21 @@
-namespace Fighters.Tests.Helpers
+namespace Fighters.Tests.Helpers;
+
+public class FakeRandom : Random
 {
-    public class FakeRandom : Random
+    private readonly Queue<double> _values;
+
+    public FakeRandom( params double[] values )
     {
-        private readonly Queue<double> _values;
+        _values = new Queue<double>( values );
+    }
 
-        public FakeRandom(params double[] values)
+    public override double NextDouble()
+    {
+        if ( _values.Count == 0 )
         {
-            _values = new Queue<double>(values);
+            throw new InvalidOperationException( "FakeRandom ran out of values" );
         }
 
-        public override double NextDouble()
-        {
-            if (_values.Count == 0)
-            {
-                throw new InvalidOperationException("FakeRandom ran out of values");
-            }
-
-            return _values.Dequeue();
-        }
+        return _values.Dequeue();
     }
 }

@@ -1,9 +1,8 @@
-namespace Fighters.UI
+namespace Fighters.UI;
+
+public class SystemConsole : IConsole
 {
-    public class SystemConsole : IConsole
-    {
-        public string? ReadLine() => Console.ReadLine();
-        public void WriteLine(string message) => Console.WriteLine(message);
-        public void Write(string message) => Console.Write(message);
-    }
+    public string? ReadLine() => Console.ReadLine();
+    public void WriteLine( string message ) => Console.WriteLine( message );
+    public void Write( string message ) => Console.Write( message );
 }

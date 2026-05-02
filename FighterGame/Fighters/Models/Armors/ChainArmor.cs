@@ -1,8 +1,8 @@
-namespace Fighters.Models.Armors
+namespace Fighters.Models.Armors;
+
+public class ChainArmor : IArmor
 {
-    public class ChainArmor : IArmor
-    {
-        public string Name => "Chain Armor";
-        public int Armor => 10;
-    }
+    public string Name => "Chain Armor";
+
+    public int Armor => 10;
 }

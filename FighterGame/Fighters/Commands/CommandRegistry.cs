@@ -1,19 +1,18 @@
-namespace Fighters.Commands
+namespace Fighters.Commands;
+
+public class CommandRegistry
 {
-    public class CommandRegistry
+    private readonly Dictionary<string, IConsoleCommand> _commands = new( StringComparer.OrdinalIgnoreCase );
+
+    public IReadOnlyCollection<IConsoleCommand> All => _commands.Values;
+
+    public void Register( IConsoleCommand consoleCommand )
     {
-        private readonly Dictionary<string, ICommand> _commands = new(StringComparer.OrdinalIgnoreCase);
+        _commands[ consoleCommand.Name ] = consoleCommand;
+    }
 
-        public IReadOnlyCollection<ICommand> All => _commands.Values;
-
-        public void Register(ICommand command)
-        {
-            _commands[command.Name] = command;
-        }
-
-        public bool TryGet(string name, out ICommand command)
-        {
-            return _commands.TryGetValue(name, out command!);
-        }
+    public bool TryGet( string name, out IConsoleCommand consoleCommand )
+    {
+        return _commands.TryGetValue( name, out consoleCommand! );
     }
 }

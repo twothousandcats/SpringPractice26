@@ -7,88 +7,99 @@ using Fighters.Models.Weapons;
 using Fighters.Tests.Helpers;
 using NUnit.Framework;
 
-namespace Fighters.Tests
+namespace Fighters.Tests;
+
+[TestFixture]
+public class BattleRunnerTests
 {
-    [TestFixture]
-    public class BattleRunnerTests
+    [Test]
+    public void Play_TwoEqualFighters_FirstFighterWins()
     {
-        [Test]
-        public void Play_TwoEqualFighters_FirstFighterWins()
-        {
-            BattleRunner battleRunner = new BattleRunner(new SilentBattleLogger(), new WeakestTargetSelector(),
-                new PlainDamageCalculator());
-            IFighter fighterA = Utils.CreateFighter("fighterA");
-            IFighter fighterB = Utils.CreateFighter("fighterB");
+        BattleRunner battleRunner = new BattleRunner(
+            new TestBattleLogger(), new WeakestTargetSelector(),
+            new PlainDamageCalculator()
+        );
 
-            IFighter winner = battleRunner.Play(new[] { fighterA, fighterB });
+        IFighter fighterA = Utils.CreateFighter( "fighterA" );
+        IFighter fighterB = Utils.CreateFighter( "fighterB" );
 
-            Assert.That(winner.Name, Is.EqualTo(fighterA.Name));
-        }
+        IFighter winner = battleRunner.Play( new[] { fighterA, fighterB } );
 
-        [Test]
-        public void Play_TwoEqualFighters_SecondFighterDies()
-        {
-            BattleRunner battleRunner = new BattleRunner(new SilentBattleLogger(), new WeakestTargetSelector(),
-                new PlainDamageCalculator());
-            IFighter fighterA = Utils.CreateFighter("fighterA");
-            IFighter fighterB = Utils.CreateFighter("fighterB");
+        Assert.That( winner.Name, Is.EqualTo( fighterA.Name ) );
+    }
 
-            battleRunner.Play(new[] { fighterA, fighterB });
+    [Test]
+    public void Play_TwoEqualFighters_SecondFighterDies()
+    {
+        BattleRunner battleRunner = new BattleRunner(
+            new TestBattleLogger(), new WeakestTargetSelector(),
+            new PlainDamageCalculator()
+        );
 
-            Assert.That(fighterA.CurrentHealth, Is.GreaterThan(0));
-            Assert.That(fighterB.CurrentHealth, Is.EqualTo(0));
-        }
+        IFighter fighterA = Utils.CreateFighter( "fighterA" );
+        IFighter fighterB = Utils.CreateFighter( "fighterB" );
 
-        [Test]
-        public void Play_StrongerFighterWins()
-        {
-            BattleRunner battleRunner = new BattleRunner(new SilentBattleLogger(), new WeakestTargetSelector(),
-                new PlainDamageCalculator());
-            IFighter weak = Utils.CreateFighter("Weak");
-            IFighter strong = new Fighter("Strong", new Orc(), new Mercenary(), new Axe(), new PlateArmor());
+        battleRunner.Play( new[] { fighterA, fighterB } );
 
-            IFighter winner = battleRunner.Play(new[] { weak, strong });
+        Assert.That( fighterA.CurrentHealth, Is.GreaterThan( 0 ) );
+        Assert.That( fighterB.CurrentHealth, Is.EqualTo( 0 ) );
+    }
 
-            Assert.That(winner.Name, Is.EqualTo(strong.Name));
-            Assert.That(weak.IsAlive, Is.False);
-        }
+    [Test]
+    public void Play_StrongerFighterWins()
+    {
+        BattleRunner battleRunner = new BattleRunner(
+            new TestBattleLogger(), new WeakestTargetSelector(),
+            new PlainDamageCalculator()
+        );
 
-        [Test]
-        public void Play_FewerThanTwoFighters_Throws()
-        {
-            BattleRunner runner = new BattleRunner(
-                new SilentBattleLogger(), new WeakestTargetSelector(), new PlainDamageCalculator());
+        IFighter weak = Utils.CreateFighter( "Weak" );
+        IFighter strong = new Fighter( "Strong", new Orc(), new Mercenary(), new Axe(), new PlateArmor() );
 
-            Assert.That(() => runner.Play(new[] { Utils.CreateFighter("solo") }),
-                Throws.ArgumentException
-            );
-        }
+        IFighter winner = battleRunner.Play( new[] { weak, strong } );
 
-        [Test]
-        public void Play_NullList_Throws()
-        {
-            BattleRunner runner = new BattleRunner(
-                new SilentBattleLogger(), new WeakestTargetSelector(), new PlainDamageCalculator()
-            );
+        Assert.That( winner.Name, Is.EqualTo( strong.Name ) );
+        Assert.That( weak.IsAlive, Is.False );
+    }
 
-            Assert.That(() => runner.Play(null!), Throws.TypeOf<ArgumentNullException>());
-        }
+    [Test]
+    public void Play_FewerThanTwoFighters_Throws()
+    {
+        BattleRunner runner = new BattleRunner(
+            new TestBattleLogger(), new WeakestTargetSelector(), new PlainDamageCalculator()
+        );
 
-        [Test]
-        public void Play_ThreeFighters_ReturnsLastSurvivor()
-        {
-            BattleRunner runner = new BattleRunner(
-                new SilentBattleLogger(), new WeakestTargetSelector(), new PlainDamageCalculator()
-            );
-            IFighter weakA = Utils.CreateFighter("WeakA");
-            IFighter weakB = Utils.CreateFighter("WeakB");
-            IFighter strong = new Fighter("Strong", new Orc(), new Mercenary(), new Axe(), new PlateArmor());
+        Assert.That(
+            () => runner.Play( new[] { Utils.CreateFighter( "solo" ) } ),
+            Throws.ArgumentException
+        );
+    }
 
-            IFighter winner = runner.Play(new[] { weakA, weakB, strong });
+    [Test]
+    public void Play_NullList_Throws()
+    {
+        BattleRunner runner = new BattleRunner(
+            new TestBattleLogger(), new WeakestTargetSelector(), new PlainDamageCalculator()
+        );
 
-            Assert.That(winner, Is.SameAs(strong));
-            Assert.That(weakA.IsAlive, Is.False);
-            Assert.That(weakB.IsAlive, Is.False);
-        }
+        Assert.That( () => runner.Play( null! ), Throws.TypeOf<ArgumentNullException>() );
+    }
+
+    [Test]
+    public void Play_ThreeFighters_ReturnsLastSurvivor()
+    {
+        BattleRunner runner = new BattleRunner(
+            new TestBattleLogger(), new WeakestTargetSelector(), new PlainDamageCalculator()
+        );
+
+        IFighter weakA = Utils.CreateFighter( "WeakA" );
+        IFighter weakB = Utils.CreateFighter( "WeakB" );
+        IFighter strong = new Fighter( "Strong", new Orc(), new Mercenary(), new Axe(), new PlateArmor() );
+
+        IFighter winner = runner.Play( new[] { weakA, weakB, strong } );
+
+        Assert.That( winner, Is.SameAs( strong ) );
+        Assert.That( weakA.IsAlive, Is.False );
+        Assert.That( weakB.IsAlive, Is.False );
     }
 }

@@ -1,26 +1,13 @@
 using Fighters.Models.Fighters;
 
-namespace Fighters.Battle
+namespace Fighters.Battle;
+
+public class WeakestTargetSelector : ITargetSelector
 {
-    public class WeakestTargetSelector : ITargetSelector
+    public IFighter? Pick( IFighter attacker, IReadOnlyList<IFighter> arena )
     {
-        public IFighter? Pick(IFighter attacker, IReadOnlyList<IFighter> arena)
-        {
-            IFighter? weakest = null;
-            foreach (IFighter target in arena)
-            {
-                if (!target.IsAlive || ReferenceEquals(target, attacker))
-                {
-                    continue;
-                }
-
-                if (weakest is null || target.CurrentHealth < weakest.CurrentHealth)
-                {
-                    weakest = target;
-                }
-            }
-
-            return weakest;
-        }
+        return arena
+            .Where( defender => defender.IsAlive && !ReferenceEquals( defender, attacker ) )
+            .MinBy( defender => defender.CurrentHealth );
     }
 }
