@@ -10,7 +10,6 @@ public sealed class RandomGenerator : IRandomGenerator
 
     private RandomGenerator( Random random )
     {
-        ArgumentNullException.ThrowIfNull( random );
         _random = random;
     }
 

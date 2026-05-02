@@ -2,15 +2,16 @@ using Casino.Infrastructure;
 
 namespace Casino.Menu;
 
-public sealed class Menu
+public sealed class MenuRunner
 {
     private readonly IInputOutput _io;
+
     private readonly List<IMenuCommand> _commands;
+
     private bool _shouldExit;
 
-    public Menu( IInputOutput io )
+    public MenuRunner( IInputOutput io )
     {
-        ArgumentNullException.ThrowIfNull( io );
         _io = io;
         _commands = new List<IMenuCommand>();
     }
@@ -27,7 +28,7 @@ public sealed class Menu
     {
         if ( _commands.Count == 0 )
         {
-            throw new InvalidOperationException( "В меню нет комманд!" );
+            throw new InvalidOperationException( "В меню нет команд!" );
         }
 
         while ( !_shouldExit )
@@ -36,7 +37,7 @@ public sealed class Menu
             int? choice = ReadChoice();
             if ( choice is null )
             {
-                _io.WriteLine( "Некорректный ввод. Попробоуйте снова." );
+                _io.WriteLine( "Некорректный ввод. Попробуйте снова." );
                 continue;
             }
 
