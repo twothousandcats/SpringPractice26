@@ -8,7 +8,7 @@ namespace OrderManager.Controllers
     {
         private readonly IUserInterface _ui;
 
-        public OrderController(IUserInterface ui)
+        public OrderController( IUserInterface ui )
         {
             _ui = ui;
         }
@@ -16,37 +16,37 @@ namespace OrderManager.Controllers
         public void PlaceOrder()
         {
             Order order = CollectOrder();
-            if (ConfirmOrder(order))
+            if ( ConfirmOrder( order ) )
             {
-                AnnounceSuccess(order);
+                AnnounceSuccess( order );
             }
             else
             {
-                _ui.WriteLine("Заказ отменен!");
+                _ui.WriteLine( "Заказ отменен!" );
             }
         }
 
         private Order CollectOrder()
         {
-            string productName = PromptForNonEmpty("Введите название товара: ");
-            int quantity = PromptForPositive("Введите количество: ");
-            string customerName = PromptForNonEmpty("Введите ваше имя: ");
-            string address = PromptForNonEmpty("Введите ваш адрес: ");
+            string productName = PromptForNonEmpty( "Введите название товара: " );
+            int quantity = PromptForPositive( "Введите количество: " );
+            string customerName = PromptForNonEmpty( "Введите ваше имя: " );
+            string address = PromptForNonEmpty( "Введите ваш адрес: " );
 
-            return new Order(productName, quantity, customerName, address);
+            return new Order( productName, quantity, customerName, address );
         }
 
-        private bool ConfirmOrder(Order order)
+        private bool ConfirmOrder( Order order )
         {
             _ui.WriteLine(
                 $"Здравствуйте, {order.CustomerName}, вы заказали " +
                 $"{order.Quantity} {order.ProductName} на адрес {order.Address}, все верно?"
             );
 
-            return _ui.ObtainConsent("Ответ (y/n): ");
+            return _ui.ObtainConsent( "Ответ (y/n): " );
         }
 
-        private void AnnounceSuccess(Order order)
+        private void AnnounceSuccess( Order order )
         {
             _ui.WriteLine(
                 $"{order.CustomerName}! Ваш заказ {order.ProductName} в количестве " +
@@ -55,31 +55,31 @@ namespace OrderManager.Controllers
             );
         }
 
-        private string PromptForNonEmpty(string prompt)
+        private string PromptForNonEmpty( string prompt )
         {
-            while (true)
+            while ( true )
             {
-                string input = _ui.ReadLine(prompt);
-                if (!string.IsNullOrWhiteSpace(input))
+                string input = _ui.ReadLine( prompt );
+                if ( !string.IsNullOrWhiteSpace( input ) )
                 {
                     return input.Trim();
                 }
 
-                _ui.WriteLine("Значение не может быть пустым! Попробуйте еще раз.");
+                _ui.WriteLine( "Значение не может быть пустым! Попробуйте еще раз." );
             }
         }
 
-        private int PromptForPositive(string prompt)
+        private int PromptForPositive( string prompt )
         {
-            while (true)
+            while ( true )
             {
-                string input = _ui.ReadLine(prompt);
-                if (int.TryParse(input, out int value) && value > 0)
+                string input = _ui.ReadLine( prompt );
+                if ( int.TryParse( input, out int value ) && value > 0 )
                 {
                     return value;
                 }
 
-                _ui.WriteLine("Введите положительное целое число.");
+                _ui.WriteLine( "Введите положительное целое число." );
             }
         }
     }

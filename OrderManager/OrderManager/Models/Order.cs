@@ -12,12 +12,12 @@ public sealed class Order
     public string Address { get; }
     public string Date { get; }
 
-    internal Order(string productName, int quantity, string customerName, string address)
+    internal Order( string productName, int quantity, string customerName, string address )
     {
         ProductName = productName;
         Quantity = quantity;
         CustomerName = customerName;
         Address = address;
-        Date = DateTime.Today.AddDays(DeliveryDaysFromNow).ToString("dd.MM.yyyy");
+        Date = DateTime.Today.AddDays( DeliveryDaysFromNow ).ToString( "dd.MM.yyyy" );
     }
 }
