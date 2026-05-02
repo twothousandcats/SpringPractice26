@@ -4,21 +4,21 @@ namespace Casino.Menu;
 
 public static class Banner
 {
-    private static readonly string[] _heading = 
+    private static readonly string[] Heading = 
     {
-        " #####    ###    ####   #   #   #   ###  ",
-        "#        #   #  #           ##  #  #   # ",
-        "#        #####   ###    #   # # #  #   # ",
-        "#        #   #      #   #   #  ##  #   # ",
-        " #####   #   #  ####    #   #   #   ###  ",
+        " #####    ###    ####   #   #   #   ### ",
+        "#        #   #  #           ##  #  #   #",
+        "#        #####   ###    #   # # #  #   #",
+        "#        #   #      #   #   #  ##  #   #",
+        " #####   #   #  ####    #   #   #   ### ",
     };
 
     public static void Print( IInputOutput io )
     {
         ArgumentNullException.ThrowIfNull( io );
-        foreach ( string heading in _heading )
+        foreach ( string headingLine in Heading )
         {
-            io.WriteLine( heading );
+            io.WriteLine( headingLine );
         }
 
         io.WriteLine( string.Empty );

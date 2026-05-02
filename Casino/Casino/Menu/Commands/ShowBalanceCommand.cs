@@ -10,8 +10,6 @@ public sealed class ShowBalanceCommand : IMenuCommand
 
     public ShowBalanceCommand( IInputOutput io, Game game )
     {
-        ArgumentNullException.ThrowIfNull( io );
-        ArgumentNullException.ThrowIfNull( game );
         _io = io;
         _game = game;
     }

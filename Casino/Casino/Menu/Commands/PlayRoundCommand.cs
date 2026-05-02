@@ -7,12 +7,11 @@ namespace Casino.Menu.Commands;
 public sealed class PlayRoundCommand : IMenuCommand
 {
     private readonly IInputOutput _io;
+
     private readonly Game _game;
 
     public PlayRoundCommand( IInputOutput io, Game game )
     {
-        ArgumentNullException.ThrowIfNull( io );
-        ArgumentNullException.ThrowIfNull( game );
         _io = io;
         _game = game;
     }
@@ -35,7 +34,7 @@ public sealed class PlayRoundCommand : IMenuCommand
         }
         catch ( ArgumentException ex )
         {
-            _io.WriteLine( $"Не удалось сыгарть: {ex.Message}" );
+            _io.WriteLine( $"Не удалось сыграть: {ex.Message}" );
         }
     }
 
@@ -62,7 +61,7 @@ public sealed class PlayRoundCommand : IMenuCommand
             return false;
         }
 
-        if ( !decimal.TryParse( input, NumberStyles.Number, CultureInfo.InvariantCulture, out var parsed ) )
+        if ( !decimal.TryParse( input, NumberStyles.Number, CultureInfo.InvariantCulture, out decimal parsed ) )
         {
             return false;
         }
@@ -84,6 +83,7 @@ public sealed class PlayRoundCommand : IMenuCommand
                 ? $"Вы выиграли: {result.Payout:0.##}!"
                 : $"Вы проиграли вашу ставку {result.BetAmount:0.##}!"
         );
+
         _io.WriteLine( $"Ваш баланс: {result.NewBalance:0.##}" );
     }
 }
