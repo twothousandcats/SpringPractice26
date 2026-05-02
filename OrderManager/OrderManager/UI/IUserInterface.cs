@@ -4,5 +4,5 @@ public interface IUserInterface
 {
     string ReadLine( string prompt );
     void WriteLine( string message );
-    bool ObtainConsent( string prompt );
+    bool Confirm( string prompt );
 }

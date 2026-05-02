@@ -11,7 +11,7 @@ internal static class Program
         Console.OutputEncoding = System.Text.Encoding.UTF8;
 
         ConsoleUserInterface ui = new ConsoleUserInterface();
-        OrderController controller = new( ui );
-        controller.PlaceOrder();
+        OrderController orderController = new( ui );
+        orderController.PlaceOrder();
     }
 }

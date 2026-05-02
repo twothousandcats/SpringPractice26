@@ -15,7 +15,7 @@ public sealed class ConsoleUserInterface : IUserInterface
         Console.WriteLine( message );
     }
 
-    public bool ObtainConsent( string prompt )
+    public bool Confirm( string prompt )
     {
         while ( true )
         {
