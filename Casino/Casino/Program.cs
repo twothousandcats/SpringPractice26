@@ -8,6 +8,7 @@ namespace Casino;
 
 public class Program
 {
+    private const int MinBalance = 1;
     private const int DefaultMultiplier = 3;
 
     public static void Main()
@@ -35,7 +36,7 @@ public class Program
             io.WriteLine( "Введите начальный баланс: " );
             string? input = io.ReadLine();
             if ( decimal.TryParse( input, NumberStyles.Number, CultureInfo.InvariantCulture, out decimal balance ) &&
-                 balance >= 0 )
+                 balance >= MinBalance )
             {
                 return balance;
             }
