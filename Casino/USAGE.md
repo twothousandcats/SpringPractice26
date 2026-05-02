@@ -3,4 +3,4 @@
 ## Запуск
 
 ```bash
-dotnet run --project Casino/Casino.csproj
+dotnet run --project Casino.csproj
