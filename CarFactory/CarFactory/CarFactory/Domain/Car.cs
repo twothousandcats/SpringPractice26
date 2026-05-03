@@ -2,7 +2,7 @@ using CarFactory.Domain.Components.Engine;
 using CarFactory.Domain.Components.Transmission;
 using CarFactory.Domain.Enums;
 
-namespace CarFactory.Domain.Components;
+namespace CarFactory.Domain;
 
 public class Car
 {
