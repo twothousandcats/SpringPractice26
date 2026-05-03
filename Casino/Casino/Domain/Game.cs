@@ -50,7 +50,7 @@ public sealed class Game
         decimal payout = isWin ? CalculateWinPayout( bet, rolled ) : -bet;
         _balance += payout;
 
-        return new RoundResult( rolled, isWin, bet, payout, _balance );
+        return new RoundResult( rolled, isWin, payout, _balance );
     }
 
     private decimal CalculateWinPayout( decimal bet, int rollNumber )
