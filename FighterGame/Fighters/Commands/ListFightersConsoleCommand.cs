@@ -5,13 +5,13 @@ namespace Fighters.Commands;
 
 public class ListFightersConsoleCommand : IConsoleCommand
 {
-    private readonly List<IFighter> _arena;
+    private readonly List<IFighter> _fighters;
 
     private readonly IConsole _console;
 
-    public ListFightersConsoleCommand( List<IFighter> arena, IConsole console )
+    public ListFightersConsoleCommand( List<IFighter> fighters, IConsole console )
     {
-        _arena = arena;
+        _fighters = fighters;
         _console = console;
     }
 
@@ -21,15 +21,15 @@ public class ListFightersConsoleCommand : IConsoleCommand
 
     public void Execute()
     {
-        if ( _arena.Count == 0 )
+        if ( _fighters.Count == 0 )
         {
             _console.WriteLine( "Arena is empty!" );
             return;
         }
 
-        for ( int i = 0; i < _arena.Count; i++ )
+        for ( int i = 0; i < _fighters.Count; i++ )
         {
-            _console.WriteLine( $"{i + 1}. {_arena[ i ].Description}" );
+            _console.WriteLine( $"{i + 1}. {_fighters[ i ].Description}" );
         }
     }
 }

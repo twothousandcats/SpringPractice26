@@ -5,15 +5,15 @@ namespace Fighters.Commands;
 
 public class PlayConsoleCommand : IConsoleCommand
 {
-    private readonly List<IFighter> _arena;
+    private readonly List<IFighter> _fighters;
 
     private readonly BattleRunner _battleRunner;
 
     private readonly IConsole _console;
 
-    public PlayConsoleCommand( List<IFighter> arena, BattleRunner battleRunner, IConsole console )
+    public PlayConsoleCommand( List<IFighter> fighters, BattleRunner battleRunner, IConsole console )
     {
-        _arena = arena;
+        _fighters = fighters;
         _battleRunner = battleRunner;
         _console = console;
     }
@@ -24,13 +24,13 @@ public class PlayConsoleCommand : IConsoleCommand
 
     public void Execute()
     {
-        if ( _arena.Count < 2 )
+        if ( _fighters.Count < 2 )
         {
             _console.WriteLine( "You must add at least 2 fighters to play" );
             return;
         }
 
-        _battleRunner.Play( _arena );
-        _arena.Clear();
+        _battleRunner.Play( _fighters );
+        _fighters.Clear();
     }
 }

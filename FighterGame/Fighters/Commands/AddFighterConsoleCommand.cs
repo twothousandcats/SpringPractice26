@@ -11,9 +11,9 @@ public class AddFighterConsoleCommand : IConsoleCommand
 
     private readonly IConsole _console;
 
-    public AddFighterConsoleCommand( List<IFighter> arena, IFighterFactory factory, IConsole console )
+    public AddFighterConsoleCommand( List<IFighter> fighters, IFighterFactory factory, IConsole console )
     {
-        _fighters = arena;
+        _fighters = fighters;
         _factory = factory;
         _console = console;
     }

@@ -5,13 +5,13 @@ namespace Fighters.Commands;
 
 public class RemoveFighterConsoleCommand : IConsoleCommand
 {
-    private readonly List<IFighter> _arena;
+    private readonly List<IFighter> _fighters;
 
     private readonly IConsole _console;
 
-    public RemoveFighterConsoleCommand( List<IFighter> arena, IConsole console )
+    public RemoveFighterConsoleCommand( List<IFighter> fighters, IConsole console )
     {
-        _arena = arena;
+        _fighters = fighters;
         _console = console;
     }
 
@@ -23,14 +23,14 @@ public class RemoveFighterConsoleCommand : IConsoleCommand
     {
         _console.WriteLine( "Enter fighter index:" );
         string? input = _console.ReadLine(); // from 1
-        if ( !int.TryParse( input, out int index ) || index < 1 || index > _arena.Count )
+        if ( !int.TryParse( input, out int index ) || index < 1 || index > _fighters.Count )
         {
             _console.WriteLine( "Invalid fighter index" );
             return;
         }
 
-        IFighter fighter = _arena[ index - 1 ];
-        _arena.Remove( fighter );
+        IFighter fighter = _fighters[ index - 1 ];
+        _fighters.Remove( fighter );
         _console.WriteLine( $"Removed fighter: {fighter.Name}" );
     }
 }
