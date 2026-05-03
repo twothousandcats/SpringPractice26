@@ -36,8 +36,6 @@ public sealed class Game
             );
         }
 
-        ArgumentNullException.ThrowIfNull( randomGenerator );
-
         _balance = initialBalance;
         _multiplier = multiplicator;
         _randomGenerator = randomGenerator;
@@ -47,7 +45,6 @@ public sealed class Game
 
     public RoundResult PlayRound( decimal bet )
     {
-        EnsureBetIsValid( bet );
         int rolled = _randomGenerator.NextInclusive( MinRoll, MaxRoll );
         bool isWin = rolled >= FirstWinningNumber;
         decimal payout = isWin ? CalculateWinPayout( bet, rolled ) : -bet;
@@ -56,28 +53,9 @@ public sealed class Game
         return new RoundResult( rolled, isWin, bet, payout, _balance );
     }
 
-    private void EnsureBetIsValid( decimal bet )
-    {
-        if ( bet <= 0 )
-        {
-            throw new ArgumentOutOfRangeException(
-                nameof( bet ),
-                "Ставка должна быть положительной"
-            );
-        }
-
-        if ( bet > _balance )
-        {
-            throw new ArgumentOutOfRangeException(
-                nameof( bet ),
-                "Ставка не может быть больше баланса"
-            );
-        }
-    }
-
     private decimal CalculateWinPayout( decimal bet, int rollNumber )
     {
-        int remainder = ( _multiplier * rollNumber ) % PayoutDivisor;
-        return bet * ( 1 + remainder );
+        // {bet} * ({multiplicator} * {random_num} % 17)
+        return bet * ( _multiplier * rollNumber % PayoutDivisor );
     }
 }

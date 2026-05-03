@@ -8,15 +8,16 @@ public sealed class MenuRunner
 
     private readonly List<IMenuCommand> _commands;
 
-    private bool _shouldExit;
+    private bool _isRunning;
 
     public MenuRunner( IInputOutput io )
     {
         _io = io;
         _commands = new List<IMenuCommand>();
+        _isRunning = true;
     }
 
-    public void RequestExit() => _shouldExit = true;
+    public void RequestExit() => _isRunning = false;
 
     public void Add( IMenuCommand command )
     {
@@ -31,9 +32,9 @@ public sealed class MenuRunner
             throw new InvalidOperationException( "В меню нет команд!" );
         }
 
-        while ( !_shouldExit )
+        PrintOptions();
+        while ( _isRunning )
         {
-            PrintOptions();
             int? choice = ReadChoice();
             if ( choice is null )
             {
