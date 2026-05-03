@@ -36,6 +36,8 @@ public sealed class Game
             );
         }
 
+        ArgumentNullException.ThrowIfNull( randomGenerator );
+
         _balance = initialBalance;
         _multiplier = multiplicator;
         _randomGenerator = randomGenerator;
@@ -45,12 +47,32 @@ public sealed class Game
 
     public RoundResult PlayRound( decimal bet )
     {
+        EnsureBetIsValid( bet );
         int rolled = _randomGenerator.NextInclusive( MinRoll, MaxRoll );
         bool isWin = rolled >= FirstWinningNumber;
         decimal payout = isWin ? CalculateWinPayout( bet, rolled ) : -bet;
         _balance += payout;
 
-        return new RoundResult( rolled, isWin, payout, _balance );
+        return new RoundResult( rolled, isWin, bet, payout, _balance );
+    }
+
+    private void EnsureBetIsValid( decimal bet )
+    {
+        if ( bet <= 0 )
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof( bet ),
+                "Ставка должна быть положительной"
+            );
+        }
+
+        if ( bet > _balance )
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof( bet ),
+                "Ставка не может быть больше баланса"
+            );
+        }
     }
 
     private decimal CalculateWinPayout( decimal bet, int rollNumber )
