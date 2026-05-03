@@ -11,20 +11,20 @@ public class ConsoleFighterFactory : IFighterFactory
 {
     private readonly IConsole _console;
 
-    private readonly IReadOnlyList<Func<IArmor>> _armors;
+    private readonly IReadOnlyList<IArmor> _armors;
 
-    private readonly IReadOnlyList<Func<IFighterClass>> _classes;
+    private readonly IReadOnlyList<IFighterClass> _classes;
 
-    private readonly IReadOnlyList<Func<IRace>> _races;
+    private readonly IReadOnlyList<IRace> _races;
 
-    private readonly IReadOnlyList<Func<IWeapon>> _weapons;
+    private readonly IReadOnlyList<IWeapon> _weapons;
 
     public ConsoleFighterFactory(
         IConsole console,
-        IReadOnlyList<Func<IArmor>> armors,
-        IReadOnlyList<Func<IFighterClass>> classes,
-        IReadOnlyList<Func<IRace>> races,
-        IReadOnlyList<Func<IWeapon>> weapons
+        IReadOnlyList<IArmor> armors,
+        IReadOnlyList<IFighterClass> classes,
+        IReadOnlyList<IRace> races,
+        IReadOnlyList<IWeapon> weapons
     )
     {
         _console = console;
@@ -60,21 +60,20 @@ public class ConsoleFighterFactory : IFighterFactory
         }
     }
 
-    private T ReadFromList<T>( string title, IReadOnlyList<Func<T>> options ) where T : IName
+    private T ReadFromList<T>( string title, IReadOnlyList<T> options ) where T : IName
     {
-        T[] samples = options.Select( f => f() ).ToArray();
         while ( true )
         {
             _console.WriteLine( title );
-            for ( int i = 0; i < samples.Length; i++ )
+            for ( int i = 0; i < options.Count; i++ )
             {
-                _console.WriteLine( $"{i + 1} - {samples[ i ].Name}" );
+                _console.WriteLine( $"{i + 1} - {options[ i ].Name}" );
             }
 
             string? input = _console.ReadLine();
             if ( int.TryParse( input, out int choice ) && choice >= 1 && choice <= options.Count )
             {
-                return options[ choice - 1 ]();
+                return options[ choice - 1 ];
             }
 
             _console.WriteLine( "Invalid option. Try again." );

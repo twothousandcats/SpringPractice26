@@ -7,36 +7,36 @@ namespace Fighters.UI;
 
 public static class FighterCatalog
 {
-    public static IReadOnlyList<Func<IArmor>> Armors { get; } =
+    public static IReadOnlyList<IArmor> Armors { get; } =
     [
-        () => new NoArmor(),
-        () => new SimpleClothes(),
-        () => new LeatherArmor(),
-        () => new ChainArmor(),
-        () => new PlateArmor(),
+        new NoArmor(),
+        new SimpleClothes(),
+        new LeatherArmor(),
+        new ChainArmor(),
+        new PlateArmor(),
     ];
 
-    public static IReadOnlyList<Func<IFighterClass>> Classes { get; } =
+    public static IReadOnlyList<IFighterClass> Classes { get; } =
     [
-        () => new Knight(),
-        () => new Mage(),
-        () => new Mercenary(),
+        new Knight(),
+        new Mage(),
+        new Mercenary(),
     ];
 
-    public static IReadOnlyList<Func<IRace>> Races { get; } =
+    public static IReadOnlyList<IRace> Races { get; } =
     [
-        () => new Human(),
-        () => new Elf(),
-        () => new Orc(),
-        () => new Dwarf(),
+        new Human(),
+        new Elf(),
+        new Orc(),
+        new Dwarf(),
     ];
 
-    public static IReadOnlyList<Func<IWeapon>> Weapons { get; } =
+    public static IReadOnlyList<IWeapon> Weapons { get; } =
     [
-        () => new Axe(),
-        () => new Bow(),
-        () => new Fists(),
-        () => new Staff(),
-        () => new Sword(),
+        new Axe(),
+        new Bow(),
+        new Fists(),
+        new Staff(),
+        new Sword(),
     ];
 }
