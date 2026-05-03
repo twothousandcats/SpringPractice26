@@ -26,7 +26,14 @@ public sealed class PlayRoundCommand : IMenuCommand
             return;
         }
 
+
         decimal bet = ReadBet();
+        if ( bet > _game.Balance )
+        {
+            _io.WriteLine( "Ставка не может быть больше баланса." );
+            return;
+        }
+
         try
         {
             RoundResult result = _game.PlayRound( bet );
