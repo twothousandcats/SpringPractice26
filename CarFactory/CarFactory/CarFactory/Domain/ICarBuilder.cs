@@ -1,7 +1,6 @@
-namespace CarFactory.Domain
+namespace CarFactory.Domain;
+
+public interface ICarBuilder
 {
-    public interface ICarBuilder
-    {
-        Car Build( CarConfiguration carConfiguration );
-    }
+    Car Build( CarConfiguration carConfiguration );
 }
