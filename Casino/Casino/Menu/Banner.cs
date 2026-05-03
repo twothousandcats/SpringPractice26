@@ -15,7 +15,6 @@ public static class Banner
 
     public static void Print( IInputOutput io )
     {
-        ArgumentNullException.ThrowIfNull( io );
         foreach ( string headingLine in Heading )
         {
             io.WriteLine( headingLine );
