@@ -1,4 +1,4 @@
-namespace CarFactory.Domain.Components;
+namespace CarFactory.Domain.Components.Engine;
 
 public class ElectricEngine : EngineBase
 {

@@ -1,4 +1,4 @@
-namespace CarFactory.Domain.Components;
+namespace CarFactory.Domain.Components.Engine;
 
 public interface IEngine
 {
