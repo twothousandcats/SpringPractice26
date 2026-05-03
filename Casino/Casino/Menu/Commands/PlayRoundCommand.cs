@@ -88,7 +88,7 @@ public sealed class PlayRoundCommand : IMenuCommand
         _io.WriteLine(
             result.IsWin
                 ? $"Вы выиграли: {result.Payout:0.##}!"
-                : $"Вы проиграли вашу ставку {result.BetAmount:0.##}!"
+                : $"Вы проиграли вашу ставку {Math.Abs( result.Payout ):0.##}!"
         );
 
         _io.WriteLine( $"Ваш баланс: {result.NewBalance:0.##}" );
