@@ -2,7 +2,7 @@ namespace CarFactory.Domain.Components.Transmission;
 
 public class AutomaticTransmission : TransmissionBase
 {
-    public AutomaticTransmission( int gearCount ) : base( "Automatic", gearCount )
+    public AutomaticTransmission( int gearCount ) : base( $"Automatic {gearCount}-speed", gearCount )
     {
     }
 

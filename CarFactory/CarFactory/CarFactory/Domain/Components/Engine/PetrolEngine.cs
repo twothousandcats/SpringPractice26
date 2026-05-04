@@ -4,7 +4,7 @@ public class PetrolEngine : EngineBase
 {
     private readonly double _displacement;
 
-    public PetrolEngine( double displacement, int maxSpeed ) : base( "Petrol", maxSpeed )
+    public PetrolEngine( double displacement, int maxSpeed ) : base( $"Petrol {displacement:F1}L", maxSpeed )
     {
         if ( displacement <= 0 )
         {

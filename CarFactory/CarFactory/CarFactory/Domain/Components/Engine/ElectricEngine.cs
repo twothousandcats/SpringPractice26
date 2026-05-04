@@ -4,7 +4,7 @@ public class ElectricEngine : EngineBase
 {
     private readonly int _batteryKwh;
 
-    public ElectricEngine( int batteryKwh, int maxSpeed ) : base( "Electric", maxSpeed )
+    public ElectricEngine( int batteryKwh, int maxSpeed ) : base( $"Electric {batteryKwh} kWh", maxSpeed )
     {
         if ( batteryKwh <= 0 )
         {

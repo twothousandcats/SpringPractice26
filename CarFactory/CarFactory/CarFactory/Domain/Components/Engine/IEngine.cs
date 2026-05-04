@@ -1,9 +1,7 @@
 namespace CarFactory.Domain.Components.Engine;
 
-public interface IEngine
+public interface IEngine : IName
 {
-    string Name { get; }
-
     int MaxSpeed { get; }
 
     string Description();

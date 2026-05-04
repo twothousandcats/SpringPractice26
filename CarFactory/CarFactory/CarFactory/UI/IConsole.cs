@@ -1,4 +1,4 @@
-namespace CarFactory.Console;
+namespace CarFactory.UI;
 
 public interface IConsole
 {

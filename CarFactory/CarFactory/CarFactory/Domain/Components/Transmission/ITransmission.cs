@@ -1,9 +1,7 @@
 namespace CarFactory.Domain.Components.Transmission;
 
-public interface ITransmission
+public interface ITransmission : IName
 {
-    string Name { get; }
-
     int GearCount { get; }
 
     string Description();

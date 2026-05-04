@@ -1,6 +1,8 @@
+using CarFactory.Domain.Components.BodyTypes;
+using CarFactory.Domain.Components.Colors;
 using CarFactory.Domain.Components.Engine;
+using CarFactory.Domain.Components.SteeringPosition;
 using CarFactory.Domain.Components.Transmission;
-using CarFactory.Domain.Enums;
 
 namespace CarFactory.Domain;
 
@@ -8,11 +10,11 @@ public class Car
 {
     private readonly string _brand;
 
-    private readonly BodyType _bodyType;
+    private readonly IBodyType _bodyType;
 
-    private readonly CarColor _color;
+    private readonly ICarColor _color;
 
-    private readonly SteeringPosition _steeringPosition;
+    private readonly ISteeringPosition _steeringPosition;
 
     private readonly IEngine _engine;
 
@@ -20,9 +22,9 @@ public class Car
 
     public Car(
         string brand,
-        BodyType bodyType,
-        CarColor color,
-        SteeringPosition steeringPosition,
+        IBodyType bodyType,
+        ICarColor color,
+        ISteeringPosition steeringPosition,
         IEngine engine,
         ITransmission transmission
     )
@@ -37,11 +39,11 @@ public class Car
 
     public string Brand => _brand;
 
-    public BodyType BodyType => _bodyType;
+    public IBodyType BodyType => _bodyType;
 
-    public CarColor Color => _color;
+    public ICarColor Color => _color;
 
-    public SteeringPosition SteeringPosition => _steeringPosition;
+    public ISteeringPosition SteeringPosition => _steeringPosition;
 
     public IEngine Engine => _engine;
 
@@ -56,12 +58,12 @@ public class Car
         return string.Join(
             Environment.NewLine,
             $"Brand: {_brand}",
-            $"BodyType: {_bodyType}",
-            $"Color: {_color}",
-            $"Steering Position: {_steeringPosition}",
+            $"BodyType: {_bodyType.Name}",
+            $"Color: {_color.Name}",
+            $"Steering Position: {_steeringPosition.Name}",
             $"Engine: {_engine.Description()}",
             $"Transmission: {_transmission.Description()}",
-            $"Max Speed: {MaxSpeed}",
+            $"Max Speed: {MaxSpeed} km/h",
             $"Gear Count: {GearCount}"
         );
     }
