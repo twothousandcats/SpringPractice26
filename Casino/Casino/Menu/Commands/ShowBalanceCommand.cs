@@ -6,6 +6,7 @@ namespace Casino.Menu.Commands;
 public sealed class ShowBalanceCommand : IMenuCommand
 {
     private readonly IInputOutput _io;
+
     private readonly Game _game;
 
     public ShowBalanceCommand( IInputOutput io, Game game )
@@ -13,8 +14,6 @@ public sealed class ShowBalanceCommand : IMenuCommand
         _io = io;
         _game = game;
     }
-
-    public string Title => "Показать баланс";
 
     public void Execute()
     {

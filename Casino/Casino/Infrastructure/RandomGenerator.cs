@@ -4,11 +4,7 @@ public sealed class RandomGenerator : IRandomGenerator
 {
     private readonly Random _random;
 
-    public RandomGenerator() : this( new Random() )
-    {
-    }
-
-    private RandomGenerator( Random random )
+    public RandomGenerator( Random random )
     {
         _random = random;
     }

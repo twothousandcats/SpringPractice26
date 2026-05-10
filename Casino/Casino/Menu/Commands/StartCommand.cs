@@ -15,8 +15,6 @@ public sealed class StartCommand : IMenuCommand
         _game = game;
     }
 
-    public string Title => "Начать";
-
     public void Execute()
     {
         _io.WriteLine( $"Игра началась. Ваш начальный баланс: {_game.Balance:0.##}" );

@@ -1,4 +1,5 @@
 using Casino.Infrastructure;
+using Casino.Menu.Commands;
 
 namespace Casino.Menu;
 
@@ -6,28 +7,27 @@ public sealed class MenuRunner
 {
     private readonly IInputOutput _io;
 
-    private readonly List<IMenuCommand> _commands;
+    private readonly List<MenuItem> _items;
 
     private bool _isRunning;
 
     public MenuRunner( IInputOutput io )
     {
         _io = io;
-        _commands = new List<IMenuCommand>();
+        _items = new List<MenuItem>();
         _isRunning = true;
     }
 
     public void RequestExit() => _isRunning = false;
 
-    public void Add( IMenuCommand command )
+    public void Add( MenuItem command )
     {
-        ArgumentNullException.ThrowIfNull( command );
-        _commands.Add( command );
+        _items.Add( command );
     }
 
     public void Run()
     {
-        if ( _commands.Count == 0 )
+        if ( _items.Count == 0 )
         {
             throw new InvalidOperationException( "В меню нет команд!" );
         }
@@ -42,7 +42,7 @@ public sealed class MenuRunner
                 continue;
             }
 
-            _commands[ choice.Value - 1 ].Execute();
+            _items[ choice.Value - 1 ].Command.Execute();
         }
     }
 
@@ -50,9 +50,9 @@ public sealed class MenuRunner
     {
         _io.WriteLine( string.Empty );
         _io.WriteLine( "Меню" );
-        for ( int i = 0; i < _commands.Count; i++ )
+        for ( int i = 0; i < _items.Count; i++ )
         {
-            _io.WriteLine( $"{i + 1}. {_commands[ i ].Title}" );
+            _io.WriteLine( $"{i + 1}. {_items[ i ].Title}" );
         }
 
         _io.WriteLine( "Выберите команду: " );
@@ -66,7 +66,7 @@ public sealed class MenuRunner
             return null;
         }
 
-        if ( choice < 1 || choice > _commands.Count )
+        if ( choice < 1 || choice > _items.Count )
         {
             return null;
         }
