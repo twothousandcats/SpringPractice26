@@ -6,7 +6,8 @@ public class GameLoop : IGameLoop
     {
         IsRunning = true;
     }
-    
+
     public bool IsRunning { get; private set; }
+
     public void RequestStop() => IsRunning = false;
 }

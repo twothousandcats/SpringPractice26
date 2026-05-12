@@ -1,6 +1,6 @@
 namespace Fighters.Models.Fighters;
 
-public interface IFighter : IName
+public interface IFighter : INamed
 {
     int CurrentHealth { get; }
 

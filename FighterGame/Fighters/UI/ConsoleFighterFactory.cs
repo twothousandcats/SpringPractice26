@@ -60,7 +60,7 @@ public class ConsoleFighterFactory : IFighterFactory
         }
     }
 
-    private T ReadFromList<T>( string title, IReadOnlyList<T> options ) where T : IName
+    private T ReadFromList<T>( string title, IReadOnlyList<T> options ) where T : INamed
     {
         while ( true )
         {

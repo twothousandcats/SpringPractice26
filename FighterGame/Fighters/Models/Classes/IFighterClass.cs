@@ -1,6 +1,6 @@
 namespace Fighters.Models.Classes;
 
-public interface IFighterClass : IName
+public interface IFighterClass : INamed
 {
     int Damage { get; }
 
