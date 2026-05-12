@@ -5,15 +5,15 @@ namespace Fighters.Commands;
 
 public class AddFighterConsoleCommand : IConsoleCommand
 {
-    private readonly List<IFighter> _fighters;
+    private readonly FighterRoster _fighterRoster;
 
     private readonly IFighterFactory _factory;
 
     private readonly IConsole _console;
 
-    public AddFighterConsoleCommand( List<IFighter> fighters, IFighterFactory factory, IConsole console )
+    public AddFighterConsoleCommand( FighterRoster fighterRoster, IFighterFactory factory, IConsole console )
     {
-        _fighters = fighters;
+        _fighterRoster = fighterRoster;
         _factory = factory;
         _console = console;
     }
@@ -25,7 +25,7 @@ public class AddFighterConsoleCommand : IConsoleCommand
     public void Execute()
     {
         IFighter fighter = _factory.Create();
-        _fighters.Add( fighter );
+        _fighterRoster.Add( fighter );
         _console.WriteLine( $"Fighter {fighter.Name} added to the arena" );
     }
 }

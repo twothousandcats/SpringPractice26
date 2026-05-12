@@ -10,7 +10,7 @@ public class Program
     public static void Main()
     {
         Random rng = new();
-        List<IFighter> arena = [ ];
+        FighterRoster fighterRoster = new();
         IConsole console = new SystemConsole();
 
         IDamageCalculator damageCalc =
@@ -35,10 +35,10 @@ public class Program
 
         IGameLoop gameLoop = new GameLoop();
         CommandRegistry registry = new();
-        registry.Register( new AddFighterConsoleCommand( arena, fighterFactory, console ) );
-        registry.Register( new ListFightersConsoleCommand( arena, console ) );
-        registry.Register( new RemoveFighterConsoleCommand( arena, console ) );
-        registry.Register( new PlayConsoleCommand( arena, battleRunner, console ) );
+        registry.Register( new AddFighterConsoleCommand( fighterRoster, fighterFactory, console ) );
+        registry.Register( new ListFightersConsoleCommand( fighterRoster, console ) );
+        registry.Register( new RemoveFighterConsoleCommand( fighterRoster, console ) );
+        registry.Register( new PlayConsoleCommand( fighterRoster, battleRunner, console ) );
         registry.Register( new HelpConsoleCommand( registry, console ) );
         registry.Register( new ExitConsoleCommand( gameLoop ) );
 

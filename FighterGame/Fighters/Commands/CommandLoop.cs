@@ -37,22 +37,7 @@ public class CommandLoop
                 continue;
             }
 
-            try
-            {
-                command.Execute();
-            }
-            catch ( ArgumentException ex )
-            {
-                _console.WriteLine( $"Bad argument: {ex.Message}" );
-            }
-            catch ( InvalidOperationException ex )
-            {
-                _console.WriteLine( $"Operation failed: {ex.Message}" );
-            }
-            catch ( FormatException ex )
-            {
-                _console.WriteLine( $"Bad input: {ex.Message}" );
-            }
+            command.Execute();
         }
     }
 }
