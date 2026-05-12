@@ -3,7 +3,7 @@ using Fighters.Models.Fighters;
 
 namespace Fighters;
 
-public class FighterRoster
+public class FighterRoster : IReadOnlyList<IFighter>
 {
     private readonly List<IFighter> _fighters = [ ];
 
@@ -26,9 +26,14 @@ public class FighterRoster
     {
         _fighters.Clear();
     }
-
+    
     public IEnumerator<IFighter> GetEnumerator()
     {
         return _fighters.GetEnumerator();
+    }
+    
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
     }
 }
