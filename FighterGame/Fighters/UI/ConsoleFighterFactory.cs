@@ -1,0 +1,82 @@
+using Fighters.Models;
+using Fighters.Models.Armors;
+using Fighters.Models.Classes;
+using Fighters.Models.Fighters;
+using Fighters.Models.Races;
+using Fighters.Models.Weapons;
+
+namespace Fighters.UI;
+
+public class ConsoleFighterFactory : IFighterFactory
+{
+    private readonly IConsole _console;
+
+    private readonly IReadOnlyList<IArmor> _armors;
+
+    private readonly IReadOnlyList<IFighterClass> _classes;
+
+    private readonly IReadOnlyList<IRace> _races;
+
+    private readonly IReadOnlyList<IWeapon> _weapons;
+
+    public ConsoleFighterFactory(
+        IConsole console,
+        IReadOnlyList<IArmor> armors,
+        IReadOnlyList<IFighterClass> classes,
+        IReadOnlyList<IRace> races,
+        IReadOnlyList<IWeapon> weapons
+    )
+    {
+        _console = console;
+        _races = races;
+        _classes = classes;
+        _weapons = weapons;
+        _armors = armors;
+    }
+
+    public IFighter Create()
+    {
+        string name = ReadName();
+        IRace race = ReadFromList( "Choose race: ", _races );
+        IFighterClass fighterClass = ReadFromList( "Choose class: ", _classes );
+        IWeapon weapon = ReadFromList( "Choose weapon: ", _weapons );
+        IArmor armor = ReadFromList( "Choose armor: ", _armors );
+
+        return new Fighter( name, race, fighterClass, weapon, armor );
+    }
+
+    private string ReadName()
+    {
+        while ( true )
+        {
+            _console.WriteLine( "Enter fighter name:" );
+            string? name = _console.ReadLine();
+            if ( !string.IsNullOrWhiteSpace( name ) )
+            {
+                return name;
+            }
+
+            _console.WriteLine( "Name cant be empty!" );
+        }
+    }
+
+    private T ReadFromList<T>( string title, IReadOnlyList<T> options ) where T : INamed
+    {
+        while ( true )
+        {
+            _console.WriteLine( title );
+            for ( int i = 0; i < options.Count; i++ )
+            {
+                _console.WriteLine( $"{i + 1} - {options[ i ].Name}" );
+            }
+
+            string? input = _console.ReadLine();
+            if ( int.TryParse( input, out int choice ) && choice >= 1 && choice <= options.Count )
+            {
+                return options[ choice - 1 ];
+            }
+
+            _console.WriteLine( "Invalid option. Try again." );
+        }
+    }
+}
