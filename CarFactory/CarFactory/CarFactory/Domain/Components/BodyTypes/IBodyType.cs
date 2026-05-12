@@ -1,5 +1,5 @@
 namespace CarFactory.Domain.Components.BodyTypes;
 
-public interface IBodyType : IName
+public interface IBodyType : INamed
 {
 }

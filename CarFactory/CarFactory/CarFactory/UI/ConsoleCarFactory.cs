@@ -41,20 +41,28 @@ public class ConsoleCarFactory : ICarFactory
     public Car Create()
     {
         string brand = ReadBrand();
-        IBodyType bodyType = ReadFromList( "Choose body type: ", _bodyTypes );
-        ICarColor carColor = ReadFromList( "Choose color: ", _carColors );
-        ISteeringPosition steeringPosition = ReadFromList( "Choose steering position: ", _steeringPositions );
-        IEngine engine = ReadFromList( "Choose engine: ", _engines );
-        ITransmission transmission = ReadFromList( "Choose transmission: ", _transmissions );
+        try
+        {
+            IBodyType bodyType = ReadFromList( "Choose body type: ", _bodyTypes );
+            ICarColor carColor = ReadFromList( "Choose color: ", _carColors );
+            ISteeringPosition steeringPosition = ReadFromList( "Choose steering position: ", _steeringPositions );
+            IEngine engine = ReadFromList( "Choose engine: ", _engines );
+            ITransmission transmission = ReadFromList( "Choose transmission: ", _transmissions );
 
-        return new Car(
-            brand,
-            bodyType,
-            carColor,
-            steeringPosition,
-            engine,
-            transmission
-        );
+            return new Car(
+                brand,
+                bodyType,
+                carColor,
+                steeringPosition,
+                engine,
+                transmission
+            );
+        }
+        catch ( Exception ex )
+        {
+            Console.WriteLine( ex.Message );
+            throw;
+        }
     }
 
     private string ReadBrand()
@@ -72,8 +80,13 @@ public class ConsoleCarFactory : ICarFactory
         }
     }
 
-    private T ReadFromList<T>( string title, IReadOnlyList<T> options ) where T : IName
+    private T ReadFromList<T>( string title, IReadOnlyList<T> options ) where T : INamed
     {
+        if ( options.Count == 0 )
+        {
+            throw new ArgumentException( "have to be not empty", nameof( options ) );
+        }
+
         while ( true )
         {
             _console.WriteLine( title );

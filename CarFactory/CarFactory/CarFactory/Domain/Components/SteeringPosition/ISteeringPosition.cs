@@ -1,5 +1,5 @@
 namespace CarFactory.Domain.Components.SteeringPosition;
 
-public interface ISteeringPosition : IName
+public interface ISteeringPosition : INamed
 {
 }

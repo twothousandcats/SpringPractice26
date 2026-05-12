@@ -1,5 +1,5 @@
 namespace CarFactory.Domain.Components.Colors;
 
-public interface ICarColor : IName
+public interface ICarColor : INamed
 {
 }

@@ -1,6 +1,6 @@
 namespace CarFactory.Domain;
 
-public interface IName
+public interface INamed
 {
     string Name { get; }
 }

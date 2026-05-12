@@ -8,6 +8,19 @@ public abstract class EngineBase : IEngine
 
     protected EngineBase( string name, int maxSpeed )
     {
+        if ( string.IsNullOrWhiteSpace( name ) )
+        {
+            throw new ArgumentNullException( nameof( name ), "Name cant be empty" );
+        }
+
+        if ( maxSpeed <= 0 )
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof( maxSpeed ),
+                "Max speed should be greater than zero"
+            );
+        }
+
         _name = name;
         _maxSpeed = maxSpeed;
     }
