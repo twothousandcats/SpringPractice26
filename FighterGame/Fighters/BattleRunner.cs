@@ -32,10 +32,10 @@ public class BattleRunner
 
         for ( int round = 1; round <= MaxRounds; round++ )
         {
-            _logger.RoundStarted( round );
+            _logger.LogAnnounceRound( round );
             int totalDamageThisRound = 0;
 
-            IEnumerable<IFighter> turnOrder = arena
+            IFighter[] turnOrder = arena
                 .OrderByDescending( f => f.Initiative )
                 .ToArray();
 
@@ -49,24 +49,24 @@ public class BattleRunner
                 IFighter? target = _targetSelector.Pick( attacker, arena );
                 if ( target is null )
                 {
-                    _logger.FighterWon( attacker );
+                    _logger.LogFighterWon( attacker );
                     return attacker;
                 }
 
                 int dealt = ApplyAttack( attacker, target );
                 totalDamageThisRound += dealt;
-                _logger.AttackPerformed( attacker, target, dealt );
+                _logger.LogPerformAttack( attacker, target, dealt );
 
                 if ( !target.IsAlive )
                 {
-                    _logger.FighterDied( target );
+                    _logger.LogFighterDied( target );
                 }
             }
 
             if ( totalDamageThisRound == 0 )
             {
                 IFighter[] survivors = arena.Where( f => f.IsAlive ).ToArray();
-                _logger.StalemateReached( survivors );
+                _logger.LogReachStalemate( survivors );
                 throw new InvalidOperationException( "Battle ended in stalemate." );
             }
         }

@@ -4,5 +4,5 @@ namespace Fighters.Battle;
 
 public interface ITargetSelector
 {
-    IFighter? Pick( IFighter attacker, IReadOnlyList<IFighter> arena );
+    IFighter? Pick( IFighter attacker, IReadOnlyList<IFighter> fighters );
 }

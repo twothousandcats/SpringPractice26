@@ -12,30 +12,30 @@ public class ConsoleBattleLogger : IBattleLogger
         _console = console;
     }
 
-    public void RoundStarted( int roundNumber )
+    public void LogAnnounceRound( int roundNumber )
     {
         _console.WriteLine( "Round " + roundNumber );
     }
 
-    public void AttackPerformed( IFighter attacker, IFighter target, int dealtDamage )
+    public void LogPerformAttack( IFighter attacker, IFighter target, int dealtDamage )
     {
         _console.WriteLine(
             $"{attacker.Name} deals {dealtDamage} damage to {target.Name}."
         );
     }
 
-    public void StalemateReached( IReadOnlyList<IFighter> fighters )
+    public void LogReachStalemate( IReadOnlyList<IFighter> fighters )
     {
         string names = string.Join( ", ", fighters.Select( f => f.Name ) );
         _console.WriteLine( $"Stalemate: nobody dealt damage this round ({names})." );
     }
 
-    public void FighterDied( IFighter fighter )
+    public void LogFighterDied( IFighter fighter )
     {
         _console.WriteLine( $"{fighter.Name} dies." );
     }
 
-    public void FighterWon( IFighter fighter )
+    public void LogFighterWon( IFighter fighter )
     {
         _console.WriteLine( $"{fighter.Name} wins." );
     }

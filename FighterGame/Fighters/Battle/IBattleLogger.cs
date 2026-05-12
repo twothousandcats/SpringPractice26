@@ -4,16 +4,13 @@ namespace Fighters.Battle;
 
 public interface IBattleLogger
 {
-    void RoundStarted( int roundNumber );
-
-    void AttackPerformed(
+    void LogAnnounceRound( int roundNumber );
+    void LogPerformAttack(
         IFighter attacker,
         IFighter target,
         int dealtDamage
     );
-
-    void StalemateReached( IReadOnlyList<IFighter> fighters );
-
-    void FighterDied( IFighter fighter );
-    void FighterWon( IFighter fighter );
+    void LogReachStalemate( IReadOnlyList<IFighter> fighters );
+    void LogFighterDied( IFighter fighter );
+    void LogFighterWon( IFighter fighter );
 }

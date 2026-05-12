@@ -4,43 +4,43 @@ namespace Fighters.Battle;
 
 public class CriticalHitDamageCalculator : IDamageCalculator
 {
-    private readonly IDamageCalculator _inner;
+    private readonly IDamageCalculator _baseCalculator;
 
     private readonly Random _random;
 
-    private readonly double _chance;
+    private readonly double _criticalChance;
 
-    private readonly double _multiplier;
+    private readonly double _criticalMultiplier;
 
     public CriticalHitDamageCalculator(
-        IDamageCalculator inner,
+        IDamageCalculator baseCalculator,
         Random random,
-        double chance = 0.15,
-        double multiplier = 2.0
+        double criticalChance = 0.15,
+        double criticalMultiplier = 2.0
     )
     {
-        if ( chance is < 0 or > 1 )
+        if ( criticalChance is < 0 or > 1 )
         {
-            throw new ArgumentOutOfRangeException( nameof( chance ), "Chance must be in [0, 1]" );
+            throw new ArgumentOutOfRangeException( nameof( criticalChance ), "Chance must be in [0, 1]" );
         }
 
-        if ( multiplier < 1 )
+        if ( criticalMultiplier < 1 )
         {
-            throw new ArgumentOutOfRangeException( nameof( multiplier ), "Multiplier must be >= 1" );
+            throw new ArgumentOutOfRangeException( nameof( criticalMultiplier ), "Multiplier must be >= 1" );
         }
 
-        _inner = inner;
+        _baseCalculator = baseCalculator;
         _random = random;
-        _chance = chance;
-        _multiplier = multiplier;
+        _criticalChance = criticalChance;
+        _criticalMultiplier = criticalMultiplier;
     }
 
     public int Calculate( IFighter attacker, IFighter defender )
     {
-        int baseDamage = _inner.Calculate( attacker, defender );
-        bool isCrit = _random.NextDouble() < _chance;
+        int baseDamage = _baseCalculator.Calculate( attacker, defender );
+        bool isCrit = _random.NextDouble() < _criticalChance;
         return isCrit
-            ? ( int )Math.Round( baseDamage * _multiplier )
+            ? ( int )Math.Round( baseDamage * _criticalMultiplier )
             : baseDamage;
     }
 }
