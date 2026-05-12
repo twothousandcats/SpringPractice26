@@ -14,8 +14,6 @@ public sealed class ExitCommand : IMenuCommand
         _onExit = onExit;
     }
 
-    public string Title => "Выйти";
-
     public void Execute()
     {
         _io.WriteLine( "Спасибо за игру!" );

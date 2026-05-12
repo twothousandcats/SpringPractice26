@@ -9,6 +9,7 @@ namespace Casino;
 public class Program
 {
     private const int MinBalance = 0;
+
     private const int DefaultMultiplier = 3;
 
     public static void Main()
@@ -17,14 +18,40 @@ public class Program
         Banner.Print( io );
 
         decimal balance = ReadInitialBalance( io );
-        IRandomGenerator rng = new RandomGenerator();
+        IRandomGenerator rng = new RandomGenerator( new Random() );
         Game game = new Game( balance, DefaultMultiplier, rng );
 
+        io.WriteLine( $"Игра началась. Ваш начальный баланс: {game.Balance:0.##}" );
+
+        IBetReader betReader = new ConsoleBetReader( io );
+        IRoundResultPrinter roundResultPrinter = new ConsoleRoundResultPrinter( io );
+
         MenuRunner menuRunner = new MenuRunner( io );
-        menuRunner.Add( new StartCommand( io, game ) );
-        menuRunner.Add( new ShowBalanceCommand( io, game ) );
-        menuRunner.Add( new PlayRoundCommand( io, game ) );
-        menuRunner.Add( new ExitCommand( io, menuRunner.RequestExit ) );
+        menuRunner.Add(
+            new MenuItem(
+                "Показать баланс",
+                new ShowBalanceCommand( io, game )
+            )
+        );
+
+        menuRunner.Add(
+            new MenuItem(
+                "Сыграть раунд",
+                new PlayRoundCommand(
+                    io,
+                    game,
+                    betReader,
+                    roundResultPrinter
+                )
+            )
+        );
+
+        menuRunner.Add(
+            new MenuItem(
+                "Выйти",
+                new ExitCommand( io, menuRunner.RequestExit )
+            )
+        );
 
         menuRunner.Run();
     }
