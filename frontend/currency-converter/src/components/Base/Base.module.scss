@@ -1,0 +1,17 @@
+@use '../../utils/styles/base' as *;
+
+.container {
+  width: 100%;
+  max-width: 1257px;
+  display: flex;
+}
+
+.base {
+  display: flex;
+  flex-direction: column;
+  padding: 28px;
+
+  border-radius: 30px;
+
+  background-color: $secondaryBg;
+}

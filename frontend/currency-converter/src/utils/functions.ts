@@ -1,0 +1,5 @@
+export function concatClassNames(
+    classNames: (string | undefined | null | boolean)[]
+): string {
+    return classNames.filter(Boolean).join(' ');
+}
