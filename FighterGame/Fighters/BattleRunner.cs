@@ -13,14 +13,18 @@ public class BattleRunner
 
     private readonly IDamageCalculator _damageCalculator;
 
-    public BattleRunner( IBattleLogger logger, ITargetSelector targetSelector, IDamageCalculator damageCalculator )
+    public BattleRunner(
+        IBattleLogger logger,
+        ITargetSelector targetSelector,
+        IDamageCalculator damageCalculator
+    )
     {
         _logger = logger;
         _targetSelector = targetSelector;
         _damageCalculator = damageCalculator;
     }
 
-    public IFighter Play( IReadOnlyList<IFighter> fighters )
+    public BattleResult Play( IReadOnlyList<IFighter> fighters )
     {
         ArgumentNullException.ThrowIfNull( fighters );
         if ( fighters.Count < 2 )
@@ -50,7 +54,7 @@ public class BattleRunner
                 if ( target is null )
                 {
                     _logger.LogFighterWon( attacker );
-                    return attacker;
+                    return BattleResult.Victory( attacker );
                 }
 
                 int dealt = ApplyAttack( attacker, target );
@@ -67,11 +71,11 @@ public class BattleRunner
             {
                 IFighter[] survivors = arena.Where( f => f.IsAlive ).ToArray();
                 _logger.LogReachStalemate( survivors );
-                throw new InvalidOperationException( "Battle ended in stalemate." );
+                return BattleResult.Stalemate();
             }
         }
 
-        throw new InvalidOperationException( "Battle did not finish within the round limit!" );
+        return BattleResult.RoundLimitReached();
     }
 
     private int ApplyAttack( IFighter attacker, IFighter defender )

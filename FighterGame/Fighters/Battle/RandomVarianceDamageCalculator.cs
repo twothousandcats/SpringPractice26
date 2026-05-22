@@ -8,19 +8,19 @@ public class RandomVarianceDamageCalculator : IDamageCalculator
 
     private const double MaxFactor = 1.1;
 
-    private readonly IDamageCalculator _inner;
+    private readonly IDamageCalculator _damageCalculator;
 
     private readonly Random _random;
 
-    public RandomVarianceDamageCalculator( IDamageCalculator inner, Random random )
+    public RandomVarianceDamageCalculator( IDamageCalculator damageCalculator, Random random )
     {
-        _inner = inner;
+        _damageCalculator = damageCalculator;
         _random = random;
     }
 
     public int Calculate( IFighter attacker, IFighter defender )
     {
-        int baseDamage = _inner.Calculate( attacker, defender );
+        int baseDamage = _damageCalculator.Calculate( attacker, defender );
         double factor = MinFactor + ( _random.NextDouble() * ( MaxFactor - MinFactor ) );
 
         return ( int )Math.Round( baseDamage * factor );

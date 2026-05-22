@@ -24,13 +24,13 @@ public class PlayConsoleCommand : IConsoleCommand
 
     public void Execute()
     {
-        if ( _fighterRoster.Count < 2 )
+        if ( _fighterRoster.Fighters.Count < 2 )
         {
             _console.WriteLine( "You must add at least 2 fighters to play" );
             return;
         }
 
-        _battleRunner.Play( _fighterRoster );
+        _battleRunner.Play( _fighterRoster.Fighters );
         _fighterRoster.Clear();
     }
 }

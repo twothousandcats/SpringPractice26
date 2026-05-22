@@ -23,13 +23,14 @@ public class RemoveFighterConsoleCommand : IConsoleCommand
     {
         _console.WriteLine( "Enter fighter index:" );
         string? input = _console.ReadLine(); // from 1
-        if ( !int.TryParse( input, out int index ) || index < 1 || index > _fighterRoster.Count )
+        IReadOnlyList<IFighter> fighters = _fighterRoster.Fighters;
+        if ( !int.TryParse( input, out int index ) || index < 1 || index > fighters.Count )
         {
             _console.WriteLine( "Invalid fighter index" );
             return;
         }
 
-        IFighter fighter = _fighterRoster[ index - 1 ];
+        IFighter fighter = fighters[ index - 1 ];
         _fighterRoster.RemoveAt( index - 1 );
         _console.WriteLine( $"Removed fighter: {fighter.Name}" );
     }

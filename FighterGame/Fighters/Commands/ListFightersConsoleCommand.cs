@@ -21,15 +21,16 @@ public class ListFightersConsoleCommand : IConsoleCommand
 
     public void Execute()
     {
-        if ( _fighterRoster.Count == 0 )
+        IReadOnlyList<IFighter> fighters = _fighterRoster.Fighters;
+        if ( fighters.Count == 0 )
         {
             _console.WriteLine( "Arena is empty!" );
             return;
         }
 
-        for ( int i = 0; i < _fighterRoster.Count; i++ )
+        for ( int i = 0; i < fighters.Count; i++ )
         {
-            _console.WriteLine( $"{i + 1}. {_fighterRoster[ i ].Description}" );
+            _console.WriteLine( $"{i + 1}. {fighters[ i ].Description}" );
         }
     }
 }
