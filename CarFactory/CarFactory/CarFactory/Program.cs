@@ -8,7 +8,7 @@ public class Program
     public static void Main()
     {
         IConsole console = new SystemConsole();
-        ICarFactory carFactory = new ConsoleCarFactory(
+        ICarConfigurator carConfigurator = new ConsoleCarConfigurator(
             console,
             CarCatalog.BodyTypes,
             CarCatalog.Colors,
@@ -16,8 +16,10 @@ public class Program
             CarCatalog.Engines,
             CarCatalog.Transmissions
         );
+        CarSpec carSpec = carConfigurator.Configure();
 
-        Car car = carFactory.Create();
+        ICarFactory carFactory = new Domain.CarFactory();
+        Car car = carFactory.Create( carSpec );
 
         console.WriteLine( "" );
         console.WriteLine( "Created car settings: " );

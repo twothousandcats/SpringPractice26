@@ -7,7 +7,7 @@ using CarFactory.Domain.Components.Transmission;
 
 namespace CarFactory.UI;
 
-public class ConsoleCarFactory : ICarFactory
+public class ConsoleCarConfigurator : ICarConfigurator
 {
     private readonly IConsole _console;
 
@@ -21,10 +21,10 @@ public class ConsoleCarFactory : ICarFactory
 
     private readonly IReadOnlyList<ITransmission> _transmissions;
 
-    public ConsoleCarFactory(
+    public ConsoleCarConfigurator(
         IConsole console,
         IReadOnlyList<IBodyType> bodyTypes,
-        IReadOnlyList<ICarColor> carColors,
+        IReadOnlyList<ICarColor> colors,
         IReadOnlyList<ISteeringPosition> steeringPositions,
         IReadOnlyList<IEngine> engines,
         IReadOnlyList<ITransmission> transmissions
@@ -32,37 +32,22 @@ public class ConsoleCarFactory : ICarFactory
     {
         _console = console;
         _bodyTypes = bodyTypes;
-        _carColors = carColors;
+        _carColors = colors;
         _steeringPositions = steeringPositions;
         _engines = engines;
         _transmissions = transmissions;
     }
 
-    public Car Create()
+    public CarSpec Configure()
     {
         string brand = ReadBrand();
-        try
-        {
-            IBodyType bodyType = ReadFromList( "Choose body type: ", _bodyTypes );
-            ICarColor carColor = ReadFromList( "Choose color: ", _carColors );
-            ISteeringPosition steeringPosition = ReadFromList( "Choose steering position: ", _steeringPositions );
-            IEngine engine = ReadFromList( "Choose engine: ", _engines );
-            ITransmission transmission = ReadFromList( "Choose transmission: ", _transmissions );
+        IBodyType bodyType = ReadFromList( "Choose body type: ", _bodyTypes );
+        ICarColor color = ReadFromList( "Choose color: ", _carColors );
+        ISteeringPosition steeringPosition = ReadFromList( "Choose steering position: ", _steeringPositions );
+        IEngine engine = ReadFromList( "Choose engine: ", _engines );
+        ITransmission transmission = ReadFromList( "Choose transmission: ", _transmissions );
 
-            return new Car(
-                brand,
-                bodyType,
-                carColor,
-                steeringPosition,
-                engine,
-                transmission
-            );
-        }
-        catch ( Exception ex )
-        {
-            Console.WriteLine( ex.Message );
-            throw;
-        }
+        return new CarSpec( brand, bodyType, color, steeringPosition, engine, transmission );
     }
 
     private string ReadBrand()

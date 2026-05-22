@@ -20,7 +20,7 @@ public class Car
 
     private readonly ITransmission _transmission;
 
-    public Car(
+    private Car(
         string brand,
         IBodyType bodyType,
         ICarColor color,
@@ -35,6 +35,18 @@ public class Car
         _steeringPosition = steeringPosition;
         _engine = engine;
         _transmission = transmission;
+    }
+
+    public static Car Create(
+        string brand,
+        IBodyType bodyType,
+        ICarColor color,
+        ISteeringPosition steeringPosition,
+        IEngine engine,
+        ITransmission transmission
+    )
+    {
+        return new Car( brand, bodyType, color, steeringPosition, engine, transmission );
     }
 
     public string Brand => _brand;
