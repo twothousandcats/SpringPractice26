@@ -1,7 +1,18 @@
 import styles from "./Heading.module.scss";
 
-export const Heading = () => {
+type HeadingProps = {
+    from: string;
+    to: string;
+}
+
+export const Heading = ({from, to}: HeadingProps) => {
+    console.log(from);
+    console.log(to);
     return (
-        <div className={styles.heading}></div>
+        <div className={styles.heading}>
+            <p className={styles.from}>{from}</p>
+            <p className={styles.to}>{to}</p>
+            <p className={styles.date}>Currency converter</p>
+        </div>
     );
 }

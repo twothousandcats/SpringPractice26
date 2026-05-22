@@ -1,25 +1,21 @@
 import styles from './DescriptionLine.module.scss';
-import type {Currencies} from "../../store/types/types.ts";
+import type { Currency } from "../../models/types.ts";
+
+const FALLBACK_DESCRIPTION = 'No description available for this currency.';
 
 type DescriptionLineProps = {
-    name: string,
-    code: string,
-    symbol: string,
-    description: string,
+    currency: Currency;
 }
 
-export const DescriptionLine = (
-    {
-        name,
-        code,
-        symbol,
-        description,
-    }: DescriptionLineProps
-) => {
+export const DescriptionLine = ({ currency }: DescriptionLineProps) => {
     return (
-        <>
-            <p className={styles.descriptionLineHeading}>{`${name} - ${code} - ${symbol}`}</p>
-            <p className={styles.descriptionLineText}>{description}</p>
-        </>
+        <article>
+            <p className={styles.descriptionLineHeading}>
+                {`${currency.name} — ${currency.code} — ${currency.symbol}`}
+            </p>
+            <p className={styles.descriptionLineText}>
+                {currency.description || FALLBACK_DESCRIPTION}
+            </p>
+        </article>
     );
 }

@@ -1,26 +1,41 @@
 import styles from "./Base.module.scss";
 import {WorkArea} from "../WorkArea/WorkArea.tsx";
 import {DescriptionGroup} from "../DescriptionGroup/DescriptionGroup.tsx";
-import {useEffect, useState} from "react";
-import type {Currencies} from "../../store/types/types.ts";
-import {ENV_CONFIG} from "../../utils/config.ts";
+import {useConverter} from "../../hooks/useConverter.ts";
 
 export const Base = () => {
-    const [currencies, setCurrencies] = useState<Currencies | undefined>(undefined);
+    const {
+        currencies,
+        from,
+        to,
+        amount,
+        result,
+        fromCurrency,
+        toCurrency,
+        setFrom,
+        setTo,
+        setAmount,
+        swap,
+    } = useConverter();
 
-    useEffect(() => {
-        fetch(ENV_CONFIG.api.currency)
-            .then(res => res.json())
-            .then(data => setCurrencies(data));
-    });
     return (
         <div className={`${styles.base} ${styles.container}`}>
-            <WorkArea currencies={currencies}/>
-            {currencies && (
-                currencies.map((currency, i) => {
-                    <DescriptionGroup currency={currency} key={i}/>
-                })
-            )}
+            <WorkArea
+                currencies={currencies}
+                from={from}
+                to={to}
+                amount={amount}
+                result={result}
+                onFromChange={setFrom}
+                onToChange={setTo}
+                onAmountChange={setAmount}
+                onSwap={swap}
+            />
+            <DescriptionGroup
+                key={`${from}/${to}`}
+                from={fromCurrency}
+                to={toCurrency}
+            />
         </div>
     )
 }

@@ -6,7 +6,7 @@ export const ENV_CONFIG = {
 
 export const CONFIG = {
     paths: {
-        converter: '/converter/',
+        main: '/',
     },
     languages: {},
     themes: {},

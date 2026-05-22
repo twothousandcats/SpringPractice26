@@ -1,19 +1,22 @@
 import styles from "./SelectList.module.scss";
-import type {Currencies, Currency} from "../../store/types/types.ts";
-import {SelectListItem} from "../SelectListItem/SelectListItem.tsx";
+import type { Currencies, Currency } from "../../models/types.ts";
+import { SelectListItem } from "../SelectListItem/SelectListItem.tsx";
 
 type SelectListProps = {
-    currencies?: Currencies,
+    currencies: Currencies;
+    selected: string;
+    onSelect: (code: string) => void;
 }
 
-export const SelectList = ({currencies}: SelectListProps) => {
+export const SelectList = ({ currencies, selected, onSelect }: SelectListProps) => {
     return (
         <ul className={styles.list}>
-            {currencies && currencies.map((item: Currency, idx: number) => (
+            {currencies.map((item: Currency) => (
                 <SelectListItem
-                    key={idx}
+                    key={item.code}
                     currencyCode={item.code}
-                    isActive={false}
+                    isActive={item.code === selected}
+                    onSelect={onSelect}
                 />
             ))}
         </ul>
