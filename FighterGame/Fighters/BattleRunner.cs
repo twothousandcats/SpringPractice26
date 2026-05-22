@@ -71,11 +71,16 @@ public class BattleRunner
             {
                 IFighter[] survivors = arena.Where( f => f.IsAlive ).ToArray();
                 _logger.LogReachStalemate( survivors );
-                return BattleResult.Stalemate();
+                IFighter winner = PickStrongest( survivors );
+                _logger.LogFighterWon( winner );
+                return BattleResult.Stalemate( winner );
             }
         }
 
-        return BattleResult.RoundLimitReached();
+        IFighter[] remainingFighters = arena.Where( f => f.IsAlive ).ToArray();
+        IFighter limitWinner = PickStrongest( remainingFighters );
+        _logger.LogFighterWon( limitWinner );
+        return BattleResult.RoundLimitReached( limitWinner );
     }
 
     private int ApplyAttack( IFighter attacker, IFighter defender )
@@ -83,5 +88,14 @@ public class BattleRunner
         int damage = _damageCalculator.Calculate( attacker, defender );
         defender.TakeDamage( damage );
         return damage;
+    }
+
+    private IFighter PickStrongest( IReadOnlyList<IFighter> fighters )
+    {
+        return fighters
+                   .MaxBy( f => f.CurrentHealth ) ??
+               throw new InvalidOperationException(
+                   "No surviving fighters to choose a winner from."
+               );
     }
 }

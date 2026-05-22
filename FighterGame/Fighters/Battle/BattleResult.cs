@@ -14,12 +14,18 @@ public sealed class BattleResult
 
     public IFighter? Winner { get; }
 
-    public static BattleResult Victory( IFighter fighter )
+    public static BattleResult Victory( IFighter winner )
     {
-        return new BattleResult( BattleOutcome.Victory, fighter );
+        return new BattleResult( BattleOutcome.Victory, winner );
     }
 
-    public static BattleResult Stalemate() => new BattleResult( BattleOutcome.Stalemate, null );
+    public static BattleResult Stalemate( IFighter winner )
+    {
+        return new BattleResult( BattleOutcome.Stalemate, winner );
+    }
 
-    public static BattleResult RoundLimitReached() => new BattleResult( BattleOutcome.RoundLimitReached, null );
+    public static BattleResult RoundLimitReached( IFighter winner )
+    {
+        return new BattleResult( BattleOutcome.RoundLimitReached, winner );
+    }
 }
