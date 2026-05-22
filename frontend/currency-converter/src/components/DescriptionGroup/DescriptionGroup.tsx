@@ -14,16 +14,20 @@ export const DescriptionGroup = ({from, to}: DescriptionGroupProps) => {
 
     return (
         <div className={styles.descriptionGroup}>
-            <MoreButton
-                title={`More about ${from.code}/${to.code}`}
-                isOpen={isOpen}
-                onToggle={() => setIsOpen((open) => !open)}
-            />
+            <div className={styles.btnContainer}>
+                <MoreButton
+                    title={`${from.code}/${to.code}: about`}
+                    isOpen={isOpen}
+                    onToggle={
+                        () => setIsOpen((open) => !open)
+                    }
+                />
+            </div>
             {isOpen && (
-                <>
+                <div className={styles.descriptionLinesSeparator}>
                     <DescriptionLine currency={from}/>
                     <DescriptionLine currency={to}/>
-                </>
+                </div>
             )}
         </div>
     );

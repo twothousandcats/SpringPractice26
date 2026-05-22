@@ -2,6 +2,8 @@ import styles from "./Select.module.scss";
 import {SelectList} from "../SelectList/SelectList.tsx";
 import type {Currencies} from "../../models/types.ts";
 import {formatNumber} from "../../utils/functions.ts";
+import {TriangleDownIcon} from "../Icons/TriangleDownIcon.tsx";
+import {useState} from "react";
 
 type SelectProps = {
     currencies: Currencies;
@@ -25,13 +27,23 @@ export const Select = (
         inputTestId,
         readOnly = false,
     }: SelectProps) => {
+    const [isOpen, setIsOpen] = useState(false);
+    console.log(isOpen);
+
     return (
-        <div className={styles.select} data-testid={containerTestId}>
+        <div className={styles.select}
+             data-testid={containerTestId}>
             <input
                 type="number"
-                data-testid={inputTestId}
-                value={readOnly ? formatNumber(value) : value}
+                className={styles.input}
+                min={0}
                 readOnly={readOnly}
+                data-testid={inputTestId}
+                value={
+                    readOnly
+                        ? formatNumber(value)
+                        : value
+                }
                 onChange={
                     readOnly
                         ? undefined
@@ -39,7 +51,23 @@ export const Select = (
                 }
             />
             <div className={styles.separator}></div>
-            <SelectList currencies={currencies} selected={selected} onSelect={onSelect}/>
+            <div
+                className={styles.selected}
+                onClick={() => {
+                    setIsOpen((prev) => !prev);
+                }}>
+                {selected}
+            </div>
+            <TriangleDownIcon/>
+            <SelectList
+                currencies={currencies}
+                selected={selected}
+                isOpen={isOpen}
+                onSelect={(code) => {
+                    onSelect(code);
+                    setIsOpen(false);
+                }}
+            />
         </div>
     );
 }

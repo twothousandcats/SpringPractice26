@@ -14,5 +14,5 @@ export type PriceChange = {
 
 export type Currencies = Currency[];
 
-// priceChanges[from][to].
+// priceChanges[from][to]
 export type PriceChanges = Record<string, Record<string, PriceChange>>;

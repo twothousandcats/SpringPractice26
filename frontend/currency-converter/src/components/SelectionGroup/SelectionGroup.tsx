@@ -1,6 +1,7 @@
 import styles from "./SelectionGroup.module.scss";
 import {Select} from "../Select/Select.tsx";
 import type {Currencies} from "../../models/types.ts";
+import {SwapButton} from "../SwapButton/SwapButton.tsx";
 
 type SelectGroupProps = {
     currencies: Currencies;
@@ -37,7 +38,7 @@ export const SelectionGroup = (
                 containerTestId="from-select"
                 inputTestId="amount-input"
             />
-            <button type="button" onClick={onSwap}>Swap</button>
+            <SwapButton onSwap={onSwap}/>
             <Select
                 currencies={currencies}
                 selected={to}

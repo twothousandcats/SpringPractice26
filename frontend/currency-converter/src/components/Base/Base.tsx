@@ -12,6 +12,7 @@ export const Base = () => {
         result,
         fromCurrency,
         toCurrency,
+        dateTime,
         setFrom,
         setTo,
         setAmount,
@@ -26,6 +27,9 @@ export const Base = () => {
                 to={to}
                 amount={amount}
                 result={result}
+                fromCurrency={fromCurrency}
+                toCurrency={toCurrency}
+                dateTime={dateTime}
                 onFromChange={setFrom}
                 onToChange={setTo}
                 onAmountChange={setAmount}

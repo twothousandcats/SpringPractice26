@@ -1,0 +1,21 @@
+@use '../../utils/styles/base' as *;
+
+.icon {
+  &--triangle {
+    margin-left: auto;
+
+    path {
+      fill: $borderColor;
+      stroke: $borderColor;
+    }
+  }
+
+  &--arrow {
+    margin-left: auto;
+
+    path {
+      fill: $accentBorderColor;
+      stroke: $accentBorderColor;
+    }
+  }
+}

@@ -9,7 +9,7 @@ type DescriptionLineProps = {
 
 export const DescriptionLine = ({ currency }: DescriptionLineProps) => {
     return (
-        <article>
+        <article className={styles.descriptionLineWrapper}>
             <p className={styles.descriptionLineHeading}>
                 {`${currency.name} — ${currency.code} — ${currency.symbol}`}
             </p>

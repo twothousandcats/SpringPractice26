@@ -1,18 +1,28 @@
 import styles from "./Heading.module.scss";
+import type {Currency} from "../../models/types.ts";
+import {formatDateTime} from "../../utils/functions.ts";
 
 type HeadingProps = {
-    from: string;
-    to: string;
+    amount: number;
+    result: number;
+    fromCurrency: Currency;
+    toCurrency: Currency;
+    updDate: string;
 }
 
-export const Heading = ({from, to}: HeadingProps) => {
-    console.log(from);
-    console.log(to);
+export const Heading = (
+    {
+        amount,
+        result,
+        fromCurrency,
+        toCurrency,
+        updDate,
+    }: HeadingProps) => {
     return (
         <div className={styles.heading}>
-            <p className={styles.from}>{from}</p>
-            <p className={styles.to}>{to}</p>
-            <p className={styles.date}>Currency converter</p>
+            <p className={styles.from}>{amount} {fromCurrency.name} is</p>
+            <p className={styles.to}>{result} {toCurrency.name}</p>
+            <p className={styles.date}>{formatDateTime(updDate)}</p>
         </div>
     );
 }
