@@ -20,11 +20,14 @@
 
     <ItemGroup>
       <Folder Include="Controllers\" />
-      <Folder Include="Domain\" />
       <Folder Include="DTO\" />
       <Folder Include="Infrastructure\" />
       <Folder Include="Mapping\" />
       <Folder Include="Middleware\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\WebApi\WebApi.csproj" />
     </ItemGroup>
 
 </Project>
