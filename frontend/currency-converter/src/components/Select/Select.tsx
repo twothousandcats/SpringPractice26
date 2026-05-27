@@ -3,7 +3,7 @@ import {SelectList} from "../SelectList/SelectList.tsx";
 import type {Currencies} from "../../models/types.ts";
 import {formatNumber} from "../../utils/functions.ts";
 import {TriangleDownIcon} from "../Icons/TriangleDownIcon.tsx";
-import {useState} from "react";
+import {useEffect, useRef, useState} from "react";
 
 type SelectProps = {
     currencies: Currencies;
@@ -28,10 +28,36 @@ export const Select = (
         readOnly = false,
     }: SelectProps) => {
     const [isOpen, setIsOpen] = useState(false);
-    console.log(isOpen);
+    const ref = useRef<HTMLDivElement>(null);
 
+    useEffect(() => {
+        if (!isOpen) {
+            return;
+        }
+
+        const handleClickOutside = (event: MouseEvent) => {
+            if (ref.current && !ref.current?.contains(event.target as Node)) {
+                setIsOpen(false);
+            }
+        }
+
+        const handleEscape = (event: KeyboardEvent) => {
+            if (event.key === "Escape") {
+                setIsOpen(false);
+            }
+        }
+
+        document.addEventListener("mousedown", handleClickOutside);
+        document.addEventListener("keydown", handleEscape);
+
+        return () => {
+            document.removeEventListener("keydown", handleEscape);
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [isOpen]);
     return (
         <div className={styles.select}
+             ref={ref}
              data-testid={containerTestId}>
             <input
                 type="number"
@@ -51,11 +77,10 @@ export const Select = (
                 }
             />
             <div className={styles.separator}></div>
-            <div
-                className={styles.selected}
-                onClick={() => {
-                    setIsOpen((prev) => !prev);
-                }}>
+            <div className={styles.selected}
+                 onClick={() => {
+                     setIsOpen((prev) => !prev);
+                 }}>
                 {selected}
             </div>
             <TriangleDownIcon/>

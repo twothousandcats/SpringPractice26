@@ -3,6 +3,7 @@ import styles from './DescriptionGroup.module.scss';
 import type {Currency} from "../../models/types.ts";
 import {MoreButton} from "../MoreButton/MoreButton.tsx";
 import {DescriptionLine} from "../DescriptionLine/DescriptionLine.tsx";
+import {concatClassNames} from "../../utils/functions.ts";
 
 type DescriptionGroupProps = {
     from: Currency;
@@ -11,6 +12,12 @@ type DescriptionGroupProps = {
 
 export const DescriptionGroup = ({from, to}: DescriptionGroupProps) => {
     const [isOpen, setIsOpen] = useState(false);
+    const collapseClasses = concatClassNames(
+        [
+            styles.collapse,
+            isOpen && styles['collapse--show'],
+        ]
+    );
 
     return (
         <div className={styles.descriptionGroup}>
@@ -23,12 +30,14 @@ export const DescriptionGroup = ({from, to}: DescriptionGroupProps) => {
                     }
                 />
             </div>
-            {isOpen && (
-                <div className={styles.descriptionLinesSeparator}>
-                    <DescriptionLine currency={from}/>
-                    <DescriptionLine currency={to}/>
+            <div className={collapseClasses}>
+                <div className={styles.collapseInner}>
+                    <div className={styles.descriptionLinesSeparator}>
+                        <DescriptionLine currency={from}/>
+                        <DescriptionLine currency={to}/>
+                    </div>
                 </div>
-            )}
+            </div>
         </div>
     );
 }

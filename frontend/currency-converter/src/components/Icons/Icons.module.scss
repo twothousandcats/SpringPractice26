@@ -1,7 +1,12 @@
 @use '../../utils/styles/base' as *;
 
 .icon {
+  display: flex;
+
   &--triangle {
+    position: absolute;
+    right: 34px;
+
     margin-left: auto;
 
     path {

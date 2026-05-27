@@ -2,6 +2,7 @@ import styles from "./Base.module.scss";
 import {WorkArea} from "../WorkArea/WorkArea.tsx";
 import {DescriptionGroup} from "../DescriptionGroup/DescriptionGroup.tsx";
 import {useConverter} from "../../hooks/useConverter.ts";
+import {useDocumentTitle} from "../../hooks/useDocumentTitle.ts";
 
 export const Base = () => {
     const {
@@ -18,6 +19,7 @@ export const Base = () => {
         setAmount,
         swap,
     } = useConverter();
+    useDocumentTitle(`Convert ${fromCurrency.name} to ${toCurrency.name}`);
 
     return (
         <div className={`${styles.base} ${styles.container}`}>

@@ -7,7 +7,7 @@ export const concatClassNames = (
 export const formatNumber = (value: number): string => {
     return Number.isInteger(value)
         ? String(value)
-        : value.toFixed(4);
+        : value.toFixed(3);
 }
 
 export function formatDateTime(iso: string): string {

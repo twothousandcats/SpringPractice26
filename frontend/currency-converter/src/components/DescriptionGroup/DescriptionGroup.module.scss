@@ -26,6 +26,22 @@
   }
 }
 
+.collapse {
+  display: grid;
+  grid-template-rows: 0fr;
+
+  transition: grid-template-rows 0.3s ease;
+
+  &--show {
+    grid-template-rows: 1fr;
+  }
+}
+
+.collapseInner {
+  overflow: hidden;
+  min-height: 0;
+}
+
 .descriptionLinesSeparator {
   display: flex;
   flex-direction: column;
