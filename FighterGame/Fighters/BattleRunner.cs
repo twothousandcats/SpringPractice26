@@ -32,8 +32,13 @@ public class BattleRunner
             throw new ArgumentException( "At least two fighters are required", nameof( fighters ) );
         }
 
-        List<IFighter> arena = new List<IFighter>( fighters );
+        BattleResult battleResult = RunBattle( new List<IFighter>( fighters ) );
+        _logger.LogFighterWon( battleResult.Winner! );
+        return battleResult;
+    }
 
+    private BattleResult RunBattle( List<IFighter> arena )
+    {
         for ( int round = 1; round <= MaxRounds; round++ )
         {
             _logger.LogAnnounceRound( round );
@@ -71,16 +76,12 @@ public class BattleRunner
             {
                 IFighter[] survivors = arena.Where( f => f.IsAlive ).ToArray();
                 _logger.LogReachStalemate( survivors );
-                IFighter winner = PickStrongest( survivors );
-                _logger.LogFighterWon( winner );
-                return BattleResult.Stalemate( winner );
+                return BattleResult.Stalemate( PickStrongest( survivors ) );
             }
         }
 
         IFighter[] remainingFighters = arena.Where( f => f.IsAlive ).ToArray();
-        IFighter limitWinner = PickStrongest( remainingFighters );
-        _logger.LogFighterWon( limitWinner );
-        return BattleResult.RoundLimitReached( limitWinner );
+        return BattleResult.RoundLimitReached( PickStrongest( remainingFighters ) );
     }
 
     private int ApplyAttack( IFighter attacker, IFighter defender )

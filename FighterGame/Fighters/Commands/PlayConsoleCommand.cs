@@ -1,3 +1,4 @@
+using Fighters.Battle;
 using Fighters.Models.Fighters;
 using Fighters.UI;
 
@@ -30,7 +31,21 @@ public class PlayConsoleCommand : IConsoleCommand
             return;
         }
 
-        _battleRunner.Play( _fighterRoster.Fighters );
+        BattleResult battleResult = _battleRunner.Play( _fighterRoster.Fighters );
+        _console.WriteLine( DescribeOutcome( battleResult ) );
         _fighterRoster.Clear();
+    }
+
+    private static string DescribeOutcome( BattleResult battleResult )
+    {
+        string winnerName = battleResult.Winner?.Name ?? "Nobody";
+
+        return battleResult.Outcome switch
+        {
+            BattleOutcome.Victory => $"{winnerName} wins the battle!",
+            BattleOutcome.Stalemate => $"Stalemate. {winnerName} prevails with the most HP.",
+            BattleOutcome.RoundLimitReached => $"Round limit reached. {winnerName} prevails with the most HP",
+            _ => throw new ArgumentOutOfRangeException( nameof( battleResult ) ),
+        };
     }
 }

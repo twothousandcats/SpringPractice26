@@ -2,9 +2,9 @@ namespace Fighters.Battle;
 
 public enum BattleOutcome
 {
-    Victory,
+    Victory = 1,
 
-    Stalemate,
+    Stalemate = 2,
 
-    RoundLimitReached
+    RoundLimitReached = 3
 }
