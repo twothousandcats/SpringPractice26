@@ -1,5 +1,4 @@
 using Fighters.Battle;
-using Fighters.Models.Fighters;
 using Fighters.UI;
 
 namespace Fighters.Commands;
