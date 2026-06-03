@@ -1,105 +1,126 @@
-﻿using Fighters.Battle;
-using Fighters.Models.Armors;
-using Fighters.Models.Classes;
+using Fighters.Battle;
 using Fighters.Models.Fighters;
-using Fighters.Models.Races;
-using Fighters.Models.Weapons;
-using Fighters.Tests.Helpers;
-using NUnit.Framework;
+using Fighters.Tests.TestData;
+using Moq;
 
 namespace Fighters.Tests;
 
-[TestFixture]
 public class BattleRunnerTests
 {
-    [Test]
-    public void Play_TwoEqualFighters_FirstFighterWins()
+    private readonly Mock<IBattleLogger> _logger = new();
+
+    private readonly Mock<ITargetSelector> _selector = new();
+
+    private readonly Mock<IDamageCalculator> _damage = new();
+
+    private BattleRunner CreateRunner() => new( _logger.Object, _selector.Object, _damage.Object );
+
+    private void SelectorAlwaysReturns( IFighter? target ) => _selector
+        .Setup( selector => selector.Pick( It.IsAny<IFighter>(), It.IsAny<IReadOnlyList<IFighter>>() ) )
+        .Returns( target );
+
+    [Fact]
+    public void Play_NullFighters_ThrowsArgumentNullException() =>
+        Assert.Throws<ArgumentNullException>( () => CreateRunner().Play( null! ) );
+
+    [Fact]
+    public void Play_FewerThanTwoFighters_ThrowsArgumentException()
     {
-        BattleRunner battleRunner = new BattleRunner(
-            new TestBattleLogger(), new WeakestTargetSelector(),
-            new PlainDamageCalculator()
-        );
+        IFighter solo = FighterBuilder.CreateMock().Object;
 
-        IFighter fighterA = Utils.CreateFighter( "fighterA" );
-        IFighter fighterB = Utils.CreateFighter( "fighterB" );
-
-        IFighter winner = battleRunner.Play( new[] { fighterA, fighterB } );
-
-        Assert.That( winner.Name, Is.EqualTo( fighterA.Name ) );
+        Assert.Throws<ArgumentException>( () => CreateRunner().Play( new[] { solo } ) );
     }
 
-    [Test]
-    public void Play_TwoEqualFighters_SecondFighterDies()
+    [Fact]
+    public void Play_NoTargetForAttacker_ReturnsVictoryForActingFighter()
     {
-        BattleRunner battleRunner = new BattleRunner(
-            new TestBattleLogger(), new WeakestTargetSelector(),
-            new PlainDamageCalculator()
-        );
+        Mock<IFighter> first = FighterBuilder.CreateMock( "First", initiative: 10 );
+        Mock<IFighter> second = FighterBuilder.CreateMock( "Second", initiative: 1 );
+        SelectorAlwaysReturns( null );
 
-        IFighter fighterA = Utils.CreateFighter( "fighterA" );
-        IFighter fighterB = Utils.CreateFighter( "fighterB" );
+        BattleResult result = CreateRunner().Play( new[] { first.Object, second.Object } );
 
-        battleRunner.Play( new[] { fighterA, fighterB } );
-
-        Assert.That( fighterA.CurrentHealth, Is.GreaterThan( 0 ) );
-        Assert.That( fighterB.CurrentHealth, Is.EqualTo( 0 ) );
+        Assert.Equal( BattleOutcome.Victory, result.Outcome );
+        Assert.Same( first.Object, result.Winner );
+        _logger.Verify( l => l.LogAnnounceRound( 1 ), Times.Once );
+        _logger.Verify( l => l.LogFighterWon( first.Object ), Times.AtLeastOnce );
     }
 
-    [Test]
-    public void Play_StrongerFighterWins()
+    [Fact]
+    public void Play_HigherInitiative_ActsFirst()
     {
-        BattleRunner battleRunner = new BattleRunner(
-            new TestBattleLogger(), new WeakestTargetSelector(),
-            new PlainDamageCalculator()
-        );
+        Mock<IFighter> slow = FighterBuilder.CreateMock( "Slow", initiative: 1 );
+        Mock<IFighter> fast = FighterBuilder.CreateMock( "Fast", initiative: 10 );
+        SelectorAlwaysReturns( null );
 
-        IFighter weak = Utils.CreateFighter( "Weak" );
-        IFighter strong = new Fighter( "Strong", new Orc(), new Mercenary(), new Axe(), new PlateArmor() );
+        BattleResult result = CreateRunner().Play( new[] { slow.Object, fast.Object } );
 
-        IFighter winner = battleRunner.Play( new[] { weak, strong } );
-
-        Assert.That( winner.Name, Is.EqualTo( strong.Name ) );
-        Assert.That( weak.IsAlive, Is.False );
+        Assert.Same( fast.Object, result.Winner );
     }
 
-    [Test]
-    public void Play_FewerThanTwoFighters_Throws()
+    [Fact]
+    public void Play_AttackerHitsTarget_AppliesDamageAndLogsAttack()
     {
-        BattleRunner runner = new BattleRunner(
-            new TestBattleLogger(), new WeakestTargetSelector(), new PlainDamageCalculator()
-        );
+        Mock<IFighter> attacker = FighterBuilder.CreateMock( "Attacker", initiative: 10 );
+        Mock<IFighter> defender = FighterBuilder.CreateMock( "Defender", initiative: 1 );
+        _damage.Setup( d => d.Calculate( attacker.Object, defender.Object ) ).Returns( 30 );
+        _selector
+            .SetupSequence( s => s.Pick( It.IsAny<IFighter>(), It.IsAny<IReadOnlyList<IFighter>>() ) )
+            .Returns( defender.Object )
+            .Returns( ( IFighter? )null );
 
-        Assert.That(
-            () => runner.Play( new[] { Utils.CreateFighter( "solo" ) } ),
-            Throws.ArgumentException
-        );
+        CreateRunner().Play( new[] { attacker.Object, defender.Object } );
+
+        defender.Verify( f => f.TakeDamage( 30 ), Times.Once );
+        _logger.Verify( l => l.LogPerformAttack( attacker.Object, defender.Object, 30 ), Times.Once );
     }
 
-    [Test]
-    public void Play_NullList_Throws()
+    [Fact]
+    public void Play_TargetDies_LogsFighterDied()
     {
-        BattleRunner runner = new BattleRunner(
-            new TestBattleLogger(), new WeakestTargetSelector(), new PlainDamageCalculator()
-        );
+        Mock<IFighter> attacker = FighterBuilder.CreateMock( "Attacker", initiative: 10 );
+        Mock<IFighter> defender = FighterBuilder.CreateMock( "Defender", initiative: 1, isAlive: false );
+        _damage.Setup( d => d.Calculate( It.IsAny<IFighter>(), It.IsAny<IFighter>() ) ).Returns( 100 );
+        _selector
+            .SetupSequence( s => s.Pick( attacker.Object, It.IsAny<IReadOnlyList<IFighter>>() ) )
+            .Returns( defender.Object )
+            .Returns( ( IFighter? )null );
 
-        Assert.That( () => runner.Play( null! ), Throws.TypeOf<ArgumentNullException>() );
+        BattleResult result = CreateRunner().Play( new[] { attacker.Object, defender.Object } );
+
+        _logger.Verify( l => l.LogFighterDied( defender.Object ), Times.Once );
+        Assert.Equal( BattleOutcome.Victory, result.Outcome );
+        Assert.Same( attacker.Object, result.Winner );
     }
 
-    [Test]
-    public void Play_ThreeFighters_ReturnsLastSurvivor()
+    [Fact]
+    public void Play_NobodyDealsDamage_ReturnsStalemateWithStrongestSurvivor()
     {
-        BattleRunner runner = new BattleRunner(
-            new TestBattleLogger(), new WeakestTargetSelector(), new PlainDamageCalculator()
-        );
+        Mock<IFighter> a = FighterBuilder.CreateMock( "A", currentHealth: 50, initiative: 10 );
+        Mock<IFighter> b = FighterBuilder.CreateMock( "B", currentHealth: 30, initiative: 1 );
+        _damage.Setup( d => d.Calculate( It.IsAny<IFighter>(), It.IsAny<IFighter>() ) ).Returns( 0 );
+        _selector.Setup( s => s.Pick( a.Object, It.IsAny<IReadOnlyList<IFighter>>() ) ).Returns( b.Object );
+        _selector.Setup( s => s.Pick( b.Object, It.IsAny<IReadOnlyList<IFighter>>() ) ).Returns( a.Object );
 
-        IFighter weakA = Utils.CreateFighter( "WeakA" );
-        IFighter weakB = Utils.CreateFighter( "WeakB" );
-        IFighter strong = new Fighter( "Strong", new Orc(), new Mercenary(), new Axe(), new PlateArmor() );
+        BattleResult result = CreateRunner().Play( new[] { a.Object, b.Object } );
 
-        IFighter winner = runner.Play( new[] { weakA, weakB, strong } );
+        Assert.Equal( BattleOutcome.Stalemate, result.Outcome );
+        Assert.Same( a.Object, result.Winner );
+        _logger.Verify( l => l.LogReachStalemate( It.IsAny<IReadOnlyList<IFighter>>() ), Times.Once );
+    }
 
-        Assert.That( winner, Is.SameAs( strong ) );
-        Assert.That( weakA.IsAlive, Is.False );
-        Assert.That( weakB.IsAlive, Is.False );
+    [Fact]
+    public void Play_NobodyDiesForManyRounds_ReturnsRoundLimitReached()
+    {
+        Mock<IFighter> a = FighterBuilder.CreateMock( "A", currentHealth: 50, initiative: 10 );
+        Mock<IFighter> b = FighterBuilder.CreateMock( "B", currentHealth: 40, initiative: 1 );
+        _damage.Setup( d => d.Calculate( It.IsAny<IFighter>(), It.IsAny<IFighter>() ) ).Returns( 1 );
+        _selector.Setup( s => s.Pick( a.Object, It.IsAny<IReadOnlyList<IFighter>>() ) ).Returns( b.Object );
+        _selector.Setup( s => s.Pick( b.Object, It.IsAny<IReadOnlyList<IFighter>>() ) ).Returns( a.Object );
+
+        BattleResult result = CreateRunner().Play( new[] { a.Object, b.Object } );
+
+        Assert.Equal( BattleOutcome.RoundLimitReached, result.Outcome );
+        Assert.Same( a.Object, result.Winner );
     }
 }
