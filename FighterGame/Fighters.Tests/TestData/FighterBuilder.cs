@@ -5,7 +5,7 @@ using Fighters.Models.Races;
 using Fighters.Models.Weapons;
 using Moq;
 
-namespace Fighters.Test.TestData;
+namespace Fighters.Tests.TestData;
 
 public static class FighterBuilder
 {

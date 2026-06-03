@@ -7,11 +7,11 @@ public class PlayConsoleCommand : IConsoleCommand
 {
     private readonly FighterRoster _fighterRoster;
 
-    private readonly BattleRunner _battleRunner;
+    private readonly IBattleRunner _battleRunner;
 
     private readonly IConsole _console;
 
-    public PlayConsoleCommand( FighterRoster fighterRoster, BattleRunner battleRunner, IConsole console )
+    public PlayConsoleCommand( FighterRoster fighterRoster, IBattleRunner battleRunner, IConsole console )
     {
         _fighterRoster = fighterRoster;
         _battleRunner = battleRunner;
