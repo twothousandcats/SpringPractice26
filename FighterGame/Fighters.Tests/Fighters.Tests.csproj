@@ -5,7 +5,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <IsPackable>false</IsPackable>
-        <RootNamespace>Fighters.Test</RootNamespace>
+        <RootNamespace>Fighters.Tests</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>

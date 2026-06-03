@@ -23,7 +23,7 @@ public static class FighterBuilder
         bool isAlive = true
     )
     {
-        var fighter = new Mock<IFighter>();
+        Mock<IFighter> fighter = new Mock<IFighter>();
         fighter.SetupGet( f => f.Name ).Returns( name );
         fighter.SetupGet( f => f.CurrentHealth ).Returns( currentHealth );
         fighter.SetupGet( f => f.MaxHealth ).Returns( maxHealth );
