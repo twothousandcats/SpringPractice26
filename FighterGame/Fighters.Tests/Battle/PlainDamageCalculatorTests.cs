@@ -14,7 +14,9 @@ public class PlainDamageCalculatorTests
         IFighter attacker = FighterBuilder.CreateMock( damage: 20 ).Object;
         IFighter defender = FighterBuilder.CreateMock( armor: 5 ).Object;
 
-        Assert.Equal( 15, _calculator.Calculate( attacker, defender ) );
+        int dealtDamage = _calculator.Calculate( attacker, defender );
+
+        Assert.Equal( 15, dealtDamage );
     }
 
     [Fact]
@@ -23,7 +25,9 @@ public class PlainDamageCalculatorTests
         IFighter attacker = FighterBuilder.CreateMock( damage: 5 ).Object;
         IFighter defender = FighterBuilder.CreateMock( armor: 20 ).Object;
 
-        Assert.Equal( 0, _calculator.Calculate( attacker, defender ) );
+        int dealtDamage = _calculator.Calculate( attacker, defender );
+
+        Assert.Equal( 0, dealtDamage );
     }
 
     [Fact]
@@ -32,6 +36,8 @@ public class PlainDamageCalculatorTests
         IFighter attacker = FighterBuilder.CreateMock( damage: 10 ).Object;
         IFighter defender = FighterBuilder.CreateMock( armor: 10 ).Object;
 
-        Assert.Equal( 0, _calculator.Calculate( attacker, defender ) );
+        int dealtDamage = _calculator.Calculate( attacker, defender );
+
+        Assert.Equal( 0, dealtDamage );
     }
 }

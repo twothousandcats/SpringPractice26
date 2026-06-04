@@ -25,4 +25,4 @@ public class AddFighterConsoleCommandTests
         factory.Verify( f => f.Create(), Times.Once );
         console.Verify( c => c.WriteLine( It.Is<string>( s => s.Contains( "Hero" ) ) ), Times.Once );
     }
-};
+}

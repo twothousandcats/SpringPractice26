@@ -62,7 +62,11 @@ public class RandomVarianceDamageCalculatorTests
     {
         IFighter attacker = FighterBuilder.CreateMock().Object;
         IFighter defender = FighterBuilder.CreateMock().Object;
-        RandomVarianceDamageCalculator calc = Create( BaseDamage, 0.5, out Mock<IDamageCalculator> calculator );
+        RandomVarianceDamageCalculator calc = Create(
+            BaseDamage,
+            0.5,
+            out Mock<IDamageCalculator> calculator
+        );
 
         calc.Calculate( attacker, defender );
 

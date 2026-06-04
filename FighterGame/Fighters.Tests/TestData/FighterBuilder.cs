@@ -9,10 +9,6 @@ namespace Fighters.Tests.TestData;
 
 public static class FighterBuilder
 {
-    public static Fighter CreateHero( string name = "Hero" ) => new Fighter(
-        name, new Human(), new Knight(), new Fists(), new NoArmor()
-    );
-
     public static Mock<IFighter> CreateMock(
         string name = "Fighter",
         int currentHealth = 100,

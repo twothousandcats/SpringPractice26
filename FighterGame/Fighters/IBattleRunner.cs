@@ -1,10 +1,9 @@
 using Fighters.Battle;
 using Fighters.Models.Fighters;
 
-namespace Fighters
+namespace Fighters;
+
+public interface IBattleRunner
 {
-    public interface IBattleRunner
-    {
-        BattleResult Play( IReadOnlyList<IFighter> fighters );
-    }
+    BattleResult Play( IReadOnlyList<IFighter> fighters );
 }

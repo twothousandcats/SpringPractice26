@@ -40,7 +40,9 @@ public class CriticalHitDamageCalculatorTests
             criticalMultiplier: 2.0
         );
 
-        Assert.Equal( BaseDamage * 2, Calculate( calc ) );
+        int critDamage = Calculate( calc );
+
+        Assert.Equal( BaseDamage * 2, critDamage );
     }
 
     [Fact]
@@ -53,7 +55,9 @@ public class CriticalHitDamageCalculatorTests
             criticalMultiplier: 2.0
         );
 
-        Assert.Equal( BaseDamage, Calculate( calc ) );
+        int critDamage = Calculate( calc );
+
+        Assert.Equal( BaseDamage, critDamage );
     }
 
     [Fact]
@@ -66,7 +70,9 @@ public class CriticalHitDamageCalculatorTests
             criticalMultiplier: 2.0
         );
 
-        Assert.Equal( BaseDamage, Calculate( calc ) );
+        int critDamage = Calculate( calc );
+
+        Assert.Equal( BaseDamage, critDamage );
     }
 
     [Fact]
@@ -79,7 +85,9 @@ public class CriticalHitDamageCalculatorTests
             criticalMultiplier: 1.5
         );
 
-        Assert.Equal( 8, Calculate( calc ) ); // 5 * 1.5 = 7.5 -> 8
+        int critDamage = Calculate( calc ); // 5 * 1.5 = 7.5 -> 8
+
+        Assert.Equal( 8, critDamage );
     }
 
     [Theory]
@@ -95,7 +103,9 @@ public class CriticalHitDamageCalculatorTests
             criticalMultiplier: 2.0
         );
 
-        Assert.Equal( BaseDamage, Calculate( calc ) );
+        int critDamage = Calculate( calc );
+
+        Assert.Equal( BaseDamage, critDamage );
     }
 
     [Fact]
@@ -108,15 +118,17 @@ public class CriticalHitDamageCalculatorTests
             criticalMultiplier: 2.0
         );
 
-        Assert.Equal( 100, Calculate( calc ) );
+        int critDamage = Calculate( calc );
+
+        Assert.Equal( 100, critDamage );
     }
 
     [Fact]
     public void Calculate_Always_DelegatesToInnerCalculatorOnce()
     {
-        Mock<IDamageCalculator> inner = CalculatorReturning( BaseDamage );
+        Mock<IDamageCalculator> mockedCalculator = CalculatorReturning( BaseDamage );
         CriticalHitDamageCalculator calc = new CriticalHitDamageCalculator(
-            inner.Object,
+            mockedCalculator.Object,
             RandomReturning( 0.99 ),
             criticalChance: 0.15,
             criticalMultiplier: 2.0
@@ -124,7 +136,7 @@ public class CriticalHitDamageCalculatorTests
 
         Calculate( calc );
 
-        inner.Verify( c => c.Calculate( It.IsAny<IFighter>(), It.IsAny<IFighter>() ), Times.Once );
+        mockedCalculator.Verify( c => c.Calculate( It.IsAny<IFighter>(), It.IsAny<IFighter>() ), Times.Once );
     }
 
     [Theory]

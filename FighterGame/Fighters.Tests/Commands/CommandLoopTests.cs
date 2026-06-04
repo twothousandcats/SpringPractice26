@@ -6,17 +6,18 @@ namespace Fighters.Tests.Commands;
 
 public class CommandLoopTests
 {
-    private readonly Mock<IGameLoop> _gameLoop = new();
+    private readonly Mock<IGameLoop> _gameLoop = new Mock<IGameLoop>();
 
-    private readonly Mock<IConsole> _console = new();
+    private readonly Mock<IConsole> _console = new Mock<IConsole>();
 
-    private readonly CommandRegistry _registry = new();
+    private readonly CommandRegistry _registry = new CommandRegistry();
 
-    private CommandLoop CreateLoop() => new( _registry, _gameLoop.Object, _console.Object );
+    private CommandLoop CreateLoop() => new CommandLoop( _registry, _gameLoop.Object, _console.Object );
 
-    private void RunsExactlyOneIteration() => _gameLoop
+    private void SetupSingleIteration() => _gameLoop
         .SetupSequence( gameLoop => gameLoop.IsRunning )
-        .Returns( true ).Returns( false );
+        .Returns( true )
+        .Returns( false );
 
     [Fact]
     public void Run_KnownCommand_ExecutesIt()
@@ -25,7 +26,7 @@ public class CommandLoopTests
         command.SetupGet( c => c.Name ).Returns( "Play" );
         command.SetupGet( c => c.Description ).Returns( "play" );
         _registry.Register( command.Object );
-        RunsExactlyOneIteration();
+        SetupSingleIteration();
         _console.Setup( c => c.ReadLine() ).Returns( "Play" );
 
         CreateLoop().Run();
@@ -36,7 +37,7 @@ public class CommandLoopTests
     [Fact]
     public void Run_UnknownCommand_PrintsUnknownMessage()
     {
-        RunsExactlyOneIteration();
+        SetupSingleIteration();
         _console.Setup( c => c.ReadLine() ).Returns( "nope" );
 
         CreateLoop().Run();
@@ -47,7 +48,7 @@ public class CommandLoopTests
     [Fact]
     public void Run_EmptyInput_PrintsUnknownMessage()
     {
-        RunsExactlyOneIteration();
+        SetupSingleIteration();
         _console.Setup( c => c.ReadLine() ).Returns( string.Empty );
 
         CreateLoop().Run();

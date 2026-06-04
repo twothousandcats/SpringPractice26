@@ -42,7 +42,10 @@ public class ConsoleFighterFactoryTests
             .Returns( "" )
             .Returns( "   " )
             .Returns( "Hero" )
-            .Returns( "1" ).Returns( "1" ).Returns( "1" ).Returns( "1" );
+            .Returns( "1" )
+            .Returns( "1" )
+            .Returns( "1" )
+            .Returns( "1" );
 
         IFighter fighter = Create( console.Object ).Create();
 

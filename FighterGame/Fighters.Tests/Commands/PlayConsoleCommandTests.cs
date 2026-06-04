@@ -9,11 +9,11 @@ namespace Fighters.Tests.Commands;
 
 public class PlayConsoleCommandTests
 {
-    private readonly Mock<IBattleRunner> _runner = new();
+    private readonly Mock<IBattleRunner> _runner = new Mock<IBattleRunner>();
 
-    private readonly Mock<IConsole> _console = new();
+    private readonly Mock<IConsole> _console = new Mock<IConsole>();
 
-    private static FighterRoster RosterWith( int count )
+    private static FighterRoster CreateRosterWith( int count )
     {
         FighterRoster roster = new FighterRoster();
         for ( int i = 0; i < count; i++ )
@@ -24,17 +24,21 @@ public class PlayConsoleCommandTests
         return roster;
     }
 
-    private PlayConsoleCommand Create( FighterRoster roster ) =>
-        new PlayConsoleCommand( roster, _runner.Object, _console.Object );
+    private PlayConsoleCommand Create( FighterRoster roster ) => new PlayConsoleCommand(
+        roster,
+        _runner.Object,
+        _console.Object
+    );
 
-    private void RunnerReturns( BattleResult result ) => _runner
-        .Setup( runner => runner.Play( It.IsAny<IReadOnlyList<IFighter>>() ) )
-        .Returns( result );
+    private void RunnerReturns( BattleResult result ) =>
+        _runner
+            .Setup( runner => runner.Play( It.IsAny<IReadOnlyList<IFighter>>() ) )
+            .Returns( result );
 
     [Fact]
     public void Execute_FewerThanTwoFighters_DoesNotRunBattle()
     {
-        FighterRoster roster = RosterWith( 1 );
+        FighterRoster roster = CreateRosterWith( 1 );
 
         Create( roster ).Execute();
 
@@ -46,7 +50,7 @@ public class PlayConsoleCommandTests
     [Fact]
     public void Execute_EnoughFighters_RunsBattleAndClearsRoster()
     {
-        FighterRoster roster = RosterWith( 2 );
+        FighterRoster roster = CreateRosterWith( 2 );
         RunnerReturns( BattleResult.Victory( FighterBuilder.CreateMock( "Champ" ).Object ) );
 
         Create( roster ).Execute();
@@ -58,7 +62,7 @@ public class PlayConsoleCommandTests
     [Fact]
     public void Execute_Victory_AnnouncesWinner()
     {
-        FighterRoster roster = RosterWith( 2 );
+        FighterRoster roster = CreateRosterWith( 2 );
         RunnerReturns( BattleResult.Victory( FighterBuilder.CreateMock( "Champ" ).Object ) );
 
         Create( roster ).Execute();
@@ -74,7 +78,7 @@ public class PlayConsoleCommandTests
     [Fact]
     public void Execute_Stalemate_AnnouncesStalemate()
     {
-        FighterRoster roster = RosterWith( 2 );
+        FighterRoster roster = CreateRosterWith( 2 );
         RunnerReturns( BattleResult.Stalemate( FighterBuilder.CreateMock( "Champ" ).Object ) );
 
         Create( roster ).Execute();
@@ -88,7 +92,7 @@ public class PlayConsoleCommandTests
     [Fact]
     public void Execute_RoundLimitReached_AnnouncesRoundLimit()
     {
-        FighterRoster roster = RosterWith( 2 );
+        FighterRoster roster = CreateRosterWith( 2 );
         RunnerReturns( BattleResult.RoundLimitReached( FighterBuilder.CreateMock( "Champ" ).Object ) );
 
         Create( roster ).Execute();

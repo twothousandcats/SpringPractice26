@@ -5,7 +5,11 @@ public class GameLoopTests
     [Fact]
     public void Constructor_NewInstance_IsRunning()
     {
-        Assert.True( new GameLoop().IsRunning );
+        GameLoop gameLoop = new GameLoop();
+
+        bool isRunning = gameLoop.IsRunning;
+
+        Assert.True( isRunning );
     }
 
     [Fact]

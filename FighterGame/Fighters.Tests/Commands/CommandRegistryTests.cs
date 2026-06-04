@@ -5,7 +5,7 @@ namespace Fighters.Tests.Commands;
 
 public class CommandRegistryTests
 {
-    private static IConsoleCommand Command( string name, string description = "desc" )
+    private static IConsoleCommand CreateCommand( string name, string description = "desc" )
     {
         Mock<IConsoleCommand> command = new Mock<IConsoleCommand>();
         command.SetupGet( c => c.Name ).Returns( name );
@@ -18,7 +18,7 @@ public class CommandRegistryTests
     public void TryGet_RegisteredCommand_ReturnsTrueAndSameInstance()
     {
         CommandRegistry registry = new CommandRegistry();
-        IConsoleCommand play = Command( "Play" );
+        IConsoleCommand play = CreateCommand( "Play" );
         registry.Register( play );
 
         bool found = registry.TryGet( "Play", out IConsoleCommand resolved );
@@ -31,7 +31,7 @@ public class CommandRegistryTests
     public void TryGet_DifferentCase_ReturnsTrue()
     {
         CommandRegistry registry = new CommandRegistry();
-        registry.Register( Command( "Play" ) );
+        registry.Register( CreateCommand( "Play" ) );
 
         Assert.True( registry.TryGet( "play", out _ ) );
     }
@@ -48,8 +48,8 @@ public class CommandRegistryTests
     public void Register_SameName_OverwritesPrevious()
     {
         CommandRegistry registry = new CommandRegistry();
-        IConsoleCommand first = Command( "Play", "first" );
-        IConsoleCommand second = Command( "Play", "second" );
+        IConsoleCommand first = CreateCommand( "Play", "first" );
+        IConsoleCommand second = CreateCommand( "Play", "second" );
 
         registry.Register( first );
         registry.Register( second );
@@ -62,8 +62,8 @@ public class CommandRegistryTests
     public void All_Always_ReturnsAllRegisteredCommands()
     {
         CommandRegistry registry = new CommandRegistry();
-        registry.Register( Command( "Play" ) );
-        registry.Register( Command( "Exit" ) );
+        registry.Register( CreateCommand( "Play" ) );
+        registry.Register( CreateCommand( "Exit" ) );
 
         Assert.Equal(
             new[] { "Exit", "Play" },

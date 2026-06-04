@@ -7,21 +7,27 @@ namespace Fighters.Tests;
 
 public class BattleRunnerTests
 {
-    private readonly Mock<IBattleLogger> _logger = new();
+    private readonly Mock<IBattleLogger> _logger = new Mock<IBattleLogger>();
 
-    private readonly Mock<ITargetSelector> _selector = new();
+    private readonly Mock<ITargetSelector> _selector = new Mock<ITargetSelector>();
 
-    private readonly Mock<IDamageCalculator> _damage = new();
+    private readonly Mock<IDamageCalculator> _damage = new Mock<IDamageCalculator>();
 
-    private BattleRunner CreateRunner() => new( _logger.Object, _selector.Object, _damage.Object );
+    private BattleRunner CreateRunner() => new BattleRunner(
+        _logger.Object,
+        _selector.Object,
+        _damage.Object
+    );
 
     private void SelectorAlwaysReturns( IFighter? target ) => _selector
         .Setup( selector => selector.Pick( It.IsAny<IFighter>(), It.IsAny<IReadOnlyList<IFighter>>() ) )
         .Returns( target );
 
     [Fact]
-    public void Play_NullFighters_ThrowsArgumentNullException() =>
+    public void Play_NullFighters_ThrowsArgumentNullException()
+    {
         Assert.Throws<ArgumentNullException>( () => CreateRunner().Play( null! ) );
+    }
 
     [Fact]
     public void Play_FewerThanTwoFighters_ThrowsArgumentException()
@@ -42,8 +48,8 @@ public class BattleRunnerTests
 
         Assert.Equal( BattleOutcome.Victory, result.Outcome );
         Assert.Same( first.Object, result.Winner );
-        _logger.Verify( l => l.LogAnnounceRound( 1 ), Times.Once );
-        _logger.Verify( l => l.LogFighterWon( first.Object ), Times.AtLeastOnce );
+        _logger.Verify( logger => logger.LogAnnounceRound( 1 ), Times.Once );
+        _logger.Verify( logger => logger.LogFighterWon( first.Object ), Times.AtLeastOnce );
     }
 
     [Fact]
