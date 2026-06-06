@@ -8,5 +8,5 @@ public interface IRoomTypeRepository
     RoomType? Get( Guid id );
     IReadOnlyCollection<RoomType> GetByProperty( Guid propertyId );
     void Update( RoomType roomType );
-    void Remove( Guid id );
+    bool Remove( Guid id );
 }

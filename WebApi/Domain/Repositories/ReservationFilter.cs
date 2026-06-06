@@ -2,7 +2,7 @@ using Domain.ValueObjects;
 
 namespace Domain.Repositories;
 
-public record ReservationFilter(
+public sealed record ReservationFilter(
     Guid? PropertyId = null,
     Guid? RoomTypeId = null,
     string? GuestName = null,
