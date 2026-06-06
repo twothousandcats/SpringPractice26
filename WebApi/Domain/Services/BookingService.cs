@@ -4,7 +4,7 @@ using Domain.Repositories;
 
 namespace Domain.Services;
 
-public class BookingService : IBookingService
+public sealed class BookingService : IBookingService
 {
     private readonly IPropertyRepository _propertyRepository;
 
@@ -40,7 +40,7 @@ public class BookingService : IBookingService
             throw new BookingValidationException( "RoomType does not belong to the specified Property." );
         }
 
-        if ( roomType.IsFits( reservationInput.GuestCount ) )
+        if ( !roomType.IsFits( reservationInput.GuestCount ) )
         {
             throw new BookingValidationException( "Guest count does not match the RoomType limits." );
         }
@@ -55,8 +55,8 @@ public class BookingService : IBookingService
             property.Id,
             roomType.Id,
             reservationInput.Period,
-            reservationInput.ArrivalDate,
-            reservationInput.DepartureDate,
+            reservationInput.ArrivalTime,
+            reservationInput.DepartureTime,
             reservationInput.GuestName,
             reservationInput.GuestPhoneNumber,
             roomType.DailyPrice

@@ -6,8 +6,8 @@ public sealed record ReservationInput(
     Guid PropertyId,
     Guid RoomTypeId,
     DateRange Period,
-    TimeOnly ArrivalDate,
-    TimeOnly DepartureDate,
+    TimeOnly ArrivalTime,
+    TimeOnly DepartureTime,
     int GuestCount,
     string GuestName,
     string GuestPhoneNumber
