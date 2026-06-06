@@ -10,7 +10,7 @@ public class Reservation
 
     public Guid RoomTypeId { get; }
 
-    public DateRange Stay { get; }
+    public DateRange Period { get; }
 
     public TimeOnly ArrivalTime { get; }
 
@@ -28,7 +28,7 @@ public class Reservation
         Guid id,
         Guid propertyId,
         Guid roomTypeId,
-        DateRange stay,
+        DateRange period,
         TimeOnly arrivalTime,
         TimeOnly departureTime,
         string guestName,
@@ -51,17 +51,17 @@ public class Reservation
             throw new ArgumentException( "RoomTypeId is required", nameof( roomTypeId ) );
         }
 
-        Validate( stay, dailyPrice, guestName, guestPhoneNumber );
+        Validate( period, dailyPrice, guestName, guestPhoneNumber );
 
         Id = id;
         PropertyId = propertyId;
         RoomTypeId = roomTypeId;
-        Stay = stay;
+        Period = period;
         ArrivalTime = arrivalTime;
         DepartureTime = departureTime;
         GuestName = guestName;
         GuestPhoneNumber = guestPhoneNumber;
-        Total = dailyPrice.Multiply( stay.Nights );
+        Total = dailyPrice.Multiply( period.Nights );
         Status = ReservationStatus.Active;
     }
 
@@ -76,13 +76,13 @@ public class Reservation
     }
 
     private void Validate(
-        DateRange stay,
+        DateRange period,
         Money dailyPrice,
         string guestName,
         string guestPhoneNumber
     )
     {
-        ArgumentNullException.ThrowIfNull( stay );
+        ArgumentNullException.ThrowIfNull( period );
         ArgumentNullException.ThrowIfNull( dailyPrice );
 
         if ( string.IsNullOrWhiteSpace( guestName ) )

@@ -15,8 +15,8 @@ public sealed class AvailabilityChecker : IAvailabilityChecker
 
     public bool CanBook( RoomType roomType, DateRange period )
     {
-        IReadOnlyCollection<Reservation> overlaping = _reservationRepository.GetOverlapping( roomType.Id, period );
-        int activeOverlap = overlaping.Count( reservation => reservation.Status == ReservationStatus.Active );
+        IReadOnlyCollection<Reservation> overlapping = _reservationRepository.GetOverlapping( roomType.Id, period );
+        int activeOverlap = overlapping.Count( reservation => reservation.Status == ReservationStatus.Active );
 
         return activeOverlap < roomType.TotalRooms;
     }

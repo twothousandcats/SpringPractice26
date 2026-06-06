@@ -8,7 +8,7 @@ namespace Domain.Tests.Services;
 
 public class AvailabilityCheckerTests
 {
-    private const string DefaultCurrency = "EUR";
+    private const string Currency = "EUR";
 
     private const int TotalRooms = 2;
 
@@ -17,7 +17,7 @@ public class AvailabilityCheckerTests
         new DateOnly( 2026, 6, 4 )
     );
 
-    private readonly Mock<IReservationRepository> _reservationRepositoryMock;
+    private readonly Mock<IReservationRepository> _reservationRepositoryMock = new Mock<IReservationRepository>();
 
     private readonly AvailabilityChecker _checker;
 
@@ -40,13 +40,12 @@ public class AvailabilityCheckerTests
 
     public AvailabilityCheckerTests()
     {
-        _reservationRepositoryMock = new Mock<IReservationRepository>();
         _checker = new AvailabilityChecker( _reservationRepositoryMock.Object );
         _roomType = new RoomType(
             Guid.NewGuid(),
             Guid.NewGuid(),
             "Standard",
-            new Money( 100m, DefaultCurrency ),
+            new Money( 100m, Currency ),
             1,
             2,
             TotalRooms,

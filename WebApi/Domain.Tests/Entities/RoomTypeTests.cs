@@ -5,7 +5,7 @@ namespace Domain.Tests.Entities;
 
 public class RoomTypeTests
 {
-    private const string DefaultCurrency = "EUR";
+    private const string Currency = "EUR";
 
     const string RoomTypeName = "Standard Double";
 
@@ -19,7 +19,7 @@ public class RoomTypeTests
         Guid.NewGuid(),
         Guid.NewGuid(),
         RoomTypeName,
-        new Money( 120m, DefaultCurrency ),
+        new Money( 120m, Currency ),
         MinPersonCount,
         MaxPersonCount,
         RoomsCount,
@@ -32,7 +32,7 @@ public class RoomTypeTests
     {
         Guid id = Guid.NewGuid();
         Guid propId = Guid.NewGuid();
-        Money price = new Money( 120m, DefaultCurrency );
+        Money price = new Money( 120m, Currency );
 
         RoomType roomType = new RoomType(
             id,
@@ -64,7 +64,7 @@ public class RoomTypeTests
                 Guid.Empty,
                 Guid.NewGuid(),
                 RoomTypeName,
-                new Money( 120m, DefaultCurrency ),
+                new Money( 120m, Currency ),
                 MinPersonCount,
                 MaxPersonCount,
                 RoomsCount,
@@ -81,7 +81,7 @@ public class RoomTypeTests
                 Guid.NewGuid(),
                 Guid.Empty,
                 RoomTypeName,
-                new Money( 120m, DefaultCurrency ),
+                new Money( 120m, Currency ),
                 MinPersonCount,
                 MaxPersonCount,
                 RoomsCount,
@@ -101,7 +101,7 @@ public class RoomTypeTests
                 Guid.NewGuid(),
                 Guid.NewGuid(),
                 name!,
-                new Money( 120m, DefaultCurrency ),
+                new Money( 120m, Currency ),
                 MinPersonCount,
                 MaxPersonCount,
                 RoomsCount,
@@ -135,7 +135,7 @@ public class RoomTypeTests
                 Guid.NewGuid(),
                 Guid.NewGuid(),
                 RoomTypeName,
-                new Money( 0m, DefaultCurrency ),
+                new Money( 0m, Currency ),
                 MinPersonCount,
                 MaxPersonCount,
                 RoomsCount,
@@ -154,7 +154,7 @@ public class RoomTypeTests
                 Guid.NewGuid(),
                 Guid.NewGuid(),
                 RoomTypeName,
-                new Money( 120m, DefaultCurrency ),
+                new Money( 120m, Currency ),
                 min,
                 MaxPersonCount,
                 RoomsCount,
@@ -171,7 +171,7 @@ public class RoomTypeTests
                 Guid.NewGuid(),
                 Guid.NewGuid(),
                 RoomTypeName,
-                new Money( 120m, DefaultCurrency ),
+                new Money( 120m, Currency ),
                 2,
                 1,
                 RoomsCount,
@@ -188,7 +188,7 @@ public class RoomTypeTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             RoomTypeName,
-            new Money( 120m, DefaultCurrency ),
+            new Money( 120m, Currency ),
             MinPersonCount,
             MinPersonCount,
             RoomsCount,
@@ -209,7 +209,7 @@ public class RoomTypeTests
                 Guid.NewGuid(),
                 Guid.NewGuid(),
                 RoomTypeName,
-                new Money( 120m, DefaultCurrency ),
+                new Money( 120m, Currency ),
                 MinPersonCount,
                 MaxPersonCount,
                 roomsCount,
@@ -226,7 +226,7 @@ public class RoomTypeTests
                 Guid.NewGuid(),
                 Guid.NewGuid(),
                 RoomTypeName,
-                new Money( 120m, DefaultCurrency ),
+                new Money( 120m, Currency ),
                 MinPersonCount,
                 MinPersonCount,
                 RoomsCount,
@@ -243,7 +243,7 @@ public class RoomTypeTests
                 Guid.NewGuid(),
                 Guid.NewGuid(),
                 RoomTypeName,
-                new Money( 120m, DefaultCurrency ),
+                new Money( 120m, Currency ),
                 MinPersonCount,
                 MinPersonCount,
                 RoomsCount,
@@ -260,7 +260,7 @@ public class RoomTypeTests
                 Guid.NewGuid(),
                 Guid.NewGuid(),
                 RoomTypeName,
-                new Money( 120m, DefaultCurrency ),
+                new Money( 120m, Currency ),
                 MinPersonCount,
                 MinPersonCount,
                 RoomsCount,
@@ -282,7 +282,7 @@ public class RoomTypeTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             RoomTypeName,
-            new Money( 120m, DefaultCurrency ),
+            new Money( 120m, Currency ),
             MinPersonCount,
             MaxPersonCount,
             RoomsCount,
@@ -311,7 +311,7 @@ public class RoomTypeTests
     public void Update_ValidArguments_ChangesState()
     {
         RoomType roomType = CreateValidRoomType();
-        Money newPrice = new Money( 200m, DefaultCurrency );
+        Money newPrice = new Money( 200m, Currency );
 
         roomType.Update(
             "Deluxe",
