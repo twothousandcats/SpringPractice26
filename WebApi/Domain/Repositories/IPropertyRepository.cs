@@ -6,8 +6,8 @@ public interface IPropertyRepository
 {
     void Add( Property property );
     Property? Get( Guid id );
-    IReadOnlyCollection<Property> List();
-    IReadOnlyCollection<Property> ListByCity( string city );
+    IReadOnlyCollection<Property> GetAll();
+    IReadOnlyCollection<Property> GetByCity( string city );
     void Update( Property property );
     bool Remove( Guid id );
 }

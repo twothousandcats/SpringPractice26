@@ -6,7 +6,7 @@ namespace Domain.Repositories;
 public interface IReservationRepository
 {
     void Add( Reservation reservation );
-    IReadOnlyCollection<Reservation> List();
-    IReadOnlyCollection<Reservation> ListOverlapping( Guid roomTypeId, DateRange period );
+    IReadOnlyCollection<Reservation> Search();
+    IReadOnlyCollection<Reservation> GetOverlapping( Guid roomTypeId, DateRange period );
     void Update( RoomType roomType );
 }
