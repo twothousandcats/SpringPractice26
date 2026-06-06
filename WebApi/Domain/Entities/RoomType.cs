@@ -62,8 +62,8 @@ public sealed class RoomType
         IEnumerable<string> amenities
     )
     {
-        string[] servicesCopy = services.ToArray();
-        string[] amenitiesCopy = amenities.ToArray();
+        string[] servicesCopy = services.ToArray() ?? throw new ArgumentNullException( nameof( services ) );
+        string[] amenitiesCopy = amenities.ToArray() ?? throw new ArgumentNullException( nameof( amenities ) );
         Validate( name, dailyPrice, minPersonCount, maxPersonCount, totalRooms, servicesCopy, amenitiesCopy );
 
         Name = name;
