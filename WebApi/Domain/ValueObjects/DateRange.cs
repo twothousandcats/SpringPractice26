@@ -1,4 +1,4 @@
-namespace WebApi.Domain.ValueObjects;
+namespace Domain.ValueObjects;
 
 public sealed class DateRange
 {

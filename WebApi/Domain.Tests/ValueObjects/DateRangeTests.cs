@@ -1,7 +1,6 @@
-using WebApi.Domain.ValueObjects;
-using Xunit;
+using Domain.ValueObjects;
 
-namespace WebApi.Tests.Domain.ValueObjects;
+namespace Domain.Tests.ValueObjects;
 
 public class DateRangeTests
 {

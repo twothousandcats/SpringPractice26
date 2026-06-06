@@ -1,7 +1,6 @@
-using WebApi.Domain.Entities;
-using Xunit;
+using Domain.Entities;
 
-namespace WebApi.Tests.Domain.Entities;
+namespace Domain.Tests.Entities;
 
 public class PropertyTests
 {

@@ -1,8 +1,7 @@
-using Xunit;
-using WebApi.Domain.Entities;
-using WebApi.Domain.ValueObjects;
+using Domain.Entities;
+using Domain.ValueObjects;
 
-namespace WebApi.Tests.Domain.Entities;
+namespace Domain.Tests.Entities;
 
 public class RoomTypeTests
 {

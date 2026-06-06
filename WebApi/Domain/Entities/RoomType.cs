@@ -1,8 +1,9 @@
-using WebApi.Domain.ValueObjects;
+using System.Diagnostics.CodeAnalysis;
+using Domain.ValueObjects;
 
-namespace WebApi.Domain.Entities;
+namespace Domain.Entities;
 
-public class RoomType
+public sealed class RoomType
 {
     public Guid Id { get; }
 
@@ -41,39 +42,18 @@ public class RoomType
 
         if ( propertyId == Guid.Empty )
         {
-            throw new ArgumentException( "PropertyId is required", nameof( id ) );
+            throw new ArgumentException( "PropertyId is required", nameof( propertyId ) );
         }
-
-        (
-            string name,
-            Money price,
-            int min,
-            int max,
-            int total,
-            IReadOnlyCollection<string> servicesCopy,
-            IReadOnlyCollection<string> amenitiesCopy
-            ) validated = Validate(
-                name,
-                dailyPrice,
-                minPersonCount,
-                maxPersonCount,
-                totalRooms,
-                services,
-                amenities
-            );
 
         Id = id;
         PropertyId = propertyId;
-        Name = validated.name;
-        DailyPrice = validated.price;
-        MinPersonCount = validated.min;
-        MaxPersonCount = validated.max;
-        TotalRooms = validated.total;
-        Services = validated.servicesCopy;
-        Amenities = validated.amenitiesCopy;
+        Update( name, dailyPrice, minPersonCount, maxPersonCount, totalRooms, services, amenities );
     }
 
-    public void Update( string name,
+    // todo: поискать решение лучше
+    [MemberNotNull( nameof( Name ), nameof( DailyPrice ), nameof( Services ), nameof( Amenities ) )]
+    public void Update(
+        string name,
         Money dailyPrice,
         int minPersonCount,
         int maxPersonCount,
@@ -82,31 +62,17 @@ public class RoomType
         IEnumerable<string> amenities
     )
     {
-        (
-            string name,
-            Money price,
-            int min,
-            int max,
-            int total,
-            IReadOnlyCollection<string> servicesCopy,
-            IReadOnlyCollection<string> amenitiesCopy
-            ) validated = Validate(
-                name,
-                dailyPrice,
-                minPersonCount,
-                maxPersonCount,
-                totalRooms,
-                services,
-                amenities
-            );
+        string[] servicesCopy = services.ToArray();
+        string[] amenitiesCopy = amenities.ToArray();
+        Validate( name, dailyPrice, minPersonCount, maxPersonCount, totalRooms, servicesCopy, amenitiesCopy );
 
-        Name = validated.name;
-        DailyPrice = validated.price;
-        MinPersonCount = validated.min;
-        MaxPersonCount = validated.max;
-        TotalRooms = validated.total;
-        Services = validated.servicesCopy;
-        Amenities = validated.amenitiesCopy;
+        Name = name;
+        DailyPrice = dailyPrice;
+        MinPersonCount = minPersonCount;
+        MaxPersonCount = maxPersonCount;
+        TotalRooms = totalRooms;
+        Services = servicesCopy;
+        Amenities = amenitiesCopy;
     }
 
     public bool IsFits( int guests )
@@ -114,23 +80,15 @@ public class RoomType
         return guests >= MinPersonCount && guests <= MaxPersonCount;
     }
 
-    private static (
+    private static void Validate(
         string name,
-        Money price,
-        int min,
-        int max,
-        int total,
-        IReadOnlyCollection<string> servicesCopy,
-        IReadOnlyCollection<string> amenitiesCopy
-        )
-        Validate(
-            string name,
-            Money dailyPrice,
-            int minPersonCount,
-            int maxPersonCount,
-            int totalRooms,
-            IEnumerable<string> services,
-            IEnumerable<string> amenities )
+        Money dailyPrice,
+        int minPersonCount,
+        int maxPersonCount,
+        int totalRooms,
+        IReadOnlyCollection<string> services,
+        IReadOnlyCollection<string> amenities
+    )
     {
         if ( string.IsNullOrWhiteSpace( name ) )
         {
@@ -160,22 +118,14 @@ public class RoomType
             throw new ArgumentOutOfRangeException( nameof( totalRooms ), "Total rooms must be positive." );
         }
 
-        ArgumentNullException.ThrowIfNull( services );
-        ArgumentNullException.ThrowIfNull( amenities );
-
-        string[] servicesCopy = services.ToArray();
-        string[] amenitiesCopy = amenities.ToArray();
-
-        if ( servicesCopy.Any( string.IsNullOrWhiteSpace ) )
+        if ( services.Any( string.IsNullOrWhiteSpace ) )
         {
             throw new ArgumentException( "Services must not contain empty entries.", nameof( services ) );
         }
 
-        if ( amenitiesCopy.Any( string.IsNullOrWhiteSpace ) )
+        if ( amenities.Any( string.IsNullOrWhiteSpace ) )
         {
             throw new ArgumentException( "Amenities must not contain empty entries.", nameof( amenities ) );
         }
-
-        return ( name, dailyPrice, minPersonCount, maxPersonCount, totalRooms, servicesCopy, amenitiesCopy );
     }
 }

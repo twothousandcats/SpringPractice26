@@ -1,4 +1,4 @@
-namespace WebApi.Domain.Entities;
+namespace Domain.Entities;
 
 public sealed class Property
 {
