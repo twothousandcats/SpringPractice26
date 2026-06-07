@@ -50,7 +50,6 @@ public sealed class RoomType
         Update( name, dailyPrice, minPersonCount, maxPersonCount, totalRooms, services, amenities );
     }
 
-    // todo: look for a better solution?
     [MemberNotNull( nameof( Name ), nameof( DailyPrice ), nameof( Services ), nameof( Amenities ) )]
     public void Update(
         string name,
@@ -62,8 +61,11 @@ public sealed class RoomType
         IEnumerable<string> amenities
     )
     {
-        string[] servicesCopy = services.ToArray() ?? throw new ArgumentNullException( nameof( services ) );
-        string[] amenitiesCopy = amenities.ToArray() ?? throw new ArgumentNullException( nameof( amenities ) );
+        ArgumentNullException.ThrowIfNull( services );
+        ArgumentNullException.ThrowIfNull( amenities );
+
+        string[] servicesCopy = services.ToArray();
+        string[] amenitiesCopy = amenities.ToArray();
         Validate( name, dailyPrice, minPersonCount, maxPersonCount, totalRooms, servicesCopy, amenitiesCopy );
 
         Name = name;
