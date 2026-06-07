@@ -27,9 +27,33 @@ public sealed class InMemoryReservationRepository : IReservationRepository
             : null;
     }
 
-    public IReadOnlyCollection<Reservation> Search()
+    public IReadOnlyCollection<Reservation> Search( ReservationFilter filter )
     {
-        return _store.Values.ToArray();
+        IEnumerable<Reservation> query = _store.Values;
+
+        if ( filter.PropertyId is not null )
+        {
+            query = query.Where( reservation => reservation.PropertyId == filter.PropertyId );
+        }
+
+        if ( filter.RoomTypeId is not null )
+        {
+            query = query.Where( reservation => reservation.RoomTypeId == filter.RoomTypeId );
+        }
+
+        if ( !string.IsNullOrWhiteSpace( filter.GuestName ) )
+        {
+            query = query.Where( reservation =>
+                reservation.GuestName.Contains( filter.GuestName, StringComparison.OrdinalIgnoreCase )
+            );
+        }
+
+        if ( filter.Period is not null )
+        {
+            query = query.Where( reservation => reservation.Period.Overlaps( filter.Period ) );
+        }
+
+        return query.ToArray();
     }
 
     public IReadOnlyCollection<Reservation> GetOverlapping( Guid roomTypeId, DateRange period )

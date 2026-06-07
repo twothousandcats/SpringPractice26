@@ -28,32 +28,32 @@ public sealed class ReservationsController : ControllerBase
     public ActionResult<IReadOnlyCollection<ReservationDto>> Search(
         [FromQuery] Guid? propertyId,
         [FromQuery] Guid? roomTypeId,
-        [FromQuery] string? guestName
+        [FromQuery] string? guestName,
+        [FromQuery] DateOnly? arrivalDate,
+        [FromQuery] DateOnly? departureDate
     )
     {
-        IEnumerable<Reservation> reservations = _reservationRepository.Search();
-
-        if ( propertyId is not null )
+        if ( arrivalDate.HasValue != departureDate.HasValue )
         {
-            reservations = reservations.Where( r => r.PropertyId == propertyId.Value );
+            return BadRequest( "Arrival date and departure dates must be provided together" );
         }
 
-        if ( roomTypeId is not null )
-        {
-            reservations = reservations.Where( r => r.RoomTypeId == roomTypeId.Value );
-        }
+        DateRange? period = arrivalDate.HasValue
+            ? new DateRange( arrivalDate.Value, departureDate!.Value )
+            : null;
 
-        if ( !string.IsNullOrWhiteSpace( guestName ) )
-        {
-            reservations = reservations
-                .Where( r => r.GuestName.Contains( guestName, StringComparison.OrdinalIgnoreCase ) );
-        }
-
-        return Ok(
-            reservations
-                .Select( reservation => reservation.ToDto() )
-                .ToArray()
+        ReservationFilter reservationFilter = new ReservationFilter(
+            propertyId,
+            roomTypeId,
+            guestName,
+            period
         );
+
+        ReservationDto[] reservationDtos = _reservationRepository.Search( reservationFilter )
+            .Select( reservation => reservation.ToDto() )
+            .ToArray();
+
+        return Ok( reservationDtos );
     }
 
     [HttpGet( "{id:guid}", Name = "GetReservation" )]

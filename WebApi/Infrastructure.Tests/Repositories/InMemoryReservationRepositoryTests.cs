@@ -14,16 +14,21 @@ public class InMemoryReservationRepositoryTests
 
     private readonly InMemoryReservationRepository _repository = new InMemoryReservationRepository();
 
-    private static Reservation CreateReservation( DateRange period )
+    private static Reservation CreateReservation(
+        DateRange period,
+        Guid? propertyId = null,
+        Guid? roomTypeId = null,
+        string guestName = "Test Guest"
+    )
     {
         return new Reservation(
             Guid.NewGuid(),
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            propertyId ?? Guid.NewGuid(),
+            roomTypeId ?? Guid.NewGuid(),
             period,
             new TimeOnly( 14, 0 ),
             new TimeOnly( 12, 0 ),
-            "Test Guest",
+            guestName,
             "+71234567890",
             DefaultDailyPrice
         );
@@ -65,9 +70,177 @@ public class InMemoryReservationRepositoryTests
         _repository.Add( first );
         _repository.Add( second );
 
-        IReadOnlyCollection<Reservation> result = _repository.Search();
+        IReadOnlyCollection<Reservation> result = _repository.Search( new ReservationFilter() );
 
         Assert.Equal( 2, result.Count );
+    }
+
+    [Fact]
+    public void Search_ByPropertyId_ReturnsOnlyMatching()
+    {
+        Guid targetProperty = Guid.NewGuid();
+        Reservation matching = CreateReservation(
+            new DateRange(
+                new DateOnly( 2026, 6, 1 ),
+                new DateOnly( 2026, 6, 4 )
+            ),
+            propertyId: targetProperty
+        );
+
+        Reservation other = CreateReservation(
+            new DateRange(
+                new DateOnly( 2026, 6, 1 ),
+                new DateOnly( 2026, 6, 4 )
+            )
+        );
+
+        _repository.Add( matching );
+        _repository.Add( other );
+
+        IReadOnlyCollection<Reservation> result = _repository.Search(
+            new ReservationFilter( PropertyId: targetProperty )
+        );
+
+        Reservation single = Assert.Single( result );
+        Assert.Same( matching, single );
+    }
+
+    [Fact]
+    public void Search_ByRoomTypeId_ReturnsOnlyMatching()
+    {
+        Guid targetRoomType = Guid.NewGuid();
+        Reservation matching = CreateReservation(
+            new DateRange(
+                new DateOnly( 2026, 6, 1 ),
+                new DateOnly( 2026, 6, 4 )
+            ),
+            roomTypeId: targetRoomType
+        );
+
+        Reservation other = CreateReservation(
+            new DateRange(
+                new DateOnly( 2026, 6, 1 ),
+                new DateOnly( 2026, 6, 4 )
+            )
+        );
+
+        _repository.Add( matching );
+        _repository.Add( other );
+
+        IReadOnlyCollection<Reservation> result = _repository.Search(
+            new ReservationFilter( RoomTypeId: targetRoomType )
+        );
+
+        Reservation single = Assert.Single( result );
+        Assert.Same( matching, single );
+    }
+
+    [Fact]
+    public void Search_ByGuestName_IsCaseInsensitiveAndPartial()
+    {
+        Reservation matching = CreateReservation(
+            new DateRange(
+                new DateOnly( 2026, 6, 1 ),
+                new DateOnly( 2026, 6, 4 )
+            ),
+            guestName: "Ivan Ivanov"
+        );
+
+        Reservation other = CreateReservation(
+            new DateRange(
+                new DateOnly( 2026, 6, 1 ),
+                new DateOnly( 2026, 6, 4 )
+            ),
+            guestName: "Petr Petrov"
+        );
+
+        _repository.Add( matching );
+        _repository.Add( other );
+
+        IReadOnlyCollection<Reservation> result = _repository.Search(
+            new ReservationFilter( GuestName: "ivan" )
+        );
+
+        Reservation single = Assert.Single( result );
+        Assert.Same( matching, single );
+    }
+
+    [Fact]
+    public void Search_ByPeriod_ReturnsOverlapping()
+    {
+        Reservation overlapping = CreateReservation(
+            new DateRange(
+                new DateOnly( 2026, 6, 1 ),
+                new DateOnly( 2026, 6, 10 )
+            )
+        );
+
+        Reservation disjoint = CreateReservation(
+            new DateRange(
+                new DateOnly( 2026, 7, 1 ),
+                new DateOnly( 2026, 7, 5 )
+            )
+        );
+
+        _repository.Add( overlapping );
+        _repository.Add( disjoint );
+
+        IReadOnlyCollection<Reservation> result = _repository.Search(
+            new ReservationFilter(
+                Period: new DateRange(
+                    new DateOnly( 2026, 6, 5 ),
+                    new DateOnly( 2026, 6, 8 )
+                )
+            )
+        );
+
+        Reservation single = Assert.Single( result );
+        Assert.Same( overlapping, single );
+    }
+
+    [Fact]
+    public void Search_CombinedFilters_AppliesAll()
+    {
+        Guid targetProperty = Guid.NewGuid();
+        Reservation matching = CreateReservation(
+            new DateRange(
+                new DateOnly( 2026, 6, 1 ),
+                new DateOnly( 2026, 6, 4 )
+            ),
+            propertyId: targetProperty,
+            guestName: "Ivan Ivanov"
+        );
+
+        Reservation wrongProperty = CreateReservation(
+            new DateRange(
+                new DateOnly( 2026, 6, 1 ),
+                new DateOnly( 2026, 6, 4 )
+            ),
+            guestName: "Ivan Ivanov"
+        );
+
+        Reservation wrongName = CreateReservation(
+            new DateRange(
+                new DateOnly( 2026, 6, 1 ),
+                new DateOnly( 2026, 6, 4 )
+            ),
+            propertyId: targetProperty,
+            guestName: "Petr Petrov"
+        );
+
+        _repository.Add( matching );
+        _repository.Add( wrongProperty );
+        _repository.Add( wrongName );
+
+        IReadOnlyCollection<Reservation> result = _repository.Search(
+            new ReservationFilter(
+                PropertyId: targetProperty,
+                GuestName: "ivan"
+            )
+        );
+
+        Reservation single = Assert.Single( result );
+        Assert.Same( matching, single );
     }
 
     [Fact]
