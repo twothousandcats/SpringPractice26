@@ -30,11 +30,11 @@ public class Program
 
         webApplication.UseExceptionHandler();
 
-        if ( webApplication.Environment.IsDevelopment() )
-        {
+        // if ( webApplication.Environment.IsDevelopment() )
+        // {
             webApplication.UseSwagger();
             webApplication.UseSwaggerUI();
-        }
+        // }
 
         webApplication.UseHttpsRedirection();
         webApplication.MapControllers();
