@@ -3,7 +3,6 @@ using Domain.Repositories;
 using Domain.Services;
 using Domain.ValueObjects;
 using Microsoft.AspNetCore.Mvc;
-using WebApi.Contracts.Common;
 using WebApi.Contracts.Reservations;
 
 namespace WebApi.Controllers;

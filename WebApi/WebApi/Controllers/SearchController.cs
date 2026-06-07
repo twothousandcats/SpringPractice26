@@ -1,9 +1,6 @@
 using Domain.Services;
 using Domain.ValueObjects;
 using Microsoft.AspNetCore.Mvc;
-using WebApi.Contracts.Common;
-using WebApi.Contracts.Properties;
-using WebApi.Contracts.RoomTypes;
 using WebApi.Contracts.Search;
 
 namespace WebApi.Controllers;

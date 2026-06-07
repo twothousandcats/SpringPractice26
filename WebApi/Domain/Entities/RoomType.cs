@@ -50,7 +50,7 @@ public sealed class RoomType
         Update( name, dailyPrice, minPersonCount, maxPersonCount, totalRooms, services, amenities );
     }
 
-    // todo: поискать решение лучше
+    // todo: look for a better solution?
     [MemberNotNull( nameof( Name ), nameof( DailyPrice ), nameof( Services ), nameof( Amenities ) )]
     public void Update(
         string name,

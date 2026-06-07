@@ -2,7 +2,6 @@ using Domain.Entities;
 using Domain.Repositories;
 using Domain.ValueObjects;
 using Microsoft.AspNetCore.Mvc;
-using WebApi.Contracts.Common;
 using WebApi.Contracts.RoomTypes;
 
 namespace WebApi.Controllers;

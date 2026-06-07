@@ -31,7 +31,7 @@ public class DomainExceptionHandler : IExceptionHandler
         return true;
     }
 
-    private (int Status, string Title)? Map( Exception exception )
+    private static (int Status, string Title)? Map( Exception exception )
     {
         return exception switch
         {
