@@ -37,40 +37,9 @@ public sealed class SearchController : ControllerBase
 
         SearchVariantDto[] result = _searchService
             .Search( criteria )
-            .Select( ToDto )
+            .Select( variant => variant.ToDto() )
             .ToArray();
 
         return Ok( result );
-    }
-
-    private static SearchVariantDto ToDto( SearchVariant variant )
-    {
-        PropertyDto property = new PropertyDto(
-            variant.Property.Id,
-            variant.Property.Name,
-            variant.Property.Country,
-            variant.Property.City,
-            variant.Property.Address,
-            variant.Property.Latitude,
-            variant.Property.Longitude
-        );
-
-        RoomTypeDto roomType = new RoomTypeDto(
-            variant.RoomType.Id,
-            variant.RoomType.PropertyId,
-            variant.RoomType.Name,
-            new MoneyDto( variant.RoomType.DailyPrice.Amount, variant.RoomType.DailyPrice.Currency ),
-            variant.RoomType.MinPersonCount,
-            variant.RoomType.MaxPersonCount,
-            variant.RoomType.TotalRooms,
-            variant.RoomType.Services,
-            variant.RoomType.Amenities
-        );
-
-        return new SearchVariantDto(
-            property,
-            roomType,
-            new MoneyDto( variant.TotalForPeriod.Amount, variant.TotalForPeriod.Currency )
-        );
     }
 }

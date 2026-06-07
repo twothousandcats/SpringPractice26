@@ -52,7 +52,7 @@ public sealed class ReservationsController : ControllerBase
 
         return Ok(
             reservations
-                .Select( ToDto )
+                .Select( reservation => reservation.ToDto() )
                 .ToArray()
         );
     }
@@ -64,7 +64,7 @@ public sealed class ReservationsController : ControllerBase
 
         return reservation is null
             ? NotFound()
-            : Ok( ToDto( reservation ) );
+            : Ok( reservation.ToDto() );
     }
 
     [HttpPost]
@@ -87,7 +87,8 @@ public sealed class ReservationsController : ControllerBase
             "GetReservation", new
             {
                 id = reservation.Id
-            }, ToDto( reservation )
+            },
+            reservation.ToDto()
         );
     }
 
@@ -104,22 +105,5 @@ public sealed class ReservationsController : ControllerBase
         _reservationRepository.Update( reservation );
 
         return NoContent();
-    }
-
-    private static ReservationDto ToDto( Reservation reservation )
-    {
-        return new ReservationDto(
-            reservation.Id,
-            reservation.PropertyId,
-            reservation.RoomTypeId,
-            reservation.Period.Start,
-            reservation.Period.End,
-            reservation.ArrivalTime,
-            reservation.DepartureTime,
-            reservation.GuestName,
-            reservation.GuestPhoneNumber,
-            new MoneyDto( reservation.Total.Amount, reservation.Total.Currency ),
-            reservation.Status.ToString()
-        );
     }
 }

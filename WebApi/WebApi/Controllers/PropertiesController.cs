@@ -6,6 +6,7 @@ using WebApi.Contracts.Properties;
 namespace WebApi.Controllers;
 
 [ApiController]
+[Route( "api/properties" )]
 public sealed class PropertiesController : ControllerBase
 {
     private readonly IPropertyRepository _propertyRepository;
@@ -18,7 +19,9 @@ public sealed class PropertiesController : ControllerBase
     [HttpGet]
     public ActionResult<IReadOnlyCollection<PropertyDto>> GetAll()
     {
-        PropertyDto[] result = _propertyRepository.GetAll().Select( ToDto ).ToArray();
+        PropertyDto[] result = _propertyRepository.GetAll()
+            .Select( prop => prop.ToDto() )
+            .ToArray();
 
         return Ok( result );
     }
@@ -30,7 +33,7 @@ public sealed class PropertiesController : ControllerBase
 
         return property is null
             ? NotFound()
-            : Ok( ToDto( property ) );
+            : Ok( property.ToDto() );
     }
 
     [HttpPost]
@@ -54,7 +57,7 @@ public sealed class PropertiesController : ControllerBase
             {
                 id = property.Id
             },
-            ToDto( property )
+            property.ToDto()
         );
     }
 
@@ -90,18 +93,5 @@ public sealed class PropertiesController : ControllerBase
         return _propertyRepository.Remove( id )
             ? NoContent()
             : NotFound();
-    }
-
-    private static PropertyDto ToDto( Property property )
-    {
-        return new PropertyDto(
-            property.Id,
-            property.Name,
-            property.Country,
-            property.City,
-            property.Address,
-            property.Latitude,
-            property.Longitude
-        );
     }
 }

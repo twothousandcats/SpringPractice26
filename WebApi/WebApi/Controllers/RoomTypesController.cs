@@ -32,7 +32,7 @@ public sealed class RoomTypesController : ControllerBase
         }
 
         RoomTypeDto[] result = _roomTypeRepository.GetByProperty( propertyId )
-            .Select( ToDto )
+            .Select( roomType => roomType.ToDto() )
             .ToArray();
 
         return Ok( result );
@@ -44,7 +44,7 @@ public sealed class RoomTypesController : ControllerBase
         RoomType? roomType = _roomTypeRepository.Get( id );
         return roomType is null
             ? NotFound()
-            : Ok( ToDto( roomType ) );
+            : Ok( roomType.ToDto() );
     }
 
     [HttpPost( "api/properties/{propertyId:guid}/roomtypes" )]
@@ -78,7 +78,7 @@ public sealed class RoomTypesController : ControllerBase
             {
                 id = roomType.Id
             },
-            ToDto( roomType )
+            roomType.ToDto()
         );
     }
 
@@ -115,20 +115,5 @@ public sealed class RoomTypesController : ControllerBase
         return _roomTypeRepository.Remove( id )
             ? NoContent()
             : NotFound();
-    }
-
-    private static RoomTypeDto ToDto( RoomType roomType )
-    {
-        return new RoomTypeDto(
-            roomType.Id,
-            roomType.PropertyId,
-            roomType.Name,
-            new MoneyDto( roomType.DailyPrice.Amount, roomType.DailyPrice.Currency ),
-            roomType.MinPersonCount,
-            roomType.MaxPersonCount,
-            roomType.TotalRooms,
-            roomType.Services,
-            roomType.Amenities
-        );
     }
 }

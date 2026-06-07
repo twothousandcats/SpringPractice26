@@ -1,7 +1,7 @@
 ﻿using Domain.Repositories;
 using Domain.Services;
 using Infrastructure.Repositories;
-using WebApi.Infrastructure.DomainExceptionHandler;
+using WebApi.Infrastructure;
 
 namespace WebApi;
 
