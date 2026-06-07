@@ -6,7 +6,7 @@ using Domain.ValueObjects;
 
 namespace Infrastructure.Repositories;
 
-public class InMemoryReservationRepository : IReservationRepository
+public sealed class InMemoryReservationRepository : IReservationRepository
 {
     private readonly ConcurrentDictionary<Guid, Reservation> _store = new ConcurrentDictionary<Guid, Reservation>();
 
@@ -41,7 +41,7 @@ public class InMemoryReservationRepository : IReservationRepository
 
     public void Update( Reservation reservation )
     {
-        if ( !_store.TryUpdate( reservation.Id, reservation, reservation ) )
+        if ( !_store.ContainsKey( reservation.Id ) )
         {
             throw new EntityNotFoundException(
                 nameof( Reservation ),
