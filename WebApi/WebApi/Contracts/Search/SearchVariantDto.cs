@@ -4,7 +4,7 @@ using WebApi.Contracts.RoomTypes;
 
 namespace WebApi.Contracts.Search;
 
-public record SearchVariantDto(
+public sealed record SearchVariantDto(
     PropertyDto Property,
     RoomTypeDto RoomType,
     MoneyDto TotalForPeriod

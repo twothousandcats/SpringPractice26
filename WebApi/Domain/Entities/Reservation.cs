@@ -2,7 +2,7 @@ using Domain.ValueObjects;
 
 namespace Domain.Entities;
 
-public class Reservation
+public sealed class Reservation
 {
     public Guid Id { get; }
 
