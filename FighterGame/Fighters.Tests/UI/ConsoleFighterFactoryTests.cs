@@ -6,17 +6,10 @@ namespace Fighters.Tests.UI;
 
 public class ConsoleFighterFactoryTests
 {
-    private static ConsoleFighterFactory Create( IConsole console ) => new ConsoleFighterFactory(
-        console,
-        FighterCatalog.Armors,
-        FighterCatalog.Classes,
-        FighterCatalog.Races,
-        FighterCatalog.Weapons
-    );
-
     [Fact]
     public void Create_ValidInput_BuildsFighterFromSelections()
     {
+        // Arrange
         Mock<IConsole> console = new Mock<IConsole>();
         console.SetupSequence( c => c.ReadLine() )
             .Returns( "Hero" )
@@ -25,17 +18,27 @@ public class ConsoleFighterFactoryTests
             .Returns( "1" )
             .Returns( "1" );
 
-        IFighter fighter = Create( console.Object ).Create();
+        ConsoleFighterFactory sut = new ConsoleFighterFactory(
+            console.Object,
+            FighterCatalog.Armors,
+            FighterCatalog.Classes,
+            FighterCatalog.Races,
+            FighterCatalog.Weapons
+        );
 
+        // Act
+        IFighter fighter = sut.Create();
+
+        // Assert
         Assert.Equal( "Hero", fighter.Name );
-        Assert.Contains( "Human", fighter.Description );
-        Assert.Contains( "Knight", fighter.Description );
-        Assert.Contains( "Axe", fighter.Description );
-        Assert.Contains( "No Armor", fighter.Description );
+        Assert.Equal( 150, fighter.MaxHealth );
+        Assert.Equal( 26, fighter.Damage );
+        Assert.Equal( 0, fighter.Armor );
+        Assert.Equal( 5, fighter.Initiative );
     }
 
     [Fact]
-    public void Create_EmptyNameEntered_RepromptsUntilValid()
+    public void Create_EmptyNameEntered_KeepsAskingUntilValidName()
     {
         Mock<IConsole> console = new Mock<IConsole>();
         console.SetupSequence( c => c.ReadLine() )
@@ -47,18 +50,26 @@ public class ConsoleFighterFactoryTests
             .Returns( "1" )
             .Returns( "1" );
 
-        IFighter fighter = Create( console.Object ).Create();
-
-        Assert.Equal( "Hero", fighter.Name );
-        console.Verify(
-            c => c.WriteLine( It.Is<string>( s => s.Contains( "cant be empty" ) ) ),
-            Times.AtLeast( 2 )
+        ConsoleFighterFactory sut = new ConsoleFighterFactory(
+            console.Object,
+            FighterCatalog.Armors,
+            FighterCatalog.Classes,
+            FighterCatalog.Races,
+            FighterCatalog.Weapons
         );
+
+        // Act
+        IFighter fighter = sut.Create();
+
+        // Assert
+        Assert.Equal( "Hero", fighter.Name );
+        console.Verify( c => c.ReadLine(), Times.Exactly( 7 ) );
     }
 
     [Fact]
-    public void Create_InvalidOptionEntered_RepromptsUntilValid()
+    public void Create_InvalidOptionEntered_KeepsAskingUntilValidOption()
     {
+        // Arrange
         Mock<IConsole> console = new Mock<IConsole>();
         console.SetupSequence( c => c.ReadLine() )
             .Returns( "Hero" )
@@ -69,12 +80,20 @@ public class ConsoleFighterFactoryTests
             .Returns( "1" )
             .Returns( "1" );
 
-        IFighter fighter = Create( console.Object ).Create();
-
-        Assert.NotNull( fighter );
-        console.Verify(
-            c => c.WriteLine( It.Is<string>( s => s.Contains( "Invalid option" ) ) ),
-            Times.AtLeast( 2 )
+        ConsoleFighterFactory sut = new ConsoleFighterFactory(
+            console.Object,
+            FighterCatalog.Armors,
+            FighterCatalog.Classes,
+            FighterCatalog.Races,
+            FighterCatalog.Weapons
         );
+
+        // Act
+        IFighter fighter = sut.Create();
+
+        // Assert
+        Assert.Equal( "Hero", fighter.Name );
+        Assert.Equal( 150, fighter.MaxHealth );
+        console.Verify( c => c.ReadLine(), Times.Exactly( 7 ) );
     }
 }
