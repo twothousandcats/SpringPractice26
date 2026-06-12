@@ -24,10 +24,10 @@ public class FighterRosterTests
     public void Add_Null_ThrowsArgumentNullException()
     {
         // Arrange
-        FighterRoster roster = new FighterRoster();
+        FighterRoster sut = new FighterRoster();
 
         // Act, Assert
-        Assert.Throws<ArgumentNullException>( () => roster.Add( null! ) );
+        Assert.Throws<ArgumentNullException>( () => sut.Add( null! ) );
     }
 
     [Fact]
@@ -49,25 +49,25 @@ public class FighterRosterTests
     public void RemoveAt_OutOfRangeIndex_ThrowsArgumentOutOfRangeException()
     {
         // Arrange
-        FighterRoster roster = new FighterRoster();
-        roster.Add( FighterMother.CreateDefault() );
+        FighterRoster sut = new FighterRoster();
+        sut.Add( FighterMother.CreateDefault() );
 
         // Act, Assert
-        Assert.Throws<ArgumentOutOfRangeException>( () => roster.RemoveAt( 5 ) );
+        Assert.Throws<ArgumentOutOfRangeException>( () => sut.RemoveAt( 5 ) );
     }
 
     [Fact]
     public void Clear_NonEmptyRoster_RemovesEverything()
     {
         // Arrange
-        FighterRoster roster = new FighterRoster();
-        roster.Add( FighterMother.CreateDefault( "a" ) );
-        roster.Add( FighterMother.CreateDefault( "b" ) );
+        FighterRoster sut = new FighterRoster();
+        sut.Add( FighterMother.CreateDefault( "a" ) );
+        sut.Add( FighterMother.CreateDefault( "b" ) );
 
         // Act
-        roster.Clear();
+        sut.Clear();
 
         // Assert
-        Assert.Empty( roster.Fighters );
+        Assert.Empty( sut.Fighters );
     }
 }

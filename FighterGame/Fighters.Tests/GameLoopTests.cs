@@ -3,33 +3,42 @@ namespace Fighters.Tests;
 public class GameLoopTests
 {
     [Fact]
-    public void Constructor_NewInstance_IsRunning()
+    public void Constructor_Always_IsRunning()
     {
-        GameLoop gameLoop = new GameLoop();
+        // Arrange
+        GameLoop sut = new GameLoop();
 
-        bool isRunning = gameLoop.IsRunning;
+        // Act
+        bool isRunning = sut.IsRunning;
 
+        // Assert
         Assert.True( isRunning );
     }
 
     [Fact]
     public void RequestStop_Called_StopsRunning()
     {
-        GameLoop gameLoop = new GameLoop();
+        // Arrange
+        GameLoop sut = new GameLoop();
 
-        gameLoop.RequestStop();
+        // Act
+        sut.RequestStop();
 
-        Assert.False( gameLoop.IsRunning );
+        // Assert
+        Assert.False( sut.IsRunning );
     }
 
     [Fact]
     public void RequestStop_CalledTwice_RemainsStopped()
     {
-        GameLoop gameLoop = new GameLoop();
+        // Arrange
+        GameLoop sut = new GameLoop();
 
-        gameLoop.RequestStop();
-        gameLoop.RequestStop();
+        // Act
+        sut.RequestStop();
+        sut.RequestStop();
 
-        Assert.False( gameLoop.IsRunning );
+        // Assert
+        Assert.False( sut.IsRunning );
     }
 }
