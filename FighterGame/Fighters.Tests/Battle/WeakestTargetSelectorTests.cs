@@ -37,7 +37,7 @@ public class WeakestTargetSelectorTests
     {
         // Arrange
         TestFighter attacker = FighterMother.CreateDefault( "Attacker" );
-        TestFighter dead = FighterMother.CreateDefault( "Dead" );
+        TestFighter dead = FighterMother.CreateDead( "Dead" );
         WeakestTargetSelector sut = new WeakestTargetSelector();
 
         // Act
