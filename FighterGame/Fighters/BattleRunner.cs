@@ -3,7 +3,7 @@ using Fighters.Models.Fighters;
 
 namespace Fighters;
 
-public class BattleRunner
+public class BattleRunner : IBattleRunner
 {
     private const int MaxRounds = 1000;
 
