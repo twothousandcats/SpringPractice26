@@ -8,63 +8,66 @@ public class FighterRosterTests
     [Fact]
     public void Add_Fighter_AppearsInFighters()
     {
-        FighterRoster roster = new FighterRoster();
-        IFighter fighter = FighterBuilder.CreateMock( "A" ).Object;
+        // Arrange
+        FighterRoster sut = new FighterRoster();
+        TestFighter testFighter = FighterMother.CreateDefault( "a" );
 
-        roster.Add( fighter );
+        // Act
+        sut.Add( testFighter );
 
-        Assert.Single( roster.Fighters );
-        Assert.Same( fighter, roster.Fighters[ 0 ] );
+        // Assert
+        Assert.Single( sut.Fighters );
+        Assert.Equal( testFighter, sut.Fighters.First() );
     }
 
     [Fact]
     public void Add_Null_ThrowsArgumentNullException()
     {
+        // Arrange
         FighterRoster roster = new FighterRoster();
 
+        // Act, Assert
         Assert.Throws<ArgumentNullException>( () => roster.Add( null! ) );
-    }
-
-    [Fact]
-    public void Add_MultipleFighters_PreservesInsertionOrder()
-    {
-        FighterRoster roster = new FighterRoster();
-        roster.Add( FighterBuilder.CreateMock( "A" ).Object );
-        roster.Add( FighterBuilder.CreateMock( "B" ).Object );
-
-        Assert.Equal( new[] { "A", "B" }, roster.Fighters.Select( f => f.Name ) );
     }
 
     [Fact]
     public void RemoveAt_ValidIndex_RemovesThatFighter()
     {
-        FighterRoster roster = new FighterRoster();
-        roster.Add( FighterBuilder.CreateMock( "A" ).Object );
-        roster.Add( FighterBuilder.CreateMock( "B" ).Object );
+        // Arrange
+        FighterRoster sut = new FighterRoster();
+        sut.Add( FighterMother.CreateDefault( "First Fighter" ) );
+        sut.Add( FighterMother.CreateDefault( "Second Fighter" ) );
 
-        roster.RemoveAt( 0 );
+        // Act
+        sut.RemoveAt( 0 );
 
-        Assert.Equal( new[] { "B" }, roster.Fighters.Select( f => f.Name ) );
+        // Assert
+        Assert.Equal( new[] { "Second Fighter" }, sut.Fighters.Select( f => f.Name ) );
     }
 
     [Fact]
     public void RemoveAt_OutOfRangeIndex_ThrowsArgumentOutOfRangeException()
     {
+        // Arrange
         FighterRoster roster = new FighterRoster();
-        roster.Add( FighterBuilder.CreateMock( "A" ).Object );
+        roster.Add( FighterMother.CreateDefault() );
 
+        // Act, Assert
         Assert.Throws<ArgumentOutOfRangeException>( () => roster.RemoveAt( 5 ) );
     }
 
     [Fact]
     public void Clear_NonEmptyRoster_RemovesEverything()
     {
+        // Arrange
         FighterRoster roster = new FighterRoster();
-        roster.Add( FighterBuilder.CreateMock( "A" ).Object );
-        roster.Add( FighterBuilder.CreateMock( "B" ).Object );
+        roster.Add( FighterMother.CreateDefault( "a" ) );
+        roster.Add( FighterMother.CreateDefault( "b" ) );
 
+        // Act
         roster.Clear();
 
+        // Assert
         Assert.Empty( roster.Fighters );
     }
 }

@@ -54,74 +54,32 @@ public class FighterTests
         return piece;
     }
 
-    private static Fighter CreateFighter(
-        string name = "Hero",
-        IRace? race = null,
-        IFighterClass? fighterClass = null,
-        IWeapon? weapon = null,
-        IArmor? armor = null
-    ) => new Fighter(
-        name,
-        race ?? CreateRace().Object,
-        fighterClass ?? CreateClass().Object,
-        weapon ?? CreateWeapon().Object,
-        armor ?? CreateArmor().Object
-    );
-
     [Fact]
-    public void MaxHealth_RaceAndClassHealth_IsSum()
+    public void FighterStats_RaceClassWeaponArmor_IsSum()
     {
-        Fighter fighter = CreateFighter(
-            race: CreateRace( health: 100 ).Object,
-            fighterClass: CreateClass( health: 50 ).Object
+        // Arrange
+        IFighter fighter = new Fighter(
+            "Hero",
+            CreateRace( health: 100, damage: 10, armor: 5, initiative: 5 ).Object,
+            CreateClass( health: 50, damage: 5 ).Object,
+            CreateWeapon( damage: 15 ).Object,
+            CreateArmor( armor: 15 ).Object
         );
 
-        Assert.Equal( 150, fighter.MaxHealth );
-    }
+        // Act
+        int currentHp = fighter.CurrentHealth;
+        int actualHp = fighter.MaxHealth;
+        int actualDamage = fighter.Damage;
+        int actualArmor = fighter.Armor;
+        int actualInitiative = fighter.Initiative;
 
-    [Fact]
-    public void Damage_RaceClassAndWeapon_IsSum()
-    {
-        Fighter fighter = CreateFighter(
-            race: CreateRace( damage: 1 ).Object,
-            fighterClass: CreateClass( damage: 5 ).Object,
-            weapon: CreateWeapon( damage: 15 ).Object
-        );
-
-        Assert.Equal( 21, fighter.Damage );
-    }
-
-    [Fact]
-    public void Armor_RaceAndArmor_IsSum()
-    {
-        Fighter fighter = CreateFighter(
-            race: CreateRace( armor: 3 ).Object,
-            armor: CreateArmor( armor: 15 ).Object
-        );
-
-        Assert.Equal( 18, fighter.Armor );
-    }
-
-    [Fact]
-    public void Initiative_Always_ComesFromRace()
-    {
-        Fighter fighter = CreateFighter(
-            race: CreateRace( initiative: 9 ).Object
-        );
-
-        Assert.Equal( 9, fighter.Initiative );
-    }
-
-    [Fact]
-    public void Constructor_NewFighter_StartsAtFullHealth()
-    {
-        Fighter fighter = CreateFighter(
-            race: CreateRace( health: 100 ).Object,
-            fighterClass: CreateClass( health: 20 ).Object
-        );
-
-        Assert.Equal( fighter.MaxHealth, fighter.CurrentHealth );
+        // Assert
         Assert.True( fighter.IsAlive );
+        Assert.Equal( 150, actualHp );
+        Assert.Equal( actualHp, currentHp );
+        Assert.Equal( 30, actualDamage );
+        Assert.Equal( 20, actualArmor );
+        Assert.Equal( 5, actualInitiative );
     }
 
     [Theory]
@@ -130,11 +88,21 @@ public class FighterTests
     [InlineData( null )]
     public void Constructor_EmptyName_ThrowsArgumentException( string? name )
     {
-        Assert.Throws<ArgumentException>( () => CreateFighter( name: name! ) );
+        // Act, Assert
+        Assert.Throws<ArgumentException>( () => new Fighter(
+                name!,
+                CreateRace().Object,
+                CreateClass().Object,
+                CreateWeapon().Object,
+                CreateArmor().Object
+            )
+        );
     }
 
     [Fact]
-    public void Constructor_NullRace_ThrowsArgumentNullException() =>
+    public void Constructor_NullRace_ThrowsArgumentNullException()
+    {
+        // Act, Assert
         Assert.Throws<ArgumentNullException>( () => new Fighter(
                 "Hero",
                 null!,
@@ -143,9 +111,12 @@ public class FighterTests
                 CreateArmor().Object
             )
         );
+    }
 
     [Fact]
-    public void Constructor_NullClass_ThrowsArgumentNullException() =>
+    public void Constructor_NullClass_ThrowsArgumentNullException()
+    {
+        // Act, Assert
         Assert.Throws<ArgumentNullException>( () => new Fighter(
                 "Hero",
                 CreateRace().Object,
@@ -154,9 +125,12 @@ public class FighterTests
                 CreateArmor().Object
             )
         );
+    }
 
     [Fact]
-    public void Constructor_NullWeapon_ThrowsArgumentNullException() =>
+    public void Constructor_NullWeapon_ThrowsArgumentNullException()
+    {
+        // Act, Assert
         Assert.Throws<ArgumentNullException>( () => new Fighter(
                 "Hero",
                 CreateRace().Object,
@@ -165,9 +139,12 @@ public class FighterTests
                 CreateArmor().Object
             )
         );
+    }
 
     [Fact]
-    public void Constructor_NullArmor_ThrowsArgumentNullException() =>
+    public void Constructor_NullArmor_ThrowsArgumentNullException()
+    {
+        // Act, Assert
         Assert.Throws<ArgumentNullException>( () => new Fighter(
                 "Hero",
                 CreateRace().Object,
@@ -176,63 +153,101 @@ public class FighterTests
                 null!
             )
         );
+    }
 
     [Fact]
     public void TakeDamage_PositiveAmount_ReducesHealthByExactAmount()
     {
-        Fighter fighter = CreateFighter(
-            race: CreateRace( health: 100 ).Object,
-            fighterClass: CreateClass( health: 50 ).Object
+        // Arrange
+        Fighter sut = new Fighter(
+            "Hero",
+            CreateRace( health: 100 ).Object,
+            CreateClass( health: 50 ).Object,
+            CreateWeapon().Object,
+            CreateArmor().Object
         );
 
-        int before = fighter.CurrentHealth;
+        // Act
+        sut.TakeDamage( 30 );
 
-        fighter.TakeDamage( 30 );
-
-        Assert.Equal( before - 30, fighter.CurrentHealth );
+        // Assert
+        Assert.Equal( 150 - 30, sut.CurrentHealth );
     }
 
     [Fact]
     public void TakeDamage_MoreThanHealth_ClampsToZeroAndDies()
     {
-        Fighter fighter = CreateFighter();
+        // Arrange
+        Fighter sut = new Fighter(
+            "Hero",
+            CreateRace( health: 100 ).Object,
+            CreateClass( health: 1 ).Object,
+            CreateWeapon().Object,
+            CreateArmor().Object
+        );
 
-        fighter.TakeDamage( 99999 );
+        // Act
+        sut.TakeDamage( 99999 );
 
-        Assert.Equal( 0, fighter.CurrentHealth );
-        Assert.False( fighter.IsAlive );
+        // Assert
+        Assert.Equal( 0, sut.CurrentHealth );
+        Assert.False( sut.IsAlive );
     }
 
     [Fact]
     public void TakeDamage_ExactlyHealth_DropsToZeroAndDies()
     {
-        Fighter fighter = CreateFighter(
-            race: CreateRace( health: 100 ).Object,
-            fighterClass: CreateClass( health: 0 ).Object
+        // Arrange
+        Fighter sut = new Fighter(
+            "Hero",
+            CreateRace( health: 50 ).Object,
+            CreateClass( health: 50 ).Object,
+            CreateWeapon().Object,
+            CreateArmor().Object
         );
 
-        fighter.TakeDamage( 100 );
+        // Act
+        sut.TakeDamage( 100 );
 
-        Assert.Equal( 0, fighter.CurrentHealth );
-        Assert.False( fighter.IsAlive );
+        // Assert
+        Assert.Equal( 0, sut.CurrentHealth );
+        Assert.False( sut.IsAlive );
     }
 
     [Fact]
     public void TakeDamage_ZeroDamage_KeepsHealth()
     {
-        Fighter fighter = CreateFighter();
-        int before = fighter.CurrentHealth;
+        // Arrange
+        Fighter sut = new Fighter(
+            "Hero",
+            CreateRace( health: 100 ).Object,
+            CreateClass( health: 100 ).Object,
+            CreateWeapon().Object,
+            CreateArmor().Object
+        );
 
-        fighter.TakeDamage( 0 );
+        int before = sut.CurrentHealth;
 
-        Assert.Equal( before, fighter.CurrentHealth );
+        // Act
+        sut.TakeDamage( 0 );
+
+        // Assert
+        Assert.Equal( before, sut.CurrentHealth );
     }
 
     [Fact]
     public void TakeDamage_NegativeAmount_ThrowsArgumentOutOfRangeException()
     {
-        Fighter fighter = CreateFighter();
+        // Arrange
+        Fighter sut = new Fighter(
+            "Hero",
+            CreateRace( health: 50 ).Object,
+            CreateClass( health: 50 ).Object,
+            CreateWeapon().Object,
+            CreateArmor().Object
+        );
 
-        Assert.Throws<ArgumentOutOfRangeException>( () => fighter.TakeDamage( -1 ) );
+        // Act, Assert
+        Assert.Throws<ArgumentOutOfRangeException>( () => sut.TakeDamage( -1 ) );
     }
 }

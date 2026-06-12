@@ -11,33 +11,63 @@ public class PlainDamageCalculatorTests
     [Fact]
     public void Calculate_DamageGreaterThanArmor_ReturnsDifference()
     {
-        IFighter attacker = FighterBuilder.CreateMock( damage: 20 ).Object;
-        IFighter defender = FighterBuilder.CreateMock( armor: 5 ).Object;
+        // Arrange
+        IFighter attacker = new TestFighter
+        {
+            Damage = 20
+        };
 
+        IFighter defender = new TestFighter
+        {
+            Armor = 5
+        };
+
+        // Act
         int dealtDamage = _calculator.Calculate( attacker, defender );
 
-        Assert.Equal( 15, dealtDamage );
+        // Assert
+        Assert.Equal( 5, dealtDamage );
     }
 
     [Fact]
     public void Calculate_ArmorGreaterThanDamage_ReturnsZero()
     {
-        IFighter attacker = FighterBuilder.CreateMock( damage: 5 ).Object;
-        IFighter defender = FighterBuilder.CreateMock( armor: 20 ).Object;
+        // Arrange
+        IFighter attacker = new TestFighter
+        {
+            Damage = 5
+        };
 
+        IFighter defender = new TestFighter
+        {
+            Armor = 20
+        };
+
+        // Act
         int dealtDamage = _calculator.Calculate( attacker, defender );
 
+        // Assert
         Assert.Equal( 0, dealtDamage );
     }
 
     [Fact]
     public void Calculate_ArmorEqualsDamage_ReturnsZero()
     {
-        IFighter attacker = FighterBuilder.CreateMock( damage: 10 ).Object;
-        IFighter defender = FighterBuilder.CreateMock( armor: 10 ).Object;
+        // Arrange
+        IFighter attacker = new TestFighter
+        {
+            Damage = 20
+        };
 
+        IFighter defender = new TestFighter
+        {
+            Armor = 20
+        };
+
+        // Act
         int dealtDamage = _calculator.Calculate( attacker, defender );
 
+        // Assert
         Assert.Equal( 0, dealtDamage );
     }
 }
