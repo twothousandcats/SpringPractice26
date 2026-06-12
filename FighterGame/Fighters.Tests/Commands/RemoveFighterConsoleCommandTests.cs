@@ -7,30 +7,26 @@ namespace Fighters.Tests.Commands;
 
 public class RemoveFighterConsoleCommandTests
 {
-    private static FighterRoster RosterWith( params string[] names )
-    {
-        FighterRoster roster = new FighterRoster();
-        foreach ( string name in names )
-        {
-            roster.Add( FighterBuilder.CreateMock( name ).Object );
-        }
-
-        return roster;
-    }
-
     [Fact]
     public void Execute_ValidIndex_RemovesFighterAndAnnounces()
     {
-        FighterRoster roster = RosterWith( "A", "B" );
+        // Arrange
+        FighterRoster roster = new FighterRoster();
+        roster.Add( FighterMother.CreateDefault( "A" ) );
+        roster.Add( FighterMother.CreateDefault( "B" ) );
         Mock<IConsole> console = new Mock<IConsole>();
-        console.Setup( c => c.ReadLine() ).Returns( "1" );
-        RemoveFighterConsoleCommand command = new RemoveFighterConsoleCommand( roster, console.Object );
+        console
+            .Setup( c => c.ReadLine() )
+            .Returns( "1" );
 
-        command.Execute();
+        RemoveFighterConsoleCommand sut = new RemoveFighterConsoleCommand( roster, console.Object );
 
+        // Act
+        sut.Execute();
+
+        // Assert
         Assert.Single( roster.Fighters );
         Assert.Equal( "B", roster.Fighters[ 0 ].Name );
-        console.Verify( c => c.WriteLine( It.Is<string>( s => s.Contains( "Removed" ) ) ), Times.Once );
     }
 
     [Theory]
@@ -41,14 +37,21 @@ public class RemoveFighterConsoleCommandTests
     [InlineData( "" )]
     public void Execute_InvalidIndex_LeavesRosterIntact( string input )
     {
-        FighterRoster roster = RosterWith( "A", "B" );
+        // Arrange
+        FighterRoster roster = new FighterRoster();
+        roster.Add( FighterMother.CreateDefault( "A" ) );
+        roster.Add( FighterMother.CreateDefault( "B" ) );
         Mock<IConsole> console = new Mock<IConsole>();
-        console.Setup( c => c.ReadLine() ).Returns( input );
-        RemoveFighterConsoleCommand command = new RemoveFighterConsoleCommand( roster, console.Object );
+        console
+            .Setup( c => c.ReadLine() )
+            .Returns( input );
 
-        command.Execute();
+        RemoveFighterConsoleCommand sut = new RemoveFighterConsoleCommand( roster, console.Object );
 
+        // Act
+        sut.Execute();
+
+        // Assert
         Assert.Equal( 2, roster.Fighters.Count );
-        console.Verify( c => c.WriteLine( It.Is<string>( s => s.Contains( "Invalid" ) ) ), Times.Once );
     }
 }

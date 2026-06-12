@@ -8,10 +8,14 @@ public class ExitConsoleCommandTests
     [Fact]
     public void Execute_Always_RequestsGameLoopStop()
     {
+        // Arrange
         Mock<IGameLoop> gameLoop = new Mock<IGameLoop>();
+        ExitConsoleCommand sut = new ExitConsoleCommand( gameLoop.Object );
 
-        new ExitConsoleCommand( gameLoop.Object ).Execute();
+        // Act
+        sut.Execute();
 
+        // Assert
         gameLoop.Verify( g => g.RequestStop(), Times.Once );
     }
 }

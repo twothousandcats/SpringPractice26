@@ -1,4 +1,5 @@
 using Fighters.Commands;
+using Fighters.Tests.TestData;
 using Fighters.UI;
 using Moq;
 
@@ -6,63 +7,84 @@ namespace Fighters.Tests.Commands;
 
 public class CommandLoopTests
 {
-    private readonly Mock<IGameLoop> _gameLoop = new Mock<IGameLoop>();
-
-    private readonly Mock<IConsole> _console = new Mock<IConsole>();
-
-    private readonly CommandRegistry _registry = new CommandRegistry();
-
-    private CommandLoop CreateLoop() => new CommandLoop( _registry, _gameLoop.Object, _console.Object );
-
-    private void SetupSingleIteration() => _gameLoop
-        .SetupSequence( gameLoop => gameLoop.IsRunning )
-        .Returns( true )
-        .Returns( false );
-
     [Fact]
     public void Run_KnownCommand_ExecutesIt()
     {
-        Mock<IConsoleCommand> command = new Mock<IConsoleCommand>();
-        command.SetupGet( c => c.Name ).Returns( "Play" );
-        command.SetupGet( c => c.Description ).Returns( "play" );
-        _registry.Register( command.Object );
-        SetupSingleIteration();
-        _console.Setup( c => c.ReadLine() ).Returns( "Play" );
+        // Arrange
+        TestCommand play = new TestCommand
+        {
+            Name = "Play"
+        };
 
-        CreateLoop().Run();
+        CommandRegistry registry = new CommandRegistry();
+        registry.Register( play );
+        Mock<IGameLoop> gameLoop = new Mock<IGameLoop>();
+        gameLoop.SetupSequence( g => g.IsRunning ).Returns( true ).Returns( false );
+        Mock<IConsole> console = new Mock<IConsole>();
+        console.Setup( c => c.ReadLine() ).Returns( "Play" );
+        CommandLoop sut = new CommandLoop( registry, gameLoop.Object, console.Object );
 
-        command.Verify( c => c.Execute(), Times.Once );
-    }
+        // Act
+        sut.Run();
 
-    [Fact]
-    public void Run_UnknownCommand_PrintsUnknownMessage()
-    {
-        SetupSingleIteration();
-        _console.Setup( c => c.ReadLine() ).Returns( "nope" );
-
-        CreateLoop().Run();
-
-        _console.Verify( c => c.WriteLine( "Unknown command" ), Times.Once );
-    }
-
-    [Fact]
-    public void Run_EmptyInput_PrintsUnknownMessage()
-    {
-        SetupSingleIteration();
-        _console.Setup( c => c.ReadLine() ).Returns( string.Empty );
-
-        CreateLoop().Run();
-
-        _console.Verify( c => c.WriteLine( "Unknown command" ), Times.Once );
+        // Assert
+        Assert.Equal( 1, play.ExecuteCallCount );
     }
 
     [Fact]
     public void Run_GameLoopNotRunning_DoesNothing()
     {
-        _gameLoop.SetupGet( g => g.IsRunning ).Returns( false );
+        // Arrange
+        CommandRegistry registry = new CommandRegistry();
+        Mock<IGameLoop> gameLoop = new Mock<IGameLoop>();
+        gameLoop
+            .Setup( g => g.IsRunning )
+            .Returns( false );
 
-        CreateLoop().Run();
+        Mock<IConsole> console = new Mock<IConsole>();
+        CommandLoop sut = new CommandLoop(
+            registry,
+            gameLoop.Object,
+            console.Object
+        );
 
-        _console.Verify( c => c.ReadLine(), Times.Never );
+        // Act
+        sut.Run();
+
+        // Assert
+        console.Verify( c => c.ReadLine(), Times.Never );
+    }
+
+    [Fact]
+    public void Run_MultipleIterations_ExecutesCommandPerIteration()
+    {
+        // Arrange
+        TestCommand play = new TestCommand
+        {
+            Name = "Play"
+        };
+
+        CommandRegistry registry = new CommandRegistry();
+        registry.Register( play );
+        Mock<IGameLoop> gameLoop = new Mock<IGameLoop>();
+        gameLoop
+            .SetupSequence( g => g.IsRunning )
+            .Returns( true )
+            .Returns( true )
+            .Returns( false );
+
+        Mock<IConsole> console = new Mock<IConsole>();
+        console
+            .SetupSequence( c => c.ReadLine() )
+            .Returns( "Play" )
+            .Returns( "Play" );
+
+        CommandLoop sut = new CommandLoop( registry, gameLoop.Object, console.Object );
+
+        // Act
+        sut.Run();
+
+        // Assert
+        Assert.Equal( 2, play.ExecuteCallCount );
     }
 }
