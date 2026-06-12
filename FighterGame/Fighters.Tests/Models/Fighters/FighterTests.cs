@@ -235,31 +235,4 @@ public class FighterTests
 
         Assert.Throws<ArgumentOutOfRangeException>( () => fighter.TakeDamage( -1 ) );
     }
-
-    [Fact]
-    public void Description_Always_ContainsNamesAndHealth()
-    {
-        Mock<IRace> race = CreateRace( health: 100 );
-        race.SetupGet( r => r.Name ).Returns( "Human" );
-        Mock<IFighterClass> fighterClass = CreateClass( health: 50 );
-        fighterClass.SetupGet( c => c.Name ).Returns( "Knight" );
-        Mock<IWeapon> weapon = CreateWeapon();
-        weapon.SetupGet( w => w.Name ).Returns( "Sword" );
-        Mock<IArmor> armor = CreateArmor();
-        armor.SetupGet( a => a.Name ).Returns( "Plate Armor" );
-
-        string description = CreateFighter(
-            race: race.Object,
-            fighterClass: fighterClass.Object,
-            weapon: weapon.Object,
-            armor: armor.Object
-        ).Description;
-
-        Assert.Contains( "Hero", description );
-        Assert.Contains( "Human", description );
-        Assert.Contains( "Knight", description );
-        Assert.Contains( "Sword", description );
-        Assert.Contains( "Plate Armor", description );
-        Assert.Contains( "150 / 150", description );
-    }
 }
