@@ -12,7 +12,7 @@ public class BattleRunnerTests
     {
         // Arrange
         BattleRunner sut = new BattleRunner(
-            new Mock<ConsoleBattleLogger>().Object,
+            new Mock<IBattleLogger> ().Object,
             new Mock<ITargetSelector>().Object,
             new Mock<IDamageCalculator>().Object
         );
@@ -24,9 +24,10 @@ public class BattleRunnerTests
     [Fact]
     public void Play_FewerThanTwoFighters_ThrowsArgumentException()
     {
+        // Arrange
         IFighter solo = FighterMother.CreateDefault();
         BattleRunner sut = new BattleRunner(
-            new Mock<ConsoleBattleLogger>().Object,
+            new Mock<IBattleLogger> ().Object,
             new Mock<ITargetSelector>().Object,
             new Mock<IDamageCalculator>().Object
         );
@@ -188,6 +189,7 @@ public class BattleRunnerTests
         // Act
         BattleResult result = sut.Play( new IFighter[] { attacker, defender } );
 
+        // Assert
         logger.Verify( l => l.LogFighterDied( defender ), Times.Once );
         Assert.Equal( BattleOutcome.Victory, result.Outcome );
         Assert.Same( attacker, result.Winner );
@@ -236,7 +238,7 @@ public class BattleRunnerTests
         BattleResult result = sut.Play( new IFighter[] { firstFighter, secondFighter } );
 
         // Assert
-        Assert.Equal( BattleOutcome.Victory, result.Outcome );
+        Assert.Equal( BattleOutcome.Stalemate, result.Outcome );
         Assert.Same( firstFighter, result.Winner );
         logger.Verify( l => l.LogReachStalemate( It.IsAny<IReadOnlyList<IFighter>>() ), Times.Once );
     }
@@ -244,6 +246,7 @@ public class BattleRunnerTests
     [Fact]
     public void Play_NobodyDiesForManyRounds_ReturnsRoundLimitReached()
     {
+        // Arrange
         TestFighter firstFighter = new TestFighter
         {
             Name = "FirstFighter",
