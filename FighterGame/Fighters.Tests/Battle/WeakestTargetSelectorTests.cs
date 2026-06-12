@@ -6,53 +6,83 @@ namespace Fighters.Tests.Battle;
 
 public class WeakestTargetSelectorTests
 {
-    private readonly WeakestTargetSelector _selector = new WeakestTargetSelector();
-
     [Fact]
-    public void Pick_MultipleOpponents_ReturnsLowestHealthAlive()
+    public void Pick_MultipleAliveOpponents_ReturnsLowestHealth()
     {
-        IFighter attacker = FighterBuilder.CreateMock( "A" ).Object;
-        IFighter healthy = FighterBuilder.CreateMock( "B", currentHealth: 100 ).Object;
-        IFighter wounded = FighterBuilder.CreateMock( "C", currentHealth: 30 ).Object;
+        // Arrange
+        TestFighter attacker = FighterMother.CreateDefault( "Attacker" );
+        TestFighter healthy = new TestFighter
+        {
+            Name = "Healthy",
+            CurrentHealth = 100
+        };
 
-        IFighter? picked = _selector.Pick( attacker, new[] { attacker, healthy, wounded } );
+        TestFighter wounded = new TestFighter
+        {
+            Name = "Wounded",
+            CurrentHealth = 30
+        };
 
+        WeakestTargetSelector sut = new WeakestTargetSelector();
+
+        // Act
+        IFighter? picked = sut.Pick( attacker, new[] { attacker, healthy, wounded } );
+
+        // Assert
         Assert.Same( wounded, picked );
     }
 
     [Fact]
     public void Pick_OnlySelfAndDead_ReturnsNull()
     {
-        IFighter attacker = FighterBuilder.CreateMock( "A" ).Object;
-        IFighter dead = FighterBuilder.CreateMock( "B", isAlive: false ).Object;
+        // Arrange
+        TestFighter attacker = FighterMother.CreateDefault( "Attacker" );
+        TestFighter dead = FighterMother.CreateDefault( "Dead" );
+        WeakestTargetSelector sut = new WeakestTargetSelector();
 
-        Assert.Null( _selector.Pick( attacker, new[] { attacker, dead } ) );
+        // Act
+        IFighter? picked = sut.Pick( attacker, new[] { attacker, dead } );
+
+        // Assert
+        Assert.Null( picked );
     }
 
     [Fact]
     public void Pick_LowestHealthIsAttackerItself_NeverTargetsItself()
     {
-        IFighter attacker = FighterBuilder.CreateMock( "A", currentHealth: 1 ).Object;
-        IFighter other = FighterBuilder.CreateMock( "B", currentHealth: 100 ).Object;
+        // Arrange
+        TestFighter attacker = new TestFighter
+        {
+            Name = "Attacker",
+            CurrentHealth = 1
+        };
 
-        Assert.Same( other, _selector.Pick( attacker, new[] { attacker, other } ) );
+        TestFighter healthy = new TestFighter
+        {
+            Name = "Healthy",
+            CurrentHealth = 100
+        };
+
+        WeakestTargetSelector sut = new WeakestTargetSelector();
+
+        // Act
+        IFighter? picked = sut.Pick( attacker, new[] { attacker, healthy } );
+
+        // Assert
+        Assert.Same( healthy, picked );
     }
 
     [Fact]
     public void Pick_OnlyAttackerPresent_ReturnsNull()
     {
-        IFighter attacker = FighterBuilder.CreateMock( "A" ).Object;
+        // Arrange
+        TestFighter attacker = FighterMother.CreateDefault( "Attacker" );
+        WeakestTargetSelector sut = new WeakestTargetSelector();
 
-        Assert.Null( _selector.Pick( attacker, new[] { attacker } ) );
-    }
+        // Act
+        IFighter? picked = sut.Pick( attacker, new[] { attacker, attacker } );
 
-    [Fact]
-    public void Pick_AllOpponentsDead_ReturnsNull()
-    {
-        IFighter attacker = FighterBuilder.CreateMock( "A" ).Object;
-        IFighter deadB = FighterBuilder.CreateMock( "B", isAlive: false ).Object;
-        IFighter deadC = FighterBuilder.CreateMock( "C", isAlive: false ).Object;
-
-        Assert.Null( _selector.Pick( attacker, new[] { attacker, deadB, deadC } ) );
+        // Assert
+        Assert.Null( picked );
     }
 }

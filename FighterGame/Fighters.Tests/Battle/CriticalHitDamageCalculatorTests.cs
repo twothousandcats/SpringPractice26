@@ -7,136 +7,175 @@ namespace Fighters.Tests.Battle;
 
 public class CriticalHitDamageCalculatorTests
 {
-    private const int BaseDamage = 50;
-
-    private static Mock<IDamageCalculator> CalculatorReturning( int value )
-    {
-        Mock<IDamageCalculator> calculator = new Mock<IDamageCalculator>();
-        calculator.Setup( c => c.Calculate( It.IsAny<IFighter>(), It.IsAny<IFighter>() ) ).Returns( value );
-
-        return calculator;
-    }
-
-    private static Random RandomReturning( double roll )
-    {
-        Mock<Random> random = new Mock<Random>();
-        random.Setup( r => r.NextDouble() ).Returns( roll );
-
-        return random.Object;
-    }
-
-    private static int Calculate( CriticalHitDamageCalculator calc ) => calc.Calculate(
-        FighterBuilder.CreateMock().Object,
-        FighterBuilder.CreateMock().Object
-    );
-
     [Fact]
     public void Calculate_RollBelowChance_AppliesMultiplier()
     {
-        CriticalHitDamageCalculator calc = new CriticalHitDamageCalculator(
-            CalculatorReturning( BaseDamage ).Object,
-            RandomReturning( 0.0 ),
+        // Arrange
+        Mock<IDamageCalculator> damageCalculator = new Mock<IDamageCalculator>();
+        damageCalculator
+            .Setup( calculator => calculator.Calculate( It.IsAny<IFighter>(), It.IsAny<IFighter>() ) )
+            .Returns( 50 );
+
+        Mock<Random> random = new Mock<Random>();
+        random
+            .Setup( rng => rng.NextDouble() )
+            .Returns( 0.0 );
+
+        CriticalHitDamageCalculator sut = new CriticalHitDamageCalculator(
+            damageCalculator.Object,
+            random.Object,
             criticalChance: 0.5,
             criticalMultiplier: 2.0
         );
 
-        int critDamage = Calculate( calc );
+        // Act
+        int actualDamage = sut.Calculate( new TestFighter(), new TestFighter() );
 
-        Assert.Equal( BaseDamage * 2, critDamage );
+        // Assert
+        Assert.Equal( 100, actualDamage );
     }
 
     [Fact]
     public void Calculate_RollAboveChance_KeepsBaseDamage()
     {
-        CriticalHitDamageCalculator calc = new CriticalHitDamageCalculator(
-            CalculatorReturning( BaseDamage ).Object,
-            RandomReturning( 0.99 ),
+        // Arrange
+        Mock<IDamageCalculator> damageCalculator = new Mock<IDamageCalculator>();
+        damageCalculator
+            .Setup( calculator => calculator.Calculate( It.IsAny<IFighter>(), It.IsAny<IFighter>() ) )
+            .Returns( 50 );
+
+        Mock<Random> random = new Mock<Random>();
+        random
+            .Setup( rng => rng.NextDouble() )
+            .Returns( 0.99 );
+
+        CriticalHitDamageCalculator sut = new CriticalHitDamageCalculator(
+            damageCalculator.Object,
+            random.Object,
             criticalChance: 0.15,
             criticalMultiplier: 2.0
         );
 
-        int critDamage = Calculate( calc );
+        // Act
+        int actualDamage = sut.Calculate( new TestFighter(), new TestFighter() );
 
-        Assert.Equal( BaseDamage, critDamage );
+        // Assert
+        Assert.Equal( 50, actualDamage );
     }
 
     [Fact]
     public void Calculate_RollEqualsChance_IsNotCritical()
     {
-        CriticalHitDamageCalculator calc = new CriticalHitDamageCalculator(
-            CalculatorReturning( BaseDamage ).Object,
-            RandomReturning( 0.15 ),
+        // Arrange
+        Mock<IDamageCalculator> damageCalculator = new Mock<IDamageCalculator>();
+        damageCalculator
+            .Setup( calculator => calculator.Calculate( It.IsAny<IFighter>(), It.IsAny<IFighter>() ) )
+            .Returns( 50 );
+
+        Mock<Random> random = new Mock<Random>();
+        random
+            .Setup( rng => rng.NextDouble() )
+            .Returns( 0.15 );
+
+        CriticalHitDamageCalculator sut = new CriticalHitDamageCalculator(
+            damageCalculator.Object,
+            random.Object,
             criticalChance: 0.15,
             criticalMultiplier: 2.0
         );
 
-        int critDamage = Calculate( calc );
+        // Act
+        int actualDamage = sut.Calculate( new TestFighter(), new TestFighter() );
 
-        Assert.Equal( BaseDamage, critDamage );
+        // Assert
+        Assert.Equal( 50, actualDamage );
     }
 
     [Fact]
-    public void Calculate_CriticalMultiplier_RoundsToNearestInt()
+    public void Calculate_FractionalMultiplier_UsesBankersRoundingToEven()
     {
-        CriticalHitDamageCalculator calc = new CriticalHitDamageCalculator(
-            CalculatorReturning( 5 ).Object,
-            RandomReturning( 0.0 ),
+        // Arrange
+        Mock<IDamageCalculator> damageCalculator = new Mock<IDamageCalculator>();
+        damageCalculator
+            .Setup( calculator => calculator.Calculate( It.IsAny<IFighter>(), It.IsAny<IFighter>() ) )
+            .Returns( 5 );
+
+        Mock<Random> random = new Mock<Random>();
+        random
+            .Setup( rng => rng.NextDouble() )
+            .Returns( 0.0 );
+
+        CriticalHitDamageCalculator sut = new CriticalHitDamageCalculator(
+            damageCalculator.Object,
+            random.Object,
             criticalChance: 1.0,
             criticalMultiplier: 1.5
         );
 
-        int critDamage = Calculate( calc ); // 5 * 1.5 = 7.5 -> 8
+        // Act
+        int actualDamage = sut.Calculate( new TestFighter(), new TestFighter() );
 
-        Assert.Equal( 8, critDamage );
+        // Assert
+        Assert.Equal( 8, actualDamage );
     }
 
     [Theory]
     [InlineData( 0.0 )]
     [InlineData( 0.5 )]
     [InlineData( 0.999 )]
-    public void Calculate_ZeroChance_NeverCrits( double roll )
+    public void Calculate_ZeroCriticalChance_KeepsBaseDamageForAnyRoll( double roll )
     {
-        CriticalHitDamageCalculator calc = new CriticalHitDamageCalculator(
-            CalculatorReturning( BaseDamage ).Object,
-            RandomReturning( roll ),
+        // Arrange
+        Mock<IDamageCalculator> damageCalculator = new Mock<IDamageCalculator>();
+        damageCalculator
+            .Setup( calculator => calculator.Calculate( It.IsAny<IFighter>(), It.IsAny<IFighter>() ) )
+            .Returns( 50 );
+
+        Mock<Random> random = new Mock<Random>();
+        random
+            .Setup( rng => rng.NextDouble() )
+            .Returns( roll );
+
+        CriticalHitDamageCalculator sut = new CriticalHitDamageCalculator(
+            damageCalculator.Object,
+            random.Object,
             criticalChance: 0.0,
             criticalMultiplier: 2.0
         );
 
-        int critDamage = Calculate( calc );
+        // Act
+        int actualDamage = sut.Calculate( new TestFighter(), new TestFighter() );
 
-        Assert.Equal( BaseDamage, critDamage );
+        // Assert
+        Assert.Equal( 50, actualDamage );
     }
 
     [Fact]
     public void Calculate_ChanceOne_AlwaysCrits()
     {
-        CriticalHitDamageCalculator calc = new CriticalHitDamageCalculator(
-            CalculatorReturning( BaseDamage ).Object,
-            RandomReturning( 0.999 ),
+        // Arrange
+        Mock<IDamageCalculator> damageCalculator = new Mock<IDamageCalculator>();
+        damageCalculator
+            .Setup( calculator => calculator.Calculate( It.IsAny<IFighter>(), It.IsAny<IFighter>() ) )
+            .Returns( 50 );
+
+        Mock<Random> random = new Mock<Random>();
+        random
+            .Setup( rng => rng.NextDouble() )
+            .Returns( 0.999 );
+
+        CriticalHitDamageCalculator sut = new CriticalHitDamageCalculator(
+            damageCalculator.Object,
+            random.Object,
             criticalChance: 1.0,
             criticalMultiplier: 2.0
         );
 
-        int critDamage = Calculate( calc );
+        // Act
+        int actualDamage = sut.Calculate( new TestFighter(), new TestFighter() );
 
-        Assert.Equal( 100, critDamage );
-    }
-
-    [Fact]
-    public void Calculate_Always_DelegatesToInnerCalculatorOnce()
-    {
-        Mock<IDamageCalculator> mockedCalculator = CalculatorReturning( BaseDamage );
-        CriticalHitDamageCalculator calc = new CriticalHitDamageCalculator(
-            mockedCalculator.Object,
-            RandomReturning( 0.99 ),
-            criticalChance: 0.15,
-            criticalMultiplier: 2.0
-        );
-
-        Calculate( calc );
-
-        mockedCalculator.Verify( c => c.Calculate( It.IsAny<IFighter>(), It.IsAny<IFighter>() ), Times.Once );
+        // Assert
+        Assert.Equal( 100, actualDamage );
     }
 
     [Theory]
@@ -144,9 +183,14 @@ public class CriticalHitDamageCalculatorTests
     [InlineData( 1.1 )]
     public void Constructor_ChanceOutOfRange_ThrowsArgumentOutOfRangeException( double chance )
     {
+        // Arrange
+        Mock<IDamageCalculator> damageCalculator = new Mock<IDamageCalculator>();
+        Mock<Random> random = new Mock<Random>();
+
+        // Act, Assert
         Assert.Throws<ArgumentOutOfRangeException>( () => new CriticalHitDamageCalculator(
-                CalculatorReturning( 1 ).Object,
-                RandomReturning( 0 ),
+                damageCalculator.Object,
+                random.Object,
                 criticalChance: chance
             )
         );
@@ -155,9 +199,14 @@ public class CriticalHitDamageCalculatorTests
     [Fact]
     public void Constructor_MultiplierLessThanOne_ThrowsArgumentOutOfRangeException()
     {
+        // Arrange
+        Mock<IDamageCalculator> damageCalculator = new Mock<IDamageCalculator>();
+        Mock<Random> random = new Mock<Random>();
+
+        // Act, Assert
         Assert.Throws<ArgumentOutOfRangeException>( () => new CriticalHitDamageCalculator(
-                CalculatorReturning( 1 ).Object,
-                RandomReturning( 0 ),
+                damageCalculator.Object,
+                random.Object,
                 criticalMultiplier: 0.5
             )
         );

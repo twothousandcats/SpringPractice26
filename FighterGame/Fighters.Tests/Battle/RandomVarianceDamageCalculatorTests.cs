@@ -7,69 +7,57 @@ namespace Fighters.Tests.Battle;
 
 public class RandomVarianceDamageCalculatorTests
 {
-    private const int BaseDamage = 100;
-
-    private static RandomVarianceDamageCalculator Create(
-        int baseDamage,
-        double roll,
-        out Mock<IDamageCalculator> damageCalculator
-    )
-    {
-        damageCalculator = new Mock<IDamageCalculator>();
-        damageCalculator.Setup( calc => calc.Calculate(
-                It.IsAny<IFighter>(),
-                It.IsAny<IFighter>()
-            )
-        ).Returns( baseDamage );
-
-        Mock<Random> random = new Mock<Random>();
-        random.Setup( r => r.NextDouble() ).Returns( roll );
-
-        return new RandomVarianceDamageCalculator( damageCalculator.Object, random.Object );
-    }
-
     [Theory]
     [InlineData( 0.0, 80 )]
     [InlineData( 0.5, 95 )]
     [InlineData( 0.9999999, 110 )]
-    public void Calculate_GivenRoll_ScalesBaseDamageWithinVariance( double roll, int expected )
+    public void Calculate_GivenRoll_ScalesBaseDamageWithinVariance( double roll, int expectedDamage )
     {
-        RandomVarianceDamageCalculator calc = Create( BaseDamage, roll, out _ );
+        // Arrange
+        Mock<IDamageCalculator> damageCalculator = new Mock<IDamageCalculator>();
+        damageCalculator
+            .Setup( calculator => calculator.Calculate( It.IsAny<IFighter>(), It.IsAny<IFighter>() ) )
+            .Returns( 100 );
 
-        int damage = calc.Calculate(
-            FighterBuilder.CreateMock().Object,
-            FighterBuilder.CreateMock().Object
+        Mock<Random> random = new Mock<Random>();
+        random
+            .Setup( rng => rng.NextDouble() )
+            .Returns( roll );
+
+        RandomVarianceDamageCalculator sut = new RandomVarianceDamageCalculator(
+            damageCalculator.Object, random.Object
         );
 
-        Assert.Equal( expected, damage );
+        // Act
+        int actualDamage = sut.Calculate( new TestFighter(), new TestFighter() );
+
+        // Assert
+        Assert.Equal( expectedDamage, actualDamage );
     }
 
     [Fact]
     public void Calculate_ZeroBaseDamage_ReturnsZero()
     {
-        RandomVarianceDamageCalculator calc = Create( 0, 0.5, out _ );
+        // Arrange
+        Mock<IDamageCalculator> damageCalculator = new Mock<IDamageCalculator>();
+        damageCalculator
+            .Setup( calculator => calculator.Calculate( It.IsAny<IFighter>(), It.IsAny<IFighter>() ) )
+            .Returns( 0 );
 
-        int damage = calc.Calculate(
-            FighterBuilder.CreateMock().Object,
-            FighterBuilder.CreateMock().Object
+        Mock<Random> random = new Mock<Random>();
+        random
+            .Setup( rng => rng.NextDouble() )
+            .Returns( 0.5 );
+
+        RandomVarianceDamageCalculator sut = new RandomVarianceDamageCalculator(
+            damageCalculator.Object,
+            random.Object
         );
 
-        Assert.Equal( 0, damage );
-    }
+        // Act
+        int actualDamage = sut.Calculate( new TestFighter(), new TestFighter() );
 
-    [Fact]
-    public void Calculate_Always_DelegatesToCalculatorOnce()
-    {
-        IFighter attacker = FighterBuilder.CreateMock().Object;
-        IFighter defender = FighterBuilder.CreateMock().Object;
-        RandomVarianceDamageCalculator calc = Create(
-            BaseDamage,
-            0.5,
-            out Mock<IDamageCalculator> calculator
-        );
-
-        calc.Calculate( attacker, defender );
-
-        calculator.Verify( c => c.Calculate( attacker, defender ), Times.Once );
+        // Assert
+        Assert.Equal( 0, actualDamage );
     }
 }

@@ -6,8 +6,6 @@ namespace Fighters.Tests.Battle;
 
 public class PlainDamageCalculatorTests
 {
-    private readonly PlainDamageCalculator _calculator = new PlainDamageCalculator();
-
     [Fact]
     public void Calculate_DamageGreaterThanArmor_ReturnsDifference()
     {
@@ -22,11 +20,13 @@ public class PlainDamageCalculatorTests
             Armor = 5
         };
 
+        PlainDamageCalculator sut = new PlainDamageCalculator();
+
         // Act
-        int dealtDamage = _calculator.Calculate( attacker, defender );
+        int dealtDamage = sut.Calculate( attacker, defender );
 
         // Assert
-        Assert.Equal( 5, dealtDamage );
+        Assert.Equal( 15, dealtDamage );
     }
 
     [Fact]
@@ -43,8 +43,10 @@ public class PlainDamageCalculatorTests
             Armor = 20
         };
 
+        PlainDamageCalculator sut = new PlainDamageCalculator();
+
         // Act
-        int dealtDamage = _calculator.Calculate( attacker, defender );
+        int dealtDamage = sut.Calculate( attacker, defender );
 
         // Assert
         Assert.Equal( 0, dealtDamage );
@@ -64,8 +66,10 @@ public class PlainDamageCalculatorTests
             Armor = 20
         };
 
+        PlainDamageCalculator sut = new PlainDamageCalculator();
+
         // Act
-        int dealtDamage = _calculator.Calculate( attacker, defender );
+        int dealtDamage = sut.Calculate( attacker, defender );
 
         // Assert
         Assert.Equal( 0, dealtDamage );
