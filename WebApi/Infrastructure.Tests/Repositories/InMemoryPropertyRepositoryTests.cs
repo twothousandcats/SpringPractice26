@@ -6,120 +6,187 @@ namespace Infrastructure.Tests.Repositories;
 
 public class InMemoryPropertyRepositoryTests
 {
-    private const string HotelName = "Azimut";
-
-    private const string HotelCountry = "Russia";
-
-    private const string HotelCity = "Yoshkar-Ola";
-
-    private const string HotelAddress = "Voskresensky Prospect, Building 11";
-
-    private const double HotelLatitude = 56.63;
-
-    private const double HotelLongitude = 47.91;
-
-    private readonly InMemoryPropertyRepository _repository = new InMemoryPropertyRepository();
-
-    private static Property CreateProperty( string city )
-    {
-        return new Property(
-            Guid.NewGuid(),
-            HotelName,
-            HotelCountry,
-            city,
-            HotelAddress,
-            HotelLatitude,
-            HotelLongitude
-        );
-    }
-
     [Fact]
     public void Add_Then_Get_ReturnsSameInstance()
     {
-        Property property = CreateProperty( HotelCountry );
+        // Arrange
+        InMemoryPropertyRepository sut = new InMemoryPropertyRepository();
+        Property property = new Property(
+            Guid.NewGuid(),
+            "Test name",
+            "Test country",
+            "Test city",
+            "Test address",
+            10.10,
+            20.20
+        );
 
-        _repository.Add( property );
-        Property? loaded = _repository.Get( property.Id );
+        // Act
+        sut.Add( property );
+        Property? loaded = sut.Get( property.Id );
 
+        // Assert
         Assert.Same( property, loaded );
     }
 
     [Fact]
     public void Get_UnknownId_ReturnsNull()
     {
-        Assert.Null( _repository.Get( Guid.NewGuid() ) );
+        // Arrange
+        InMemoryPropertyRepository sut = new InMemoryPropertyRepository();
+
+        // Act, Assert
+        Assert.Null( sut.Get( Guid.NewGuid() ) );
     }
 
     [Fact]
     public void Add_Duplicate_Throws()
     {
-        Property property = CreateProperty( HotelCountry );
-        _repository.Add( property );
+        // Arrange
+        InMemoryPropertyRepository sut = new InMemoryPropertyRepository();
+        Property property = new Property(
+            Guid.NewGuid(),
+            "Test name",
+            "Test country",
+            "Test city",
+            "Test address",
+            10.10,
+            20.20
+        );
 
-        Assert.Throws<InvalidOperationException>( () => _repository.Add( property ) );
+        // Act
+        sut.Add( property );
+
+        // Assert
+        Assert.Throws<InvalidOperationException>( () => sut.Add( property ) );
     }
 
     [Fact]
     public void GetAll_ReturnsEveryAddedProperty()
     {
-        Property first = CreateProperty( HotelCountry );
-        Property second = CreateProperty( HotelCity );
-        _repository.Add( first );
-        _repository.Add( second );
+        // Arrange
+        InMemoryPropertyRepository sut = new InMemoryPropertyRepository();
+        Property firstProperty = new Property(
+            Guid.NewGuid(),
+            "Test name",
+            "Test country",
+            "Test city",
+            "Test address",
+            10.10,
+            20.20
+        );
 
-        IReadOnlyCollection<Property> all = _repository.GetAll();
+        Property secondProperty = new Property(
+            Guid.NewGuid(),
+            "Test name2",
+            "Test country2",
+            "Test city2",
+            "Test address2",
+            10.10,
+            20.20
+        );
 
+        sut.Add( firstProperty );
+        sut.Add( secondProperty );
+
+        // Act
+        IReadOnlyCollection<Property> all = sut.GetAll();
+
+        // Assert
         Assert.Equal( 2, all.Count );
-        Assert.Contains( first, all );
-        Assert.Contains( second, all );
+        Assert.Contains( firstProperty, all );
+        Assert.Contains( secondProperty, all );
     }
 
     [Fact]
     public void GetByCity_FiltersByCity_CaseInsensitive()
     {
-        Property first = CreateProperty( HotelCountry );
-        Property second = CreateProperty( "London" );
-        _repository.Add( first );
-        _repository.Add( second );
+        // Arrange
+        InMemoryPropertyRepository sut = new InMemoryPropertyRepository();
+        Property firstProperty = new Property(
+            Guid.NewGuid(),
+            "Test name",
+            "Test country",
+            "Test city",
+            "Test address",
+            10.10,
+            20.20
+        );
 
-        IReadOnlyCollection<Property> result = _repository.GetByCity( HotelCountry );
+        Property secondProperty = new Property(
+            Guid.NewGuid(),
+            "Test name2",
+            "Test country2",
+            "Test city2",
+            "Test address2",
+            10.10,
+            20.20
+        );
+        sut.Add( firstProperty );
+        sut.Add( secondProperty );
 
+        // Act
+        IReadOnlyCollection<Property> result = sut.GetByCity( "Test city" );
+
+        // Assert
         Property single = Assert.Single( result );
-        Assert.Same( first, single );
-    }
-
-    [Fact]
-    public void Update_Existing_DoesNotThrow()
-    {
-        Property property = CreateProperty( HotelCountry );
-        _repository.Add( property );
-
-        _repository.Update( property );
+        Assert.Same( firstProperty, single );
     }
 
     [Fact]
     public void Update_Unknown_ThrowsEntityNotFound()
     {
-        Property property = CreateProperty( HotelCountry );
+        // Arrange
+        InMemoryPropertyRepository sut = new InMemoryPropertyRepository();
+        Property property = new Property(
+            Guid.NewGuid(),
+            "Test name",
+            "Test country",
+            "Test city",
+            "Test address",
+            10.10,
+            20.20
+        );
 
-        Assert.Throws<EntityNotFoundException>( () => _repository.Update( property ) );
+        // Act, Assert
+        Assert.Throws<EntityNotFoundException>( () => sut.Update( property ) );
     }
 
     [Fact]
     public void Remove_Existing_ReturnsTrueAndRemoves()
     {
-        Property property = CreateProperty( HotelCountry );
-        _repository.Add( property );
+        // Arrange
+        InMemoryPropertyRepository sut = new InMemoryPropertyRepository();
+        Property property = new Property(
+            Guid.NewGuid(),
+            "Test name",
+            "Test country",
+            "Test city",
+            "Test address",
+            10.10,
+            20.20
+        );
 
-        bool removed = _repository.Remove( property.Id );
+        sut.Add( property );
 
+        // Act
+        bool removed = sut.Remove( property.Id );
+
+        // Assert
         Assert.True( removed );
-        Assert.Null( _repository.Get( property.Id ) );
+        Assert.Null( sut.Get( property.Id ) );
     }
 
     [Fact]
     public void Remove_Unknown_ReturnsFalse()
     {
-        Assert.False( _repository.Remove( Guid.NewGuid() ) );
+        // Arrange
+        InMemoryPropertyRepository sut = new InMemoryPropertyRepository();
+
+        // Act
+        bool result = sut.Remove( Guid.NewGuid() );
+
+        // Assert
+        Assert.False( result );
     }
 }

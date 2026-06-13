@@ -8,99 +8,126 @@ namespace Infrastructure.Tests.Repositories;
 
 public class InMemoryReservationRepositoryTests
 {
-    private const string Currency = "EUR";
-
-    private static readonly Money DefaultDailyPrice = new Money( 100m, Currency );
-
-    private readonly InMemoryReservationRepository _repository = new InMemoryReservationRepository();
-
-    private static Reservation CreateReservation(
-        DateRange period,
-        Guid? propertyId = null,
-        Guid? roomTypeId = null,
-        string guestName = "Test Guest"
-    )
-    {
-        return new Reservation(
-            Guid.NewGuid(),
-            propertyId ?? Guid.NewGuid(),
-            roomTypeId ?? Guid.NewGuid(),
-            period,
-            new TimeOnly( 14, 0 ),
-            new TimeOnly( 12, 0 ),
-            guestName,
-            "+71234567890",
-            DefaultDailyPrice
-        );
-    }
-
     [Fact]
     public void Add_Then_Get_ReturnsSameInstance()
     {
-        Reservation reservation = CreateReservation(
-            new DateRange(
-                new DateOnly( 2026, 6, 1 ),
-                new DateOnly( 2026, 6, 4 )
-            )
+        // Arrange
+        DateRange period = new DateRange(
+            new DateOnly( 2026, 1, 1 ),
+            new DateOnly( 2026, 1, 3 )
         );
 
-        _repository.Add( reservation );
-        Reservation? loaded = _repository.Get( reservation.Id );
+        Reservation reservation = new Reservation(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            period,
+            new TimeOnly( 14, 0 ),
+            new TimeOnly( 12, 0 ),
+            "Test name",
+            "+88005553535",
+            new Money( 100m, "Test currency" )
+        );
 
+        InMemoryReservationRepository sut = new InMemoryReservationRepository();
+
+        // Act
+        sut.Add( reservation );
+        Reservation? loaded = sut.Get( reservation.Id );
+
+        // Assert
         Assert.Same( reservation, loaded );
     }
 
     [Fact]
     public void Search_ReturnsAllReservations()
     {
-        Reservation first = CreateReservation(
+        // Arrange
+        Reservation firstReservation = new Reservation(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
             new DateRange(
-                new DateOnly( 2026, 6, 1 ),
-                new DateOnly( 2026, 6, 4 )
-            )
+                new DateOnly( 2026, 1, 1 ),
+                new DateOnly( 2026, 1, 3 )
+            ),
+            new TimeOnly( 14, 0 ),
+            new TimeOnly( 12, 0 ),
+            "Test name",
+            "+88005553535",
+            new Money( 100m, "Test currency" )
         );
 
-        Reservation second = CreateReservation(
+        Reservation secondReservation = new Reservation(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
             new DateRange(
-                new DateOnly( 2026, 7, 1 ),
-                new DateOnly( 2026, 7, 5 )
-            )
+                new DateOnly( 2026, 1, 1 ),
+                new DateOnly( 2026, 1, 4 )
+            ),
+            new TimeOnly( 14, 0 ),
+            new TimeOnly( 12, 0 ),
+            "Test name",
+            "+88005553535",
+            new Money( 100m, "Test currency" )
         );
 
-        _repository.Add( first );
-        _repository.Add( second );
+        InMemoryReservationRepository sut = new InMemoryReservationRepository();
+        sut.Add( firstReservation );
+        sut.Add( secondReservation );
 
-        IReadOnlyCollection<Reservation> result = _repository.Search( new ReservationFilter() );
+        // Act
+        IReadOnlyCollection<Reservation> result = sut.Search( new ReservationFilter() );
 
+        // Assert
         Assert.Equal( 2, result.Count );
     }
 
     [Fact]
     public void Search_ByPropertyId_ReturnsOnlyMatching()
     {
+        // Arrange
         Guid targetProperty = Guid.NewGuid();
-        Reservation matching = CreateReservation(
+        Reservation matching = new Reservation(
+            Guid.NewGuid(),
+            targetProperty,
+            Guid.NewGuid(),
+            new DateRange(
+                new DateOnly( 2026, 1, 1 ),
+                new DateOnly( 2026, 1, 3 )
+            ),
+            new TimeOnly( 14, 0 ),
+            new TimeOnly( 12, 0 ),
+            "Test name",
+            "+88005553535",
+            new Money( 100m, "Test currency" )
+        );
+
+        Reservation other = new Reservation(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
             new DateRange(
                 new DateOnly( 2026, 6, 1 ),
                 new DateOnly( 2026, 6, 4 )
             ),
-            propertyId: targetProperty
+            new TimeOnly( 14, 0 ),
+            new TimeOnly( 12, 0 ),
+            "Test name",
+            "+88005553535",
+            new Money( 100m, "Test currency" )
         );
 
-        Reservation other = CreateReservation(
-            new DateRange(
-                new DateOnly( 2026, 6, 1 ),
-                new DateOnly( 2026, 6, 4 )
-            )
-        );
+        InMemoryReservationRepository sut = new InMemoryReservationRepository();
+        sut.Add( matching );
+        sut.Add( other );
+        ReservationFilter reservationFilter = new ReservationFilter( PropertyId: targetProperty );
 
-        _repository.Add( matching );
-        _repository.Add( other );
+        // Act
+        IReadOnlyCollection<Reservation> result = sut.Search( reservationFilter );
 
-        IReadOnlyCollection<Reservation> result = _repository.Search(
-            new ReservationFilter( PropertyId: targetProperty )
-        );
-
+        // Assert
         Reservation single = Assert.Single( result );
         Assert.Same( matching, single );
     }
@@ -108,29 +135,47 @@ public class InMemoryReservationRepositoryTests
     [Fact]
     public void Search_ByRoomTypeId_ReturnsOnlyMatching()
     {
+        // Arrange
         Guid targetRoomType = Guid.NewGuid();
-        Reservation matching = CreateReservation(
+        Reservation matching = new Reservation(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            targetRoomType,
+            new DateRange(
+                new DateOnly( 2026, 1, 1 ),
+                new DateOnly( 2026, 1, 3 )
+            ),
+            new TimeOnly( 14, 0 ),
+            new TimeOnly( 12, 0 ),
+            "Test name",
+            "+88005553535",
+            new Money( 100m, "Test currency" )
+        );
+
+        Reservation other = new Reservation(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
             new DateRange(
                 new DateOnly( 2026, 6, 1 ),
                 new DateOnly( 2026, 6, 4 )
             ),
-            roomTypeId: targetRoomType
+            new TimeOnly( 14, 0 ),
+            new TimeOnly( 12, 0 ),
+            "Test name",
+            "+88005553535",
+            new Money( 100m, "Test currency" )
         );
 
-        Reservation other = CreateReservation(
-            new DateRange(
-                new DateOnly( 2026, 6, 1 ),
-                new DateOnly( 2026, 6, 4 )
-            )
-        );
+        InMemoryReservationRepository sut = new InMemoryReservationRepository();
+        sut.Add( matching );
+        sut.Add( other );
+        ReservationFilter reservationFilter = new ReservationFilter( RoomTypeId: targetRoomType );
 
-        _repository.Add( matching );
-        _repository.Add( other );
+        // Act
+        IReadOnlyCollection<Reservation> result = sut.Search( reservationFilter );
 
-        IReadOnlyCollection<Reservation> result = _repository.Search(
-            new ReservationFilter( RoomTypeId: targetRoomType )
-        );
-
+        // Assert
         Reservation single = Assert.Single( result );
         Assert.Same( matching, single );
     }
@@ -138,29 +183,47 @@ public class InMemoryReservationRepositoryTests
     [Fact]
     public void Search_ByGuestName_IsCaseInsensitiveAndPartial()
     {
-        Reservation matching = CreateReservation(
+        // Arrange
+        Reservation matching = new Reservation(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            new DateRange(
+                new DateOnly( 2026, 1, 1 ),
+                new DateOnly( 2026, 1, 3 )
+            ),
+            new TimeOnly( 14, 0 ),
+            new TimeOnly( 12, 0 ),
+            "Ivan",
+            "+88005553535",
+            new Money( 100m, "Test currency" )
+        );
+
+        Reservation other = new Reservation(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
             new DateRange(
                 new DateOnly( 2026, 6, 1 ),
                 new DateOnly( 2026, 6, 4 )
             ),
-            guestName: "Ivan Ivanov"
+            new TimeOnly( 14, 0 ),
+            new TimeOnly( 12, 0 ),
+            "Petr",
+            "+88005553535",
+            new Money( 100m, "Test currency" )
         );
 
-        Reservation other = CreateReservation(
-            new DateRange(
-                new DateOnly( 2026, 6, 1 ),
-                new DateOnly( 2026, 6, 4 )
-            ),
-            guestName: "Petr Petrov"
-        );
+        InMemoryReservationRepository sut = new InMemoryReservationRepository();
 
-        _repository.Add( matching );
-        _repository.Add( other );
+        sut.Add( matching );
+        sut.Add( other );
+        ReservationFilter reservationFilter = new ReservationFilter( GuestName: "ivan" );
 
-        IReadOnlyCollection<Reservation> result = _repository.Search(
-            new ReservationFilter( GuestName: "ivan" )
-        );
+        // Act
+        IReadOnlyCollection<Reservation> result = sut.Search( reservationFilter );
 
+        // Assert
         Reservation single = Assert.Single( result );
         Assert.Same( matching, single );
     }
@@ -168,32 +231,52 @@ public class InMemoryReservationRepositoryTests
     [Fact]
     public void Search_ByPeriod_ReturnsOverlapping()
     {
-        Reservation overlapping = CreateReservation(
+        // Arrange
+        Reservation overlapping = new Reservation(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
             new DateRange(
-                new DateOnly( 2026, 6, 1 ),
-                new DateOnly( 2026, 6, 10 )
-            )
+                new DateOnly( 2026, 1, 1 ),
+                new DateOnly( 2026, 1, 10 )
+            ),
+            new TimeOnly( 14, 0 ),
+            new TimeOnly( 12, 0 ),
+            "Test name",
+            "+88005553535",
+            new Money( 100m, "Test currency" )
         );
 
-        Reservation disjoint = CreateReservation(
+        Reservation disjoint = new Reservation(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
             new DateRange(
-                new DateOnly( 2026, 7, 1 ),
-                new DateOnly( 2026, 7, 5 )
+                new DateOnly( 2026, 1, 1 ),
+                new DateOnly( 2026, 1, 5 )
+            ),
+            new TimeOnly( 14, 0 ),
+            new TimeOnly( 12, 0 ),
+            "Test name",
+            "+88005553535",
+            new Money( 100m, "Test currency" )
+        );
+
+        InMemoryReservationRepository sut = new InMemoryReservationRepository();
+
+        sut.Add( overlapping );
+        sut.Add( disjoint );
+        ReservationFilter reservationFilter = new ReservationFilter(
+            Period: new DateRange(
+                new DateOnly( 2026, 1, 5 ),
+                new DateOnly( 2026, 1, 8 )
             )
         );
 
-        _repository.Add( overlapping );
-        _repository.Add( disjoint );
+        // Act
+        IReadOnlyCollection<Reservation> result = sut.Search( reservationFilter );
 
-        IReadOnlyCollection<Reservation> result = _repository.Search(
-            new ReservationFilter(
-                Period: new DateRange(
-                    new DateOnly( 2026, 6, 5 ),
-                    new DateOnly( 2026, 6, 8 )
-                )
-            )
-        );
-
+        // Assert
         Reservation single = Assert.Single( result );
         Assert.Same( overlapping, single );
     }
@@ -201,44 +284,66 @@ public class InMemoryReservationRepositoryTests
     [Fact]
     public void Search_CombinedFilters_AppliesAll()
     {
+        // Arrange
         Guid targetProperty = Guid.NewGuid();
-        Reservation matching = CreateReservation(
+        Reservation matching = new Reservation(
+            Guid.NewGuid(),
+            targetProperty,
+            Guid.NewGuid(),
             new DateRange(
                 new DateOnly( 2026, 6, 1 ),
                 new DateOnly( 2026, 6, 4 )
             ),
-            propertyId: targetProperty,
-            guestName: "Ivan Ivanov"
+            new TimeOnly( 10, 20, 30 ),
+            new TimeOnly( 10, 20, 30 ),
+            "Ivan Ivanov",
+            "88005553535",
+            new Money( 100m, "Test currency" )
         );
 
-        Reservation wrongProperty = CreateReservation(
+        Reservation wrongProperty = new Reservation(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
             new DateRange(
                 new DateOnly( 2026, 6, 1 ),
                 new DateOnly( 2026, 6, 4 )
             ),
-            guestName: "Ivan Ivanov"
+            new TimeOnly( 10, 20, 30 ),
+            new TimeOnly( 10, 20, 30 ),
+            "Ivan Ivanov",
+            "88005553535",
+            new Money( 100m, "Test currency" )
         );
 
-        Reservation wrongName = CreateReservation(
+        Reservation wrongName = new Reservation(
+            Guid.NewGuid(),
+            targetProperty,
+            Guid.NewGuid(),
             new DateRange(
                 new DateOnly( 2026, 6, 1 ),
                 new DateOnly( 2026, 6, 4 )
             ),
-            propertyId: targetProperty,
-            guestName: "Petr Petrov"
+            new TimeOnly( 10, 20, 30 ),
+            new TimeOnly( 10, 20, 30 ),
+            "Petr Petrov",
+            "88005553535",
+            new Money( 100m, "Test currency" )
         );
 
-        _repository.Add( matching );
-        _repository.Add( wrongProperty );
-        _repository.Add( wrongName );
-
-        IReadOnlyCollection<Reservation> result = _repository.Search(
-            new ReservationFilter(
-                PropertyId: targetProperty,
-                GuestName: "ivan"
-            )
+        InMemoryReservationRepository sut = new InMemoryReservationRepository();
+        sut.Add( matching );
+        sut.Add( wrongProperty );
+        sut.Add( wrongName );
+        ReservationFilter reservationFilter = new ReservationFilter(
+            PropertyId: targetProperty,
+            GuestName: "ivan"
         );
 
+        // Act
+        IReadOnlyCollection<Reservation> result = sut.Search( reservationFilter );
+
+        // Assert
         Reservation single = Assert.Single( result );
         Assert.Same( matching, single );
     }
@@ -246,15 +351,29 @@ public class InMemoryReservationRepositoryTests
     [Fact]
     public void GetOverlapping_OverlappingPeriod_ReturnsReservation()
     {
+        // Arrange
         DateRange existingPeriod = new DateRange(
             new DateOnly( 2026, 6, 1 ),
             new DateOnly( 2026, 6, 10 )
         );
 
-        Reservation reservation = CreateReservation( existingPeriod );
-        _repository.Add( reservation );
+        Reservation reservation = new Reservation(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            existingPeriod,
+            new TimeOnly( 10, 20, 30 ),
+            new TimeOnly( 10, 20, 30 ),
+            "Ivan Ivanov",
+            "88005553535",
+            new Money( 100m, "Test currency" )
+        );
 
-        IReadOnlyCollection<Reservation> result = _repository.GetOverlapping(
+        InMemoryReservationRepository sut = new InMemoryReservationRepository();
+        sut.Add( reservation );
+
+        // Act
+        IReadOnlyCollection<Reservation> result = sut.GetOverlapping(
             reservation.RoomTypeId,
             new DateRange(
                 new DateOnly( 2026, 6, 5 ),
@@ -262,6 +381,7 @@ public class InMemoryReservationRepositoryTests
             )
         );
 
+        // Assert
         Reservation single = Assert.Single( result );
         Assert.Same( reservation, single );
     }
@@ -269,16 +389,27 @@ public class InMemoryReservationRepositoryTests
     [Fact]
     public void GetOverlapping_DisjointPeriod_ReturnsEmpty()
     {
-        Reservation reservation = CreateReservation(
+        // Arrange
+        Reservation reservation = new Reservation(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
             new DateRange(
                 new DateOnly( 2026, 6, 1 ),
-                new DateOnly( 2026, 6, 4 )
-            )
+                new DateOnly( 2026, 6, 3 )
+            ),
+            new TimeOnly( 10, 20, 30 ),
+            new TimeOnly( 10, 20, 30 ),
+            "Ivan Ivanov",
+            "88005553535",
+            new Money( 100m, "Test currency" )
         );
 
-        _repository.Add( reservation );
+        InMemoryReservationRepository sut = new InMemoryReservationRepository();
+        sut.Add( reservation );
 
-        IReadOnlyCollection<Reservation> result = _repository.GetOverlapping(
+        // Act
+        IReadOnlyCollection<Reservation> result = sut.GetOverlapping(
             reservation.RoomTypeId,
             new DateRange(
                 new DateOnly( 2026, 6, 4 ),
@@ -286,22 +417,34 @@ public class InMemoryReservationRepositoryTests
             )
         );
 
+        // Assert
         Assert.Empty( result );
     }
 
     [Fact]
     public void GetOverlapping_DifferentRoomType_ReturnsEmpty()
     {
-        Reservation reservation = CreateReservation(
+        // Arrange
+        Reservation reservation = new Reservation(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
             new DateRange(
                 new DateOnly( 2026, 6, 1 ),
-                new DateOnly( 2026, 6, 4 )
-            )
+                new DateOnly( 2026, 6, 3 )
+            ),
+            new TimeOnly( 10, 20, 30 ),
+            new TimeOnly( 10, 20, 30 ),
+            "Ivan Ivanov",
+            "88005553535",
+            new Money( 100m, "Test currency" )
         );
 
-        _repository.Add( reservation );
+        InMemoryReservationRepository sut = new InMemoryReservationRepository();
+        sut.Add( reservation );
 
-        IReadOnlyCollection<Reservation> result = _repository.GetOverlapping(
+        // Act
+        IReadOnlyCollection<Reservation> result = sut.GetOverlapping(
             Guid.NewGuid(),
             new DateRange(
                 new DateOnly( 2026, 6, 1 ),
@@ -309,37 +452,62 @@ public class InMemoryReservationRepositoryTests
             )
         );
 
+        // Assert
         Assert.Empty( result );
     }
 
     [Fact]
     public void Update_Existing_DoesNotThrow()
     {
-        Reservation reservation = CreateReservation(
+        // Arrange
+        Reservation reservation = new Reservation(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
             new DateRange(
                 new DateOnly( 2026, 6, 1 ),
-                new DateOnly( 2026, 6, 4 )
-            )
+                new DateOnly( 2026, 6, 3 )
+            ),
+            new TimeOnly( 10, 20, 30 ),
+            new TimeOnly( 10, 20, 30 ),
+            "Ivan Ivanov",
+            "88005553535",
+            new Money( 100m, "Test currency" )
         );
 
-        _repository.Add( reservation );
+        InMemoryReservationRepository sut = new InMemoryReservationRepository();
+        sut.Add( reservation );
 
+        // Act
         reservation.Cancel();
-        _repository.Update( reservation );
+        sut.Update( reservation );
 
-        Assert.Equal( ReservationStatus.Cancelled, _repository.Get( reservation.Id )!.Status );
+        // Assert
+        Assert.Equal( ReservationStatus.Cancelled, sut.Get( reservation.Id )!.Status );
     }
 
     [Fact]
     public void Update_Unknown_ThrowsEntityNotFound()
     {
-        Reservation reservation = CreateReservation(
+        // Arrange
+        Reservation reservation = new Reservation(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
             new DateRange(
                 new DateOnly( 2026, 6, 1 ),
-                new DateOnly( 2026, 6, 4 )
-            )
+                new DateOnly( 2026, 6, 3 )
+            ),
+            new TimeOnly( 10, 20, 30 ),
+            new TimeOnly( 10, 20, 30 ),
+            "Ivan Ivanov",
+            "88005553535",
+            new Money( 100m, "Test currency" )
         );
 
-        Assert.Throws<EntityNotFoundException>( () => _repository.Update( reservation ) );
+        InMemoryReservationRepository sut = new InMemoryReservationRepository();
+
+        // Act, Assert
+        Assert.Throws<EntityNotFoundException>( () => sut.Update( reservation ) );
     }
 }

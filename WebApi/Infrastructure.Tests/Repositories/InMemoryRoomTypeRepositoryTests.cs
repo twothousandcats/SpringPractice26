@@ -8,85 +8,169 @@ namespace Infrastructure.Tests.Repositories;
 
 public class InMemoryRoomTypeRepositoryTests
 {
-    private const string Currency = "EUR";
-
-    private readonly IRoomTypeRepository _repository = new InMemoryRoomTypeRepository();
-
-    private static RoomType CreateRoomType( Guid propertyId )
+    [Fact]
+    public void Add_Then_Get_ReturnsSameInstance()
     {
-        return new RoomType(
+        // Arrange
+        RoomType roomType = new RoomType(
             Guid.NewGuid(),
-            propertyId,
-            "Standard",
-            new Money( 100m, Currency ),
+            Guid.NewGuid(),
+            "Test name",
+            new Money( 100m, "Test currency" ),
             1,
             2,
             2,
             Array.Empty<string>(),
             Array.Empty<string>()
         );
-    }
 
-    [Fact]
-    public void Add_Then_Get_ReturnsSameInstance()
-    {
-        RoomType roomType = CreateRoomType( Guid.NewGuid() );
+        InMemoryRoomTypeRepository sut = new InMemoryRoomTypeRepository();
+        sut.Add( roomType );
 
-        _repository.Add( roomType );
-        RoomType? loaded = _repository.Get( roomType.Id );
+        // Act
+        RoomType? loaded = sut.Get( roomType.Id );
 
+        // Assert
         Assert.Same( roomType, loaded );
     }
 
     [Fact]
     public void Add_Duplicate_Throws()
     {
-        RoomType roomType = CreateRoomType( Guid.NewGuid() );
-        _repository.Add( roomType );
+        // Arrange
+        RoomType roomType = new RoomType(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            "Test name",
+            new Money( 100m, "Test currency" ),
+            1,
+            2,
+            2,
+            Array.Empty<string>(),
+            Array.Empty<string>()
+        );
 
-        Assert.Throws<InvalidOperationException>( () => _repository.Add( roomType ) );
+        InMemoryRoomTypeRepository sut = new InMemoryRoomTypeRepository();
+        sut.Add( roomType );
+
+        // Act, Assert
+        Assert.Throws<InvalidOperationException>( () => sut.Add( roomType ) );
     }
 
     [Fact]
     public void GetByProperty_FiltersByPropertyId()
     {
-        Guid propertyA = Guid.NewGuid();
-        Guid propertyB = Guid.NewGuid();
-        RoomType firstA = CreateRoomType( propertyA );
-        RoomType secondA = CreateRoomType( propertyA );
-        RoomType single = CreateRoomType( propertyB );
-        _repository.Add( firstA );
-        _repository.Add( secondA );
-        _repository.Add( single );
+        // Arrange
+        Guid firstPropertyId = Guid.NewGuid();
+        Guid secondPropertyId = Guid.NewGuid();
+        RoomType firstRoomTypeA = new RoomType(
+            Guid.NewGuid(),
+            firstPropertyId,
+            "Test name",
+            new Money( 100m, "Test currency" ),
+            1,
+            2,
+            2,
+            Array.Empty<string>(),
+            Array.Empty<string>()
+        );
 
-        IReadOnlyCollection<RoomType> result = _repository.GetByProperty( propertyA );
+        RoomType secondRoomTypeA = new RoomType(
+            Guid.NewGuid(),
+            firstPropertyId,
+            "Test name2",
+            new Money( 100m, "Test currency" ),
+            1,
+            2,
+            2,
+            Array.Empty<string>(),
+            Array.Empty<string>()
+        );
 
+        RoomType firstRoomTypeB = new RoomType(
+            Guid.NewGuid(),
+            secondPropertyId,
+            "Test name",
+            new Money( 100m, "Test currency" ),
+            1,
+            2,
+            2,
+            Array.Empty<string>(),
+            Array.Empty<string>()
+        );
+
+        InMemoryRoomTypeRepository sut = new InMemoryRoomTypeRepository();
+        sut.Add( firstRoomTypeA );
+        sut.Add( firstRoomTypeB );
+        sut.Add( secondRoomTypeA );
+
+        // Act
+        IReadOnlyCollection<RoomType> result = sut.GetByProperty( firstPropertyId );
+
+        // Assert
         Assert.Equal( 2, result.Count );
-        Assert.Contains( firstA, result );
-        Assert.Contains( secondA, result );
+        Assert.Contains( firstRoomTypeA, result );
+        Assert.Contains( secondRoomTypeA, result );
     }
 
     [Fact]
     public void Update_Unknown_ThrowsEntityNotFound()
     {
-        RoomType roomType = CreateRoomType( Guid.NewGuid() );
+        // Arrange
+        RoomType roomType = new RoomType(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            "Test name",
+            new Money( 100m, "Test currency" ),
+            1,
+            2,
+            2,
+            Array.Empty<string>(),
+            Array.Empty<string>()
+        );
 
-        Assert.Throws<EntityNotFoundException>( () => _repository.Update( roomType ) );
+        InMemoryRoomTypeRepository sut = new InMemoryRoomTypeRepository();
+
+        // Act, Assert
+        Assert.Throws<EntityNotFoundException>( () => sut.Update( roomType ) );
     }
 
     [Fact]
     public void Remove_Existing_ReturnsTrue()
     {
-        RoomType roomType = CreateRoomType( Guid.NewGuid() );
-        _repository.Add( roomType );
+        // Arrange
+        RoomType roomType = new RoomType(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            "Test name",
+            new Money( 100m, "Test currency" ),
+            1,
+            2,
+            2,
+            Array.Empty<string>(),
+            Array.Empty<string>()
+        );
 
-        Assert.True( _repository.Remove( roomType.Id ) );
-        Assert.Null( _repository.Get( roomType.Id ) );
+        InMemoryRoomTypeRepository sut = new InMemoryRoomTypeRepository();
+        sut.Add( roomType );
+
+        // Act
+        bool result = sut.Remove( roomType.Id );
+
+        Assert.True( result );
+        Assert.Null( sut.Get( roomType.Id ) );
     }
 
     [Fact]
     public void Remove_Unknown_ReturnsFalse()
     {
-        Assert.False( _repository.Remove( Guid.NewGuid() ) );
+        // Arrange
+        InMemoryRoomTypeRepository sut = new InMemoryRoomTypeRepository();
+
+        // Act
+        bool result = sut.Remove( Guid.NewGuid() );
+
+        // Assert
+        Assert.False( result );
     }
 }
