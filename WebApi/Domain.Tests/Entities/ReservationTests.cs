@@ -5,94 +5,93 @@ namespace Domain.Tests.Entities;
 
 public class ReservationTests
 {
-    private const string Currency = "EUR";
-
-    private const string GuestName = "Ivan Ivanov";
-
-    private const string GuestNumber = "+79991234567";
-
-    private static readonly DateOnly ArrivalDate = new DateOnly( 2026, 6, 1 );
-
-    private static readonly DateOnly DepartureDate = new DateOnly( 2026, 6, 4 );
-
-    private static readonly TimeOnly ArrivalTime = new TimeOnly( 14, 0 );
-
-    private static readonly TimeOnly DepartureTime = new TimeOnly( 12, 0 );
-
-    private static Reservation CreateValidReservation(
-        Money? money = null,
-        DateRange? stay = null
-    )
-    {
-        return new Reservation(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            stay ?? new DateRange( ArrivalDate, DepartureDate ),
-            ArrivalTime,
-            DepartureTime,
-            GuestName,
-            GuestNumber,
-            money ?? new Money( 100m, Currency )
-        );
-    }
-
     [Fact]
     public void Constructor_ValidArguments_CreatesReservation()
     {
+        // Arrange
         Guid id = Guid.NewGuid();
         Guid propertyId = Guid.NewGuid();
         Guid roomTypeId = Guid.NewGuid();
-        DateRange stay = new DateRange( ArrivalDate, DepartureDate );
-        Money dailyPrice = new Money( 150m, Currency );
+        Money dailyPrice = new Money( 150m, "Test currency" );
+        TimeOnly arrivalTime = new TimeOnly( 10, 20, 30 );
+        TimeOnly departureTime = new TimeOnly( 10, 20, 30 );
+        DateRange range = new DateRange(
+            new DateOnly( 2020, 01, 01 ),
+            new DateOnly( 2020, 01, 03 )
+        );
 
-        Reservation reservation = new Reservation(
+        // Act
+        Reservation sut = new Reservation(
             id,
             propertyId,
             roomTypeId,
-            stay,
-            ArrivalTime,
-            DepartureTime,
-            GuestName,
-            GuestNumber,
+            range,
+            arrivalTime,
+            departureTime,
+            "Test guest",
+            "88005553535",
             dailyPrice
         );
 
-        Assert.Equal( id, reservation.Id );
-        Assert.Equal( propertyId, reservation.PropertyId );
-        Assert.Equal( roomTypeId, reservation.RoomTypeId );
-        Assert.Equal( stay, reservation.Period );
-        Assert.Equal( ArrivalTime, reservation.ArrivalTime );
-        Assert.Equal( DepartureTime, reservation.DepartureTime );
-        Assert.Equal( GuestName, reservation.GuestName );
-        Assert.Equal( GuestNumber, reservation.GuestPhoneNumber );
-        Assert.Equal( ReservationStatus.Active, reservation.Status );
+        // Assert
+        Assert.Equal( id, sut.Id );
+        Assert.Equal( propertyId, sut.PropertyId );
+        Assert.Equal( roomTypeId, sut.RoomTypeId );
+        Assert.Equal( range, sut.Period );
+        Assert.Equal( arrivalTime, sut.ArrivalTime );
+        Assert.Equal( departureTime, sut.DepartureTime );
+        Assert.Equal( "Test guest", sut.GuestName );
+        Assert.Equal( "88005553535", sut.GuestPhoneNumber );
+        Assert.Equal( ReservationStatus.Active, sut.Status );
     }
 
     [Fact]
     public void Constructor_ComputesTotalAsDailyPriceTimesNights()
     {
-        DateRange stay = new DateRange( ArrivalDate, DepartureDate );
-        Money dailyPrice = new Money( 150m, Currency );
+        // Arrange
+        Money dailyPrice = new Money( 100m, "Test currency" );
+        DateRange range = new DateRange(
+            new DateOnly( 2020, 01, 01 ),
+            new DateOnly( 2020, 01, 04 )
+        );
 
-        Reservation reservation = CreateValidReservation( dailyPrice, stay );
+        // Act
+        Reservation sut = new Reservation(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            range,
+            new TimeOnly( 10, 20, 30 ),
+            new TimeOnly( 10, 20, 30 ),
+            "Test guest",
+            "88005553535",
+            dailyPrice
+        );
 
-        Assert.Equal( new Money( 450m, Currency ), reservation.Total );
+        // Assert
+        Assert.Equal( new Money( 300m, "Test currency" ), sut.Total );
     }
 
     [Fact]
     public void Constructor_EmptyId_Throws()
     {
+        // Arrange
+        DateRange range = new DateRange(
+            new DateOnly( 2020, 01, 01 ),
+            new DateOnly( 2020, 01, 02 )
+        );
+
+        // Act, Assert
         Assert.Throws<ArgumentException>( () => new Reservation(
                 Guid.Empty,
                 Guid.NewGuid(),
                 Guid.NewGuid(),
-                new DateRange( ArrivalDate, DepartureDate ),
-                ArrivalTime,
-                DepartureTime,
-                GuestName,
-                GuestNumber,
-                new Money( 100m, Currency )
+                range,
+                new TimeOnly( 10, 20, 30 ),
+                new TimeOnly( 10, 20, 30 ),
+                "Test guest",
+                "88005553535",
+                new Money( 100m, "Test currency" )
             )
         );
     }
@@ -100,16 +99,23 @@ public class ReservationTests
     [Fact]
     public void Constructor_EmptyPropertyId_Throws()
     {
+        // Arrange
+        DateRange range = new DateRange(
+            new DateOnly( 2020, 01, 01 ),
+            new DateOnly( 2020, 01, 02 )
+        );
+
+        // Act, Assert
         Assert.Throws<ArgumentException>( () => new Reservation(
                 Guid.NewGuid(),
                 Guid.Empty,
                 Guid.NewGuid(),
-                new DateRange( ArrivalDate, DepartureDate ),
-                ArrivalTime,
-                DepartureTime,
-                GuestName,
-                GuestNumber,
-                new Money( 100m, Currency )
+                range,
+                new TimeOnly( 10, 20, 30 ),
+                new TimeOnly( 10, 20, 30 ),
+                "Test guest",
+                "88005553535",
+                new Money( 100m, "Test currency" )
             )
         );
     }
@@ -117,16 +123,23 @@ public class ReservationTests
     [Fact]
     public void Constructor_EmptyRoomTypeId_Throws()
     {
+        // Arrange
+        DateRange range = new DateRange(
+            new DateOnly( 2020, 01, 01 ),
+            new DateOnly( 2020, 01, 02 )
+        );
+
+        // Act, Assert
         Assert.Throws<ArgumentException>( () => new Reservation(
                 Guid.NewGuid(),
                 Guid.NewGuid(),
                 Guid.Empty,
-                new DateRange( ArrivalDate, DepartureDate ),
-                ArrivalTime,
-                DepartureTime,
-                GuestName,
-                GuestNumber,
-                new Money( 100m, Currency )
+                range,
+                new TimeOnly( 10, 20, 30 ),
+                new TimeOnly( 10, 20, 30 ),
+                "Test guest",
+                "88005553535",
+                new Money( 100m, "Test currency" )
             )
         );
     }
@@ -134,16 +147,19 @@ public class ReservationTests
     [Fact]
     public void Constructor_NullStay_Throws()
     {
+        // Arrange
+        // Act
+        // Assert
         Assert.Throws<ArgumentNullException>( () => new Reservation(
                 Guid.NewGuid(),
                 Guid.NewGuid(),
                 Guid.NewGuid(),
                 null!,
-                ArrivalTime,
-                DepartureTime,
-                GuestName,
-                GuestNumber,
-                new Money( 100m, Currency )
+                new TimeOnly( 10, 20, 30 ),
+                new TimeOnly( 10, 20, 30 ),
+                "Test guest",
+                "88005553535",
+                new Money( 100m, "Test currency" )
             )
         );
     }
@@ -151,15 +167,23 @@ public class ReservationTests
     [Fact]
     public void Constructor_NullDailyPrice_Throws()
     {
+        // Arrange
+        DateRange range = new DateRange(
+            new DateOnly( 2020, 01, 01 ),
+            new DateOnly( 2020, 01, 02 )
+        );
+
+        // Act
+        // Assert
         Assert.Throws<ArgumentNullException>( () => new Reservation(
                 Guid.NewGuid(),
                 Guid.NewGuid(),
                 Guid.NewGuid(),
-                new DateRange( ArrivalDate, DepartureDate ),
-                ArrivalTime,
-                DepartureTime,
-                GuestName,
-                GuestNumber,
+                range,
+                new TimeOnly( 10, 20, 30 ),
+                new TimeOnly( 10, 20, 30 ),
+                "Test guest",
+                "88005553535",
                 null!
             )
         );
@@ -171,16 +195,24 @@ public class ReservationTests
     [InlineData( null )]
     public void Constructor_InvalidGuestName_Throws( string? name )
     {
+        // Arrange
+        DateRange range = new DateRange(
+            new DateOnly( 2020, 01, 01 ),
+            new DateOnly( 2020, 01, 02 )
+        );
+
+        // Act
+        // Assert
         Assert.Throws<ArgumentException>( () => new Reservation(
                 Guid.NewGuid(),
                 Guid.NewGuid(),
                 Guid.NewGuid(),
-                new DateRange( ArrivalDate, DepartureDate ),
-                ArrivalTime,
-                DepartureTime,
+                range,
+                new TimeOnly( 10, 20, 30 ),
+                new TimeOnly( 10, 20, 30 ),
                 name!,
-                GuestNumber,
-                new Money( 100m, Currency )
+                "88005553535",
+                new Money( 100m, "Test currency" )
             )
         );
     }
@@ -191,16 +223,24 @@ public class ReservationTests
     [InlineData( null )]
     public void Constructor_InvalidGuestPhone_Throws( string? phone )
     {
+        // Arrange
+        DateRange range = new DateRange(
+            new DateOnly( 2020, 01, 01 ),
+            new DateOnly( 2020, 01, 02 )
+        );
+
+        // Act
+        // Assert
         Assert.Throws<ArgumentException>( () => new Reservation(
                 Guid.NewGuid(),
                 Guid.NewGuid(),
                 Guid.NewGuid(),
-                new DateRange( ArrivalDate, DepartureDate ),
-                ArrivalTime,
-                DepartureTime,
-                GuestName,
+                range,
+                new TimeOnly( 10, 20, 30 ),
+                new TimeOnly( 10, 20, 30 ),
+                "Test guest",
                 phone!,
-                new Money( 100m, Currency )
+                new Money( 100m, "Test currency" )
             )
         );
     }
@@ -208,21 +248,58 @@ public class ReservationTests
     [Fact]
     public void Cancel_ActiveReservation_SwitchesStatusToCancelled()
     {
-        Reservation reservation = CreateValidReservation();
+        // Arrange
+        DateRange range = new DateRange(
+            new DateOnly( 2020, 01, 01 ),
+            new DateOnly( 2020, 01, 02 )
+        );
 
-        reservation.Cancel();
+        Reservation sut = new Reservation(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            range,
+            new TimeOnly( 10, 20, 30 ),
+            new TimeOnly( 10, 20, 30 ),
+            "Test guest",
+            "88005553535",
+            new Money( 100m, "Test currency" )
+        );
 
-        Assert.Equal( ReservationStatus.Cancelled, reservation.Status );
+        // Act
+        sut.Cancel();
+
+        // Assert
+        Assert.Equal( ReservationStatus.Cancelled, sut.Status );
     }
 
     [Fact]
     public void Cancel_AlreadyCancelled_Idempotent()
     {
-        Reservation reservation = CreateValidReservation();
-        reservation.Cancel();
-        ReservationStatus status = reservation.Status;
-        reservation.Cancel();
+        // Arrange
+        DateRange range = new DateRange(
+            new DateOnly( 2020, 01, 01 ),
+            new DateOnly( 2020, 01, 02 )
+        );
 
+        Reservation sut = new Reservation(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            range,
+            new TimeOnly( 10, 20, 30 ),
+            new TimeOnly( 10, 20, 30 ),
+            "Test guest",
+            "88005553535",
+            new Money( 100m, "Test currency" )
+        );
+
+        // Act
+        sut.Cancel();
+        ReservationStatus status = sut.Status;
+        sut.Cancel();
+
+        // Assert
         Assert.Equal( ReservationStatus.Cancelled, status );
     }
 }

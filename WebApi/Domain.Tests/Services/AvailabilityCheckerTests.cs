@@ -8,104 +8,214 @@ namespace Domain.Tests.Services;
 
 public class AvailabilityCheckerTests
 {
-    private const string Currency = "EUR";
-
-    private const int TotalRooms = 2;
-
-    private static readonly DateRange Period = new DateRange(
-        new DateOnly( 2026, 6, 1 ),
-        new DateOnly( 2026, 6, 4 )
-    );
-
-    private readonly Mock<IReservationRepository> _reservationRepositoryMock = new Mock<IReservationRepository>();
-
-    private readonly AvailabilityChecker _checker;
-
-    private readonly RoomType _roomType;
-
-    private static Reservation CreateValidReservation( RoomType roomType, DateRange period )
-    {
-        return new Reservation(
-            Guid.NewGuid(),
-            roomType.PropertyId,
-            roomType.Id,
-            period,
-            new TimeOnly( 14, 0 ),
-            new TimeOnly( 12, 0 ),
-            "Test Guest",
-            "+71234567890",
-            roomType.DailyPrice
-        );
-    }
-
-    public AvailabilityCheckerTests()
-    {
-        _checker = new AvailabilityChecker( _reservationRepositoryMock.Object );
-        _roomType = new RoomType(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            "Standard",
-            new Money( 100m, Currency ),
-            1,
-            2,
-            TotalRooms,
-            Array.Empty<string>(),
-            Array.Empty<string>()
-        );
-    }
-
     [Fact]
     public void CanBook_NoOverlap_ReturnsTrue()
     {
-        _reservationRepositoryMock
-            .Setup( r => r.GetOverlapping( _roomType.Id, Period ) )
+        // Arrange
+        Mock<IReservationRepository> reservationRepositoryMock = new Mock<IReservationRepository>();
+        DateRange period = new DateRange(
+            new DateOnly( 2020, 01, 01 ),
+            new DateOnly( 2020, 01, 02 )
+        );
+
+        RoomType roomType = new RoomType(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            "Test name",
+            new Money( 100m, "Test currency" ),
+            1,
+            2,
+            2,
+            new[] { "Breakfast" },
+            new[] { "Wi-Fi", "TV" }
+        );
+
+        reservationRepositoryMock
+            .Setup( repo => repo.GetOverlapping( roomType.Id, period ) )
             .Returns( Array.Empty<Reservation>() );
 
-        bool result = _checker.CanBook( _roomType, Period );
+        AvailabilityChecker sut = new AvailabilityChecker( reservationRepositoryMock.Object );
 
+        // Act
+        bool result = sut.CanBook( roomType, period );
+
+        // Assert
         Assert.True( result );
     }
 
     [Fact]
     public void CanBook_ActiveOverlapBelowCapacity_ReturnsTrue()
     {
-        Reservation existing = CreateValidReservation( _roomType, Period );
-        _reservationRepositoryMock
-            .Setup( r => r.GetOverlapping( _roomType.Id, Period ) )
-            .Returns( new[] { existing } );
+        // Arrange
+        Mock<IReservationRepository> reservationRepositoryMock = new Mock<IReservationRepository>();
+        DateRange range = new DateRange(
+            new DateOnly( 2020, 01, 01 ),
+            new DateOnly( 2020, 01, 02 )
+        );
 
-        bool result = _checker.CanBook( _roomType, Period );
+        Reservation reservation = new Reservation(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            range,
+            new TimeOnly( 10, 20, 30 ),
+            new TimeOnly( 10, 20, 30 ),
+            "Test guest",
+            "88005553535",
+            new Money( 100m, "Test currency" )
+        );
 
+        RoomType roomType = new RoomType(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            "Test name",
+            new Money( 100m, "Test currency" ),
+            1,
+            2,
+            2,
+            new[] { "Breakfast" },
+            new[] { "Wi-Fi", "TV" }
+        );
+
+        DateRange period = new DateRange(
+            new DateOnly( 2020, 01, 01 ),
+            new DateOnly( 2020, 01, 02 )
+        );
+
+        reservationRepositoryMock
+            .Setup( r => r.GetOverlapping( roomType.Id, period ) )
+            .Returns( new[] { reservation } );
+
+        AvailabilityChecker sut = new AvailabilityChecker( reservationRepositoryMock.Object );
+
+        // Act
+        bool result = sut.CanBook( roomType, period );
+
+        // Assert
         Assert.True( result );
     }
 
     [Fact]
     public void CanBook_ActiveOverlapAtCapacity_ReturnsFalse()
     {
-        Reservation first = CreateValidReservation( _roomType, Period );
-        Reservation second = CreateValidReservation( _roomType, Period );
-        _reservationRepositoryMock
-            .Setup( r => r.GetOverlapping( _roomType.Id, Period ) )
-            .Returns( new[] { first, second } );
+        // Arrange
+        Mock<IReservationRepository> reservationRepositoryMock = new Mock<IReservationRepository>();
+        RoomType roomType = new RoomType(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            "Test name",
+            new Money( 100m, "Test currency" ),
+            1,
+            2,
+            2,
+            new[] { "Breakfast" },
+            new[] { "Wi-Fi", "TV" }
+        );
 
-        bool result = _checker.CanBook( _roomType, Period );
+        DateRange period = new DateRange(
+            new DateOnly( 2020, 01, 01 ),
+            new DateOnly( 2020, 01, 02 )
+        );
 
+        Reservation firstReservation = new Reservation(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            period,
+            new TimeOnly( 10, 20, 30 ),
+            new TimeOnly( 10, 20, 30 ),
+            "Test guest",
+            "88005553535",
+            new Money( 100m, "Test currency" )
+        );
+
+        Reservation secondReservation = new Reservation(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            period,
+            new TimeOnly( 10, 20, 30 ),
+            new TimeOnly( 10, 20, 30 ),
+            "Test guest",
+            "88005553535",
+            new Money( 100m, "Test currency" )
+        );
+
+        reservationRepositoryMock
+            .Setup( r => r.GetOverlapping( roomType.Id, period ) )
+            .Returns( new[] { firstReservation, secondReservation } );
+
+        AvailabilityChecker sut = new AvailabilityChecker( reservationRepositoryMock.Object );
+
+        // Act
+        bool result = sut.CanBook( roomType, period );
+
+        // Assert
         Assert.False( result );
     }
 
     [Fact]
     public void CanBook_CancelledReservationsDoNotCount()
     {
-        Reservation first = CreateValidReservation( _roomType, Period );
-        Reservation second = CreateValidReservation( _roomType, Period );
-        first.Cancel();
-        second.Cancel();
-        _reservationRepositoryMock
-            .Setup( r => r.GetOverlapping( _roomType.Id, Period ) )
-            .Returns( new[] { first, second } );
+        // Arrange
+        Mock<IReservationRepository> reservationRepositoryMock = new Mock<IReservationRepository>();
+        RoomType roomType = new RoomType(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            "Test name",
+            new Money( 100m, "Test currency" ),
+            1,
+            2,
+            2,
+            new[] { "Breakfast" },
+            new[] { "Wi-Fi", "TV" }
+        );
 
-        bool result = _checker.CanBook( _roomType, Period );
+        DateRange period = new DateRange(
+            new DateOnly( 2020, 01, 01 ),
+            new DateOnly( 2020, 01, 02 )
+        );
 
+        Reservation firstReservation = new Reservation(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            period,
+            new TimeOnly( 10, 20, 30 ),
+            new TimeOnly( 10, 20, 30 ),
+            "Test guest",
+            "88005553535",
+            new Money( 100m, "Test currency" )
+        );
+
+        Reservation secondReservation = new Reservation(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            period,
+            new TimeOnly( 10, 20, 30 ),
+            new TimeOnly( 10, 20, 30 ),
+            "Test guest",
+            "88005553535",
+            new Money( 100m, "Test currency" )
+        );
+
+        reservationRepositoryMock
+            .Setup( r => r.GetOverlapping( roomType.Id, period ) )
+            .Returns( new[] { firstReservation, secondReservation } );
+
+        firstReservation.Cancel();
+        secondReservation.Cancel();
+        reservationRepositoryMock
+            .Setup( r => r.GetOverlapping( roomType.Id, period ) )
+            .Returns( new[] { firstReservation, secondReservation } );
+
+        AvailabilityChecker sut = new AvailabilityChecker( reservationRepositoryMock.Object );
+
+        // Act
+        bool result = sut.CanBook( roomType, period );
+
+        // Assert
         Assert.True( result );
     }
 }

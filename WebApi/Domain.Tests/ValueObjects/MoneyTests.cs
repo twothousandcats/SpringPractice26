@@ -7,37 +7,61 @@ public class MoneyTests
     [Fact]
     public void Constructor_ValidArguments_CreatesMoney()
     {
-        Money money = new Money( 100m, "EUR" );
+        // Arrange
+        Money sut = new Money( 100m, "EUR" );
 
-        Assert.Equal( 100m, money.Amount );
-        Assert.Equal( "EUR", money.Currency );
+        // Act
+        decimal amount = sut.Amount;
+        string currency = sut.Currency;
+
+        // Assert
+        Assert.Equal( 100m, amount );
+        Assert.Equal( "EUR", currency );
     }
 
     [Fact]
     public void Constructor_NegativeAmount_Throws()
     {
-        Assert.Throws<ArgumentOutOfRangeException>( () => new Money( -1m, "EUR" ) );
+        // Arrange 
+        string currency = "EUR";
+        decimal amount = -100m;
+
+        // Act, Assert
+        Assert.Throws<ArgumentOutOfRangeException>( () => new Money( amount, currency ) );
     }
 
     [Fact]
     public void Constructor_EmptyCurrency_Throws()
     {
-        Assert.Throws<ArgumentException>( () => new Money( 100m, "" ) );
+        // Arrange 
+        string currency = "";
+        decimal amount = 100m;
+
+        // Act, Assert
+        Assert.Throws<ArgumentException>( () => new Money( amount, currency ) );
     }
 
     [Fact]
     public void Constructor_WhitespaceCurrency_Throws()
     {
-        Assert.Throws<ArgumentException>( () => new Money( 100m, "   " ) );
+        // Arrange 
+        string currency = " ";
+        decimal amount = 100m;
+
+        // Act, Assert
+        Assert.Throws<ArgumentException>( () => new Money( amount, currency ) );
     }
 
     [Fact]
     public void Multiply_PositiveMultiplier_ReturnsScaledMoney()
     {
-        Money money = new Money( 100m, "EUR" );
+        // Arrange
+        Money sut = new Money( 100m, "EUR" );
 
-        Money result = money.Multiply( 3 );
+        // Act
+        Money result = sut.Multiply( 3 );
 
+        // Assert
         Assert.Equal( 300m, result.Amount );
         Assert.Equal( "EUR", result.Currency );
     }
@@ -45,36 +69,54 @@ public class MoneyTests
     [Fact]
     public void Multiply_ZeroMultiplier_ReturnsZeroAmount()
     {
-        Money money = new Money( 100m, "EUR" );
+        // Arrange
+        Money sut = new Money( 100m, "EUR" );
 
-        Money result = money.Multiply( 0 );
+        // Act
+        Money result = sut.Multiply( 0 );
 
+        // Assert
         Assert.Equal( 0m, result.Amount );
     }
 
     [Fact]
     public void Multiply_NegativeFactor_Throws()
     {
-        Money money = new Money( 100m, "EUR" );
+        // Arrange
+        Money sut = new Money( 100m, "EUR" );
 
-        Assert.Throws<ArgumentOutOfRangeException>( () => money.Multiply( -1 ) );
+        // Act, Assert
+        Assert.Throws<ArgumentOutOfRangeException>( () => sut.Multiply( -1 ) );
     }
 
     [Fact]
     public void Equality_SameAmountAndCurrency_AreEqual()
     {
-        Money first = new Money( 100m, "EUR" );
-        Money second = new Money( 100m, "EUR" );
+        // Arrange
+        string currency = "EUR";
+        decimal amount = 100m;
 
-        Assert.Equal( first, second );
+        // Act
+        Money sut1 = new Money( amount, currency );
+        Money sut2 = new Money( amount, currency );
+
+        // Assert
+        Assert.Equal( sut1, sut2 );
     }
 
     [Fact]
     public void Equality_DifferentCurrency_AreNotEqual()
     {
-        Money first = new Money( 100m, "EUR" );
-        Money second = new Money( 100m, "USD" );
+        // Arrange
+        string currency1 = "EUR";
+        string currency2 = "USD";
+        decimal amount = 100m;
 
-        Assert.NotEqual( first, second );
+        // Act
+        Money sut1 = new Money( amount, currency1 );
+        Money sut2 = new Money( amount, currency2 );
+
+        // Assert
+        Assert.NotEqual( sut1, sut2 );
     }
 }

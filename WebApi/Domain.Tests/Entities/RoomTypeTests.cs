@@ -5,69 +5,53 @@ namespace Domain.Tests.Entities;
 
 public class RoomTypeTests
 {
-    private const string Currency = "EUR";
-
-    const string RoomTypeName = "Standard Double";
-
-    const int MinPersonCount = 1;
-
-    const int MaxPersonCount = 2;
-
-    const int RoomsCount = 5;
-
-    private static RoomType CreateValidRoomType() => new RoomType(
-        Guid.NewGuid(),
-        Guid.NewGuid(),
-        RoomTypeName,
-        new Money( 120m, Currency ),
-        MinPersonCount,
-        MaxPersonCount,
-        RoomsCount,
-        new[] { "Breakfast" },
-        new[] { "Wi-Fi", "TV" }
-    );
-
     [Fact]
     public void Constructor_ValidArguments_CreatesRoomType()
     {
+        // Arrange
         Guid id = Guid.NewGuid();
         Guid propId = Guid.NewGuid();
-        Money price = new Money( 120m, Currency );
+        Money price = new Money( 100m, "Test currency" );
 
-        RoomType roomType = new RoomType(
+        // Act
+        RoomType sut = new RoomType(
             id,
             propId,
-            RoomTypeName,
+            "Test name",
             price,
-            MinPersonCount,
-            MaxPersonCount,
-            RoomsCount,
+            1,
+            2,
+            2,
             new[] { "Breakfast" },
             new[] { "Wi-Fi", "TV" }
         );
 
-        Assert.Equal( id, roomType.Id );
-        Assert.Equal( propId, roomType.PropertyId );
-        Assert.Equal( RoomTypeName, roomType.Name );
-        Assert.Equal( price, roomType.DailyPrice );
-        Assert.Equal( MinPersonCount, roomType.MinPersonCount );
-        Assert.Equal( MaxPersonCount, roomType.MaxPersonCount );
-        Assert.Equal( RoomsCount, roomType.TotalRooms );
-        Assert.Equal( new[] { "Breakfast" }, roomType.Services );
-        Assert.Equal( new[] { "Wi-Fi", "TV" }, roomType.Amenities );
+        // Assert
+        Assert.Equal( id, sut.Id );
+        Assert.Equal( propId, sut.PropertyId );
+        Assert.Equal( "Test name", sut.Name );
+        Assert.Equal( price, sut.DailyPrice );
+        Assert.Equal( 1, sut.MinPersonCount );
+        Assert.Equal( 2, sut.MaxPersonCount );
+        Assert.Equal( 2, sut.TotalRooms );
+        Assert.Equal( new[] { "Breakfast" }, sut.Services );
+        Assert.Equal( new[] { "Wi-Fi", "TV" }, sut.Amenities );
     }
 
     [Fact]
     public void Constructor_EmptyId_Throws()
     {
+        // Arrange
+        // Act
+        // Assert
         Assert.Throws<ArgumentException>( () => new RoomType(
                 Guid.Empty,
                 Guid.NewGuid(),
-                RoomTypeName,
-                new Money( 120m, Currency ),
-                MinPersonCount,
-                MaxPersonCount,
-                RoomsCount,
+                "Test name",
+                new Money( 100m, "Test currency" ),
+                1,
+                2,
+                2,
                 Array.Empty<string>(),
                 Array.Empty<string>()
             )
@@ -77,14 +61,17 @@ public class RoomTypeTests
     [Fact]
     public void Constructor_EmptyPropertyId_Throws()
     {
+        // Arrange
+        // Act
+        // Assert
         Assert.Throws<ArgumentException>( () => new RoomType(
                 Guid.NewGuid(),
                 Guid.Empty,
-                RoomTypeName,
-                new Money( 120m, Currency ),
-                MinPersonCount,
-                MaxPersonCount,
-                RoomsCount,
+                "Test name",
+                new Money( 100m, "Test currency" ),
+                1,
+                2,
+                2,
                 Array.Empty<string>(),
                 Array.Empty<string>()
             )
@@ -97,14 +84,17 @@ public class RoomTypeTests
     [InlineData( null )]
     public void Constructor_InvalidName_Throws( string? name )
     {
+        // Arrange
+        // Act
+        // Assert
         Assert.Throws<ArgumentException>( () => new RoomType(
                 Guid.NewGuid(),
                 Guid.NewGuid(),
                 name!,
-                new Money( 120m, Currency ),
-                MinPersonCount,
-                MaxPersonCount,
-                RoomsCount,
+                new Money( 100m, "Test currency" ),
+                1,
+                2,
+                2,
                 Array.Empty<string>(),
                 Array.Empty<string>()
             )
@@ -114,14 +104,17 @@ public class RoomTypeTests
     [Fact]
     public void Constructor_NullDailyPrice_Throws()
     {
+        // Arrange
+        // Act
+        // Assert
         Assert.Throws<ArgumentNullException>( () => new RoomType(
                 Guid.NewGuid(),
                 Guid.NewGuid(),
-                RoomTypeName,
+                "Test name",
                 null!,
-                MinPersonCount,
-                MaxPersonCount,
-                RoomsCount,
+                1,
+                2,
+                2,
                 Array.Empty<string>(),
                 Array.Empty<string>()
             )
@@ -131,14 +124,17 @@ public class RoomTypeTests
     [Fact]
     public void Constructor_ZeroDailyPrice_Throws()
     {
+        // Arrange
+        // Act
+        // Assert
         Assert.Throws<ArgumentOutOfRangeException>( () => new RoomType(
                 Guid.NewGuid(),
                 Guid.NewGuid(),
-                RoomTypeName,
-                new Money( 0m, Currency ),
-                MinPersonCount,
-                MaxPersonCount,
-                RoomsCount,
+                "Test name",
+                new Money( 0m, "Test currency" ),
+                1,
+                2,
+                2,
                 Array.Empty<string>(),
                 Array.Empty<string>()
             )
@@ -148,16 +144,19 @@ public class RoomTypeTests
     [Theory]
     [InlineData( 0 )]
     [InlineData( -1 )]
-    public void Constructor_NonPositiveMinPersonCount_Throws( int min )
+    public void Constructor_NonPositiveMinPersonCount_Throws( int minPersonCount )
     {
+        // Arrange
+        // Act
+        // Assert
         Assert.Throws<ArgumentOutOfRangeException>( () => new RoomType(
                 Guid.NewGuid(),
                 Guid.NewGuid(),
-                RoomTypeName,
-                new Money( 120m, Currency ),
-                min,
-                MaxPersonCount,
-                RoomsCount,
+                "Test name",
+                new Money( 100m, "Test currency" ),
+                minPersonCount,
+                2,
+                2,
                 Array.Empty<string>(),
                 Array.Empty<string>()
             )
@@ -167,14 +166,17 @@ public class RoomTypeTests
     [Fact]
     public void Constructor_MaxLessThanMin_Throws()
     {
+        // Arrange
+        // Act
+        // Assert
         Assert.Throws<ArgumentException>( () => new RoomType(
                 Guid.NewGuid(),
                 Guid.NewGuid(),
-                RoomTypeName,
-                new Money( 120m, Currency ),
+                "Test name",
+                new Money( 100m, "Test currency" ),
                 2,
                 1,
-                RoomsCount,
+                2,
                 Array.Empty<string>(),
                 Array.Empty<string>()
             )
@@ -184,20 +186,26 @@ public class RoomTypeTests
     [Fact]
     public void Constructor_MaxEqualsMin_DoesNotThrow()
     {
+        // Arrange
+        int minPersonCount = 2;
+        int maxPersonCount = 2;
+
+        // Act
         RoomType roomType = new RoomType(
             Guid.NewGuid(),
             Guid.NewGuid(),
-            RoomTypeName,
-            new Money( 120m, Currency ),
-            MinPersonCount,
-            MinPersonCount,
-            RoomsCount,
+            "Test name",
+            new Money( 100m, "Test currency" ),
+            minPersonCount,
+            maxPersonCount,
+            2,
             Array.Empty<string>(),
             Array.Empty<string>()
         );
 
-        Assert.Equal( MinPersonCount, roomType.MinPersonCount );
-        Assert.Equal( MinPersonCount, roomType.MaxPersonCount );
+        // Arrange
+        Assert.Equal( 2, roomType.MinPersonCount );
+        Assert.Equal( 2, roomType.MaxPersonCount );
     }
 
     [Theory]
@@ -205,13 +213,16 @@ public class RoomTypeTests
     [InlineData( -1 )]
     public void Constructor_NonPositiveRoomsCount_Throws( int roomsCount )
     {
+        // Arrange
+        // Act
+        // Assert
         Assert.Throws<ArgumentOutOfRangeException>( () => new RoomType(
                 Guid.NewGuid(),
                 Guid.NewGuid(),
-                RoomTypeName,
-                new Money( 120m, Currency ),
-                MinPersonCount,
-                MaxPersonCount,
+                "Test name",
+                new Money( 100m, "Test currency" ),
+                1,
+                2,
                 roomsCount,
                 Array.Empty<string>(),
                 Array.Empty<string>()
@@ -222,14 +233,17 @@ public class RoomTypeTests
     [Fact]
     public void Constructor_NullServices_Throws()
     {
+        // Arrange
+        // Act
+        // Assert
         Assert.Throws<ArgumentNullException>( () => new RoomType(
                 Guid.NewGuid(),
                 Guid.NewGuid(),
-                RoomTypeName,
-                new Money( 120m, Currency ),
-                MinPersonCount,
-                MinPersonCount,
-                RoomsCount,
+                "Test name",
+                new Money( 100m, "Test currency" ),
+                1,
+                2,
+                2,
                 null!,
                 Array.Empty<string>()
             )
@@ -239,14 +253,17 @@ public class RoomTypeTests
     [Fact]
     public void Constructor_ServicesContainEmpty_Throws()
     {
+        // Arrange
+        // Act
+        // Assert
         Assert.Throws<ArgumentException>( () => new RoomType(
                 Guid.NewGuid(),
                 Guid.NewGuid(),
-                RoomTypeName,
-                new Money( 120m, Currency ),
-                MinPersonCount,
-                MinPersonCount,
-                RoomsCount,
+                "Test name",
+                new Money( 100m, "Test currency" ),
+                1,
+                2,
+                2,
                 new[] { "Breakfast", string.Empty },
                 Array.Empty<string>()
             )
@@ -256,14 +273,17 @@ public class RoomTypeTests
     [Fact]
     public void Constructor_AmenitiesContainEmpty_Throws()
     {
+        // Arrange
+        // Act
+        // Assert
         Assert.Throws<ArgumentException>( () => new RoomType(
                 Guid.NewGuid(),
                 Guid.NewGuid(),
-                RoomTypeName,
-                new Money( 120m, Currency ),
-                MinPersonCount,
-                MinPersonCount,
-                RoomsCount,
+                "Test name",
+                new Money( 100m, "Test currency" ),
+                1,
+                2,
+                2,
                 Array.Empty<string>(),
                 new[] { "Wi-Fi", "   " }
             )
@@ -273,24 +293,27 @@ public class RoomTypeTests
     [Fact]
     public void Constructor_ServicesCopiedDefensively()
     {
+        // Arrange
         List<string> services = new List<string>
         {
             "Breakfast",
         };
 
-        RoomType roomType = new RoomType(
+        // Act
+        RoomType sut = new RoomType(
             Guid.NewGuid(),
             Guid.NewGuid(),
-            RoomTypeName,
-            new Money( 120m, Currency ),
-            MinPersonCount,
-            MaxPersonCount,
-            RoomsCount,
+            "Test name",
+            new Money( 100m, "Test currency" ),
+            1,
+            2,
+            2,
             services,
-            Array.Empty<string>()
+            new[] { "Wi-Fi" }
         );
 
-        Assert.Single( roomType.Services );
+        // Assert
+        Assert.Single( sut.Services );
     }
 
     [Theory]
@@ -300,20 +323,45 @@ public class RoomTypeTests
     [InlineData( 0, false )]
     public void Fits_ReturnsExpected( int guests, bool expected )
     {
-        RoomType roomType = CreateValidRoomType();
+        // Arrange
+        RoomType sut = new RoomType(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            "Test name",
+            new Money( 100m, "Test currency" ),
+            1,
+            2,
+            2,
+            new[] { "Breakfast" },
+            new[] { "Wi-Fi" }
+        );
 
-        bool result = roomType.IsFits( guests );
+        // Act
+        bool result = sut.IsFits( guests );
 
+        // Assert
         Assert.Equal( expected, result );
     }
 
     [Fact]
     public void Update_ValidArguments_ChangesState()
     {
-        RoomType roomType = CreateValidRoomType();
-        Money newPrice = new Money( 200m, Currency );
+        // Arrange
+        Money newPrice = new Money( 200m, "New currency" );
+        RoomType sut = new RoomType(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            "Test name",
+            new Money( 100m, "Test currency" ),
+            1,
+            2,
+            2,
+            new[] { "Breakfast" },
+            new[] { "Wi-Fi" }
+        );
 
-        roomType.Update(
+        // Act
+        sut.Update(
             "Deluxe",
             newPrice,
             2,
@@ -323,12 +371,13 @@ public class RoomTypeTests
             new[] { "Wi-Fi" }
         );
 
-        Assert.Equal( "Deluxe", roomType.Name );
-        Assert.Equal( newPrice, roomType.DailyPrice );
-        Assert.Equal( 2, roomType.MinPersonCount );
-        Assert.Equal( 4, roomType.MaxPersonCount );
-        Assert.Equal( 10, roomType.TotalRooms );
-        Assert.Equal( new[] { "Breakfast", "Spa" }, roomType.Services );
-        Assert.Equal( new[] { "Wi-Fi" }, roomType.Amenities );
+        // Assert
+        Assert.Equal( "Deluxe", sut.Name );
+        Assert.Equal( newPrice, sut.DailyPrice );
+        Assert.Equal( 2, sut.MinPersonCount );
+        Assert.Equal( 4, sut.MaxPersonCount );
+        Assert.Equal( 10, sut.TotalRooms );
+        Assert.Equal( new[] { "Breakfast", "Spa" }, sut.Services );
+        Assert.Equal( new[] { "Wi-Fi" }, sut.Amenities );
     }
 }

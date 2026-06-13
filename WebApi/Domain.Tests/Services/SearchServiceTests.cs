@@ -8,180 +8,384 @@ namespace Domain.Tests.Services;
 
 public class SearchServiceTests
 {
-    private const string HotelName = "Azimut";
-
-    private const string HotelCountry = "Russia";
-
-    private const string HotelCity = "Yoshkar-Ola";
-
-    private const string HotelAddress = "Voskresensky Prospect, Building 11";
-
-    private const double HotelLatitude = 56.63;
-
-    private const double HotelLongitude = 47.91;
-
-    private const string Currency = "EUR";
-
-    private static readonly DateRange Period = new DateRange(
-        new DateOnly( 2026, 6, 1 ),
-        new DateOnly( 2026, 6, 4 )
-    );
-
-    private readonly Mock<IPropertyRepository> _propertyRepositoryMock = new Mock<IPropertyRepository>();
-
-    private readonly Mock<IRoomTypeRepository> _roomTypeRepositoryMock = new Mock<IRoomTypeRepository>();
-
-    private readonly Mock<IAvailabilityChecker> _availabilityCheckerMock = new Mock<IAvailabilityChecker>();
-
-    private readonly SearchService _searchService;
-
-    private void SetupCityAndRooms( Property property, RoomType roomType )
-    {
-        _propertyRepositoryMock
-            .Setup( r => r.GetByCity( HotelCity ) )
-            .Returns( new[] { property } );
-
-        _roomTypeRepositoryMock
-            .Setup( r => r.GetByProperty( property.Id ) )
-            .Returns( new[] { roomType } );
-    }
-
-    private static SearchCriteria CreateCriteria( int guestCount, decimal? maxPricePerNight = null )
-    {
-        return new SearchCriteria( HotelCity, Period, guestCount, maxPricePerNight );
-    }
-
-    private static Property CreateProperty()
-    {
-        return new Property(
-            Guid.NewGuid(),
-            HotelName,
-            HotelCountry,
-            HotelCity,
-            HotelAddress,
-            HotelLatitude,
-            HotelLongitude
-        );
-    }
-
-    private static RoomType CreateRoomType( Guid propertyId, decimal dailyPrice, int min, int max )
-    {
-        return new RoomType(
-            Guid.NewGuid(),
-            propertyId,
-            "Standard",
-            new Money( dailyPrice, Currency ),
-            min,
-            max,
-            2,
-            Array.Empty<string>(),
-            Array.Empty<string>()
-        );
-    }
-
-    public SearchServiceTests()
-    {
-        _searchService = new SearchService(
-            _propertyRepositoryMock.Object,
-            _roomTypeRepositoryMock.Object,
-            _availabilityCheckerMock.Object
-        );
-
-        _availabilityCheckerMock
-            .Setup( a => a.CanBook( It.IsAny<RoomType>(), It.IsAny<DateRange>() ) )
-            .Returns( true );
-    }
-
     [Fact]
     public void Search_NoPropertiesInCity_ReturnsEmpty()
     {
-        SearchCriteria criteria = CreateCriteria( guestCount: 2 );
-        _propertyRepositoryMock.Setup( r => r.GetByCity( HotelCity ) ).Returns( Array.Empty<Property>() );
+        // Arrange
+        DateRange period = new DateRange(
+            new DateOnly( 2020, 01, 01 ),
+            new DateOnly( 2020, 01, 03 )
+        );
 
-        IReadOnlyCollection<SearchVariant> result = _searchService.Search( criteria );
+        Mock<IPropertyRepository> propertyRepositoryMock = new Mock<IPropertyRepository>();
+        propertyRepositoryMock
+            .Setup( r => r.GetByCity( "Test city" ) )
+            .Returns( Array.Empty<Property>() );
 
+        SearchCriteria criteria = new SearchCriteria(
+            "Test city",
+            period,
+            2,
+            100m
+        );
+
+        SearchService sut = new SearchService(
+            propertyRepositoryMock.Object,
+            new Mock<IRoomTypeRepository>().Object,
+            new Mock<IAvailabilityChecker>().Object
+        );
+
+        // Act
+        IReadOnlyCollection<SearchVariant> result = sut.Search( criteria );
+
+        // Assert
         Assert.Empty( result );
     }
 
     [Fact]
     public void Search_MatchingRoomType_ReturnsVariantWithComputedTotal()
     {
-        Property property = CreateProperty();
-        RoomType roomType = CreateRoomType( property.Id, dailyPrice: 100m, min: 1, max: 2 );
-        SetupCityAndRooms( property, roomType );
-        SearchCriteria criteria = CreateCriteria( guestCount: 2 );
+        // Arrange
+        Property property = new Property(
+            Guid.NewGuid(),
+            "Test name",
+            "Test country",
+            "Test city",
+            "Test address",
+            10.10,
+            20.20
+        );
 
-        IReadOnlyCollection<SearchVariant> result = _searchService.Search( criteria );
+        DateRange period = new DateRange(
+            new DateOnly( 2020, 01, 01 ),
+            new DateOnly( 2020, 01, 03 )
+        );
 
+        RoomType roomType = new RoomType(
+            Guid.NewGuid(),
+            property.Id,
+            "Standard",
+            new Money( 100m, "Test currency" ),
+            1,
+            2,
+            2,
+            Array.Empty<string>(),
+            Array.Empty<string>()
+        );
+
+        Mock<IPropertyRepository> propertyRepositoryMock = new Mock<IPropertyRepository>();
+        propertyRepositoryMock
+            .Setup( r => r.GetByCity( "Test city" ) )
+            .Returns( new[] { property } );
+
+        Mock<IRoomTypeRepository> roomTypeRepositoryMock = new Mock<IRoomTypeRepository>();
+        roomTypeRepositoryMock
+            .Setup( r => r.GetByProperty( property.Id ) )
+            .Returns( new[] { roomType } );
+
+        Mock<IAvailabilityChecker> availabilityCheckerMock = new Mock<IAvailabilityChecker>();
+        availabilityCheckerMock
+            .Setup( a => a.CanBook( It.IsAny<RoomType>(), It.IsAny<DateRange>() ) )
+            .Returns( true );
+
+        SearchCriteria criteria = new SearchCriteria(
+            "Test city",
+            period,
+            2,
+            100m
+        );
+
+        SearchService sut = new SearchService(
+            propertyRepositoryMock.Object,
+            roomTypeRepositoryMock.Object,
+            availabilityCheckerMock.Object
+        );
+
+        // Act
+        IReadOnlyCollection<SearchVariant> result = sut.Search( criteria );
+
+        // Assert
         SearchVariant variant = Assert.Single( result );
         Assert.Equal( property, variant.Property );
         Assert.Equal( roomType, variant.RoomType );
-        Assert.Equal( new Money( 300m, Currency ), variant.TotalForPeriod );
+        Assert.Equal( new Money( 200m, "Test currency" ), variant.TotalForPeriod );
     }
 
     [Fact]
     public void Search_GuestCountOutOfRange_RoomTypeFilteredOut()
     {
-        Property property = CreateProperty();
-        RoomType roomType = CreateRoomType( property.Id, dailyPrice: 100m, min: 1, max: 2 );
-        SetupCityAndRooms( property, roomType );
-        SearchCriteria criteria = CreateCriteria( guestCount: 5 );
+        // Arrange
+        Property property = new Property(
+            Guid.NewGuid(),
+            "Test city",
+            "Test country",
+            "Test city",
+            "Test address",
+            10.10,
+            20.20
+        );
 
-        IReadOnlyCollection<SearchVariant> result = _searchService.Search( criteria );
+        DateRange period = new DateRange(
+            new DateOnly( 2020, 01, 01 ),
+            new DateOnly( 2020, 01, 03 )
+        );
 
+        RoomType roomType = new RoomType(
+            Guid.NewGuid(),
+            property.Id,
+            "Standard",
+            new Money( 100m, "Test currency" ),
+            1,
+            2,
+            2,
+            Array.Empty<string>(),
+            Array.Empty<string>()
+        );
+
+        Mock<IPropertyRepository> propertyRepositoryMock = new Mock<IPropertyRepository>();
+        propertyRepositoryMock
+            .Setup( r => r.GetByCity( "Test city" ) )
+            .Returns( new[] { property } );
+
+        Mock<IRoomTypeRepository> roomTypeRepositoryMock = new Mock<IRoomTypeRepository>();
+        roomTypeRepositoryMock
+            .Setup( r => r.GetByProperty( property.Id ) )
+            .Returns( new[] { roomType } );
+
+        SearchCriteria criteria = new SearchCriteria(
+            "Test city",
+            period,
+            5, // <-
+            100m
+        );
+
+        SearchService sut = new SearchService(
+            propertyRepositoryMock.Object,
+            roomTypeRepositoryMock.Object,
+            new Mock<IAvailabilityChecker>().Object
+        );
+
+        // Act
+        IReadOnlyCollection<SearchVariant> result = sut.Search( criteria );
+
+        // Assert
         Assert.Empty( result );
     }
 
     [Fact]
     public void Search_AbovePriceCap_RoomTypeFilteredOut()
     {
-        Property property = CreateProperty();
-        RoomType roomType = CreateRoomType( property.Id, dailyPrice: 500m, min: 1, max: 2 );
-        SetupCityAndRooms( property, roomType );
-        SearchCriteria criteria = CreateCriteria( guestCount: 2, maxPricePerNight: 200m );
+        // Arrange
+        Property property = new Property(
+            Guid.NewGuid(),
+            "Test city",
+            "Test country",
+            "Test city",
+            "Test address",
+            10.10,
+            20.20
+        );
 
-        IReadOnlyCollection<SearchVariant> result = _searchService.Search( criteria );
+        DateRange period = new DateRange(
+            new DateOnly( 2020, 01, 01 ),
+            new DateOnly( 2020, 01, 03 )
+        );
 
+        RoomType roomType = new RoomType(
+            Guid.NewGuid(),
+            property.Id,
+            "Standard",
+            new Money( 500m, "Test currency" ),
+            1,
+            2,
+            2,
+            Array.Empty<string>(),
+            Array.Empty<string>()
+        );
+
+        Mock<IPropertyRepository> propertyRepositoryMock = new Mock<IPropertyRepository>();
+        propertyRepositoryMock
+            .Setup( r => r.GetByCity( "Test city" ) )
+            .Returns( new[] { property } );
+
+        Mock<IRoomTypeRepository> roomTypeRepositoryMock = new Mock<IRoomTypeRepository>();
+        roomTypeRepositoryMock
+            .Setup( r => r.GetByProperty( property.Id ) )
+            .Returns( new[] { roomType } );
+
+        SearchCriteria criteria = new SearchCriteria(
+            "Test city",
+            period,
+            2,
+            200m
+        );
+
+        SearchService sut = new SearchService(
+            propertyRepositoryMock.Object,
+            roomTypeRepositoryMock.Object,
+            new Mock<IAvailabilityChecker>().Object
+        );
+
+        // Act
+        IReadOnlyCollection<SearchVariant> result = sut.Search( criteria );
+
+        // Assert
         Assert.Empty( result );
     }
 
     [Fact]
     public void Search_NotAvailable_RoomTypeFilteredOut()
     {
-        Property property = CreateProperty();
-        RoomType roomType = CreateRoomType( property.Id, dailyPrice: 100m, min: 1, max: 2 );
-        SetupCityAndRooms( property, roomType );
-        _availabilityCheckerMock
-            .Setup( a => a.CanBook( roomType, Period ) )
+        // Arrange
+        Property property = new Property(
+            Guid.NewGuid(),
+            "Test city",
+            "Test country",
+            "Test city",
+            "Test address",
+            10.10,
+            20.20
+        );
+
+        DateRange period = new DateRange(
+            new DateOnly( 2020, 01, 01 ),
+            new DateOnly( 2020, 01, 03 )
+        );
+
+        RoomType roomType = new RoomType(
+            Guid.NewGuid(),
+            property.Id,
+            "Standard",
+            new Money( 100m, "Test currency" ),
+            1,
+            2,
+            2,
+            Array.Empty<string>(),
+            Array.Empty<string>()
+        );
+
+        Mock<IPropertyRepository> propertyRepositoryMock = new Mock<IPropertyRepository>();
+        propertyRepositoryMock
+            .Setup( r => r.GetByCity( "Test city" ) )
+            .Returns( new[] { property } );
+
+        Mock<IRoomTypeRepository> roomTypeRepositoryMock = new Mock<IRoomTypeRepository>();
+        roomTypeRepositoryMock
+            .Setup( r => r.GetByProperty( property.Id ) )
+            .Returns( new[] { roomType } );
+
+        Mock<IAvailabilityChecker> availabilityCheckerMock = new Mock<IAvailabilityChecker>();
+        availabilityCheckerMock
+            .Setup( a => a.CanBook( roomType, period ) )
             .Returns( false );
 
-        SearchCriteria criteria = CreateCriteria( guestCount: 2 );
+        SearchCriteria criteria = new SearchCriteria(
+            "Test city",
+            period,
+            2
+        );
 
-        IReadOnlyCollection<SearchVariant> result = _searchService.Search( criteria );
+        SearchService sut = new SearchService(
+            propertyRepositoryMock.Object,
+            roomTypeRepositoryMock.Object,
+            availabilityCheckerMock.Object
+        );
 
+        // Act
+        IReadOnlyCollection<SearchVariant> result = sut.Search( criteria );
+
+        // Assert
         Assert.Empty( result );
     }
 
     [Fact]
     public void Search_MultipleProperties_AggregatesVariants()
     {
-        Property first = CreateProperty();
-        Property second = CreateProperty();
-        RoomType firstRoom = CreateRoomType( first.Id, dailyPrice: 100m, min: 1, max: 2 );
-        RoomType secondRoom = CreateRoomType( second.Id, dailyPrice: 150m, min: 1, max: 2 );
-        _propertyRepositoryMock.Setup( r => r.GetByCity( HotelCity ) )
-            .Returns( new[] { first, second } );
+        // Arrange
+        Property firstProperty = new Property(
+            Guid.NewGuid(),
+            "Test city",
+            "Test country",
+            "Test city",
+            "Test address",
+            10.10,
+            20.20
+        );
 
-        _roomTypeRepositoryMock.Setup( r => r.GetByProperty( first.Id ) )
-            .Returns( new[] { firstRoom } );
+        Property secondProperty = new Property(
+            Guid.NewGuid(),
+            "Test city2",
+            "Test country2",
+            "Test city2",
+            "Test address2",
+            20.20,
+            30.30
+        );
 
-        _roomTypeRepositoryMock.Setup( r => r.GetByProperty( second.Id ) )
-            .Returns( new[] { secondRoom } );
+        DateRange period = new DateRange(
+            new DateOnly( 2020, 01, 01 ),
+            new DateOnly( 2020, 01, 03 )
+        );
 
-        SearchCriteria criteria = CreateCriteria( guestCount: 2 );
+        RoomType firstRoomType = new RoomType(
+            Guid.NewGuid(),
+            firstProperty.Id,
+            "Standard",
+            new Money( 100m, "Test currency" ),
+            1,
+            2,
+            2,
+            Array.Empty<string>(),
+            Array.Empty<string>()
+        );
 
-        IReadOnlyCollection<SearchVariant> result = _searchService.Search( criteria );
+        RoomType secondRoomType = new RoomType(
+            Guid.NewGuid(),
+            secondProperty.Id,
+            "Standard",
+            new Money( 150m, "Test currency" ),
+            1,
+            2,
+            2,
+            Array.Empty<string>(),
+            Array.Empty<string>()
+        );
 
+        Mock<IPropertyRepository> propertyRepositoryMock = new Mock<IPropertyRepository>();
+        propertyRepositoryMock
+            .Setup( r => r.GetByCity( "Test city" ) )
+            .Returns( new[] { firstProperty, secondProperty } );
+
+        Mock<IRoomTypeRepository> roomTypeRepositoryMock = new Mock<IRoomTypeRepository>();
+        roomTypeRepositoryMock
+            .Setup( r => r.GetByProperty( firstProperty.Id ) )
+            .Returns( new[] { firstRoomType } );
+
+        roomTypeRepositoryMock
+            .Setup( r => r.GetByProperty( secondProperty.Id ) )
+            .Returns( new[] { secondRoomType } );
+
+        Mock<IAvailabilityChecker> availabilityCheckerMock = new Mock<IAvailabilityChecker>();
+        availabilityCheckerMock
+            .Setup( a => a.CanBook( It.IsAny<RoomType>(), It.IsAny<DateRange>() ) )
+            .Returns( true );
+
+        SearchCriteria criteria = new SearchCriteria(
+            "Test city",
+            period,
+            2
+        );
+
+        SearchService sut = new SearchService(
+            propertyRepositoryMock.Object,
+            roomTypeRepositoryMock.Object,
+            availabilityCheckerMock.Object
+        );
+
+        // Act
+        IReadOnlyCollection<SearchVariant> result = sut.Search( criteria );
+
+        // Assert
         Assert.Equal( 2, result.Count );
     }
 }

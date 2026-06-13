@@ -4,63 +4,47 @@ namespace Domain.Tests.Entities;
 
 public class PropertyTests
 {
-    private const string HotelName = "Azimut";
-
-    private const string HotelCountry = "Russia";
-
-    private const string HotelCity = "Yoshkar-Ola";
-
-    private const string HotelAddress = "Voskresensky Prospect, Building 11";
-
-    private const double HotelLatitude = 56.63;
-
-    private const double HotelLongitude = 47.91;
-
-    private static Property CreateValidProperty(
-        Guid id,
-        string hotelName = HotelName,
-        string hotelCountry = HotelCountry,
-        string hotelCity = HotelCity,
-        string hotelAddress = HotelAddress,
-        double hotelLatitude = HotelLatitude,
-        double hotelLongitude = HotelLongitude
-    ) => new Property(
-        id,
-        hotelName,
-        hotelCountry,
-        hotelCity,
-        hotelAddress,
-        hotelLatitude,
-        hotelLongitude
-    );
-
     [Fact]
     public void Constructor_ValidArguments_CreatesProperty()
     {
+        // Arrange
         Guid id = Guid.NewGuid();
 
-        Property property = CreateValidProperty( id );
+        // Act
+        Property sut = new Property(
+            id,
+            "Test name",
+            "Test country",
+            "Test city",
+            "Test address",
+            10.10,
+            20.20
+        );
 
-        Assert.Equal( id, property.Id );
-        Assert.Equal( HotelName, property.Name );
-        Assert.Equal( HotelCountry, property.Country );
-        Assert.Equal( HotelCity, property.City );
-        Assert.Equal( HotelAddress, property.Address );
-        Assert.Equal( HotelLatitude, property.Latitude );
-        Assert.Equal( HotelLongitude, property.Longitude );
+        // Assert
+        Assert.Equal( id, sut.Id );
+        Assert.Equal( "Test name", sut.Name );
+        Assert.Equal( "Test country", sut.Country );
+        Assert.Equal( "Test city", sut.City );
+        Assert.Equal( "Test address", sut.Address );
+        Assert.Equal( 10.10, sut.Latitude );
+        Assert.Equal( 20.20, sut.Longitude );
     }
 
     [Fact]
     public void Constructor_EmptyId_Throws()
     {
+        // Arrange
+        // Act
+        // Assert
         Assert.Throws<ArgumentException>( () => new Property(
                 Guid.Empty,
-                HotelName,
-                HotelCountry,
-                HotelCity,
-                HotelAddress,
-                HotelLatitude,
-                HotelLongitude
+                "Test name",
+                "Test country",
+                "Test city",
+                "Test address",
+                10.10,
+                20.20
             )
         );
     }
@@ -71,7 +55,19 @@ public class PropertyTests
     [InlineData( null )]
     public void Constructor_InvalidName_Throws( string? name )
     {
-        Assert.Throws<ArgumentException>( () => CreateValidProperty( Guid.NewGuid(), name! ) );
+        // Arrange
+        // Act
+        // Assert
+        Assert.Throws<ArgumentException>( () => new Property(
+                Guid.NewGuid(),
+                name!,
+                "Test country",
+                "Test city",
+                "Test address",
+                10.10,
+                20.20
+            )
+        );
     }
 
     [Theory]
@@ -80,14 +76,17 @@ public class PropertyTests
     [InlineData( null )]
     public void Constructor_InvalidCountry_Throws( string? country )
     {
+        // Arrange
+        // Act
+        // Assert
         Assert.Throws<ArgumentException>( () => new Property(
                 Guid.NewGuid(),
-                HotelName,
+                "Test name",
                 country!,
-                HotelCity,
-                HotelAddress,
-                HotelLatitude,
-                HotelLongitude
+                "Test city",
+                "Test address",
+                10.10,
+                20.20
             )
         );
     }
@@ -98,14 +97,17 @@ public class PropertyTests
     [InlineData( null )]
     public void Constructor_InvalidCity_Throws( string? city )
     {
+        // Arrange
+        // Act
+        // Assert
         Assert.Throws<ArgumentException>( () => new Property(
                 Guid.NewGuid(),
-                HotelName,
-                HotelCountry,
+                "Test name",
+                "Test country",
                 city!,
-                HotelAddress,
-                HotelLatitude,
-                HotelLongitude
+                "Test address",
+                10.10,
+                20.20
             )
         );
     }
@@ -116,14 +118,17 @@ public class PropertyTests
     [InlineData( null )]
     public void Constructor_InvalidAddress_Throws( string? address )
     {
+        // Arrange
+        // Act
+        // Assert
         Assert.Throws<ArgumentException>( () => new Property(
                 Guid.NewGuid(),
-                HotelName,
-                HotelCountry,
-                HotelCity,
+                "Test name",
+                "Test country",
+                "Test city",
                 address!,
-                HotelLatitude,
-                HotelLongitude
+                10.10,
+                20.20
             )
         );
     }
@@ -134,14 +139,17 @@ public class PropertyTests
     [InlineData( 180.0 )]
     public void Constructor_LatitudeOutOfRange_Throws( double latitude )
     {
+        // Arrange
+        // Act
+        // Assert
         Assert.Throws<ArgumentOutOfRangeException>( () => new Property(
                 Guid.NewGuid(),
-                HotelName,
-                HotelCountry,
-                HotelCity,
-                HotelAddress,
+                "Test name",
+                "Test country",
+                "Test city",
+                "Test address",
                 latitude,
-                HotelLongitude
+                20.20
             )
         );
     }
@@ -152,17 +160,19 @@ public class PropertyTests
     [InlineData( 0.0 )]
     public void Constructor_LatitudeAtBoundary_DoesNotThrow( double latitude )
     {
-        Property property = CreateValidProperty(
+        // Arrange, Act
+        Property sut = new Property(
             Guid.NewGuid(),
-            HotelName,
-            HotelCountry,
-            HotelCity,
-            HotelAddress,
+            "Test name",
+            "Test country",
+            "Test city",
+            "Test address",
             latitude,
-            HotelLongitude
+            20.20
         );
 
-        Assert.Equal( latitude, property.Latitude );
+        // Assert
+        Assert.Equal( latitude, sut.Latitude );
     }
 
     [Theory]
@@ -171,13 +181,16 @@ public class PropertyTests
     [InlineData( 360.0 )]
     public void Constructor_LongitudeOutOfRange_Throws( double longitude )
     {
-        Assert.Throws<ArgumentOutOfRangeException>( () => CreateValidProperty(
+        // Arrange
+        // Act
+        // Assert
+        Assert.Throws<ArgumentOutOfRangeException>( () => new Property(
                 Guid.NewGuid(),
-                HotelName,
-                HotelCountry,
-                HotelCity,
-                HotelAddress,
-                HotelLatitude,
+                "Test name",
+                "Test country",
+                "Test city",
+                "Test address",
+                10.10,
                 longitude
             )
         );
@@ -189,74 +202,109 @@ public class PropertyTests
     [InlineData( 0.0 )]
     public void Constructor_LongitudeAtBoundary_DoesNotThrow( double longitude )
     {
-        Property property = CreateValidProperty(
+        // Arrange, Act
+        Property sut = new Property(
             Guid.NewGuid(),
-            HotelName,
-            HotelCountry,
-            HotelCity,
-            HotelAddress,
-            HotelLatitude,
+            "Test name",
+            "Test country",
+            "Test city",
+            "Test address",
+            10.10,
             longitude
         );
 
-        Assert.Equal( longitude, property.Longitude );
+        // Assert
+        Assert.Equal( longitude, sut.Longitude );
     }
 
     [Fact]
     public void Update_ValidArguments_ChangesState()
     {
-        Property property = CreateValidProperty( Guid.NewGuid() );
-
-        property.Update(
-            "Carlton",
-            "Russia",
-            "Moscow",
-            "Tverskaya Street, 3",
-            61.5,
-            23.76
+        // Arrange
+        Property sut = new Property(
+            Guid.NewGuid(),
+            "Test name",
+            "Test country",
+            "Test city",
+            "Test address",
+            10.10,
+            20.20
         );
 
-        Assert.Equal( "Carlton", property.Name );
-        Assert.Equal( "Russia", property.Country );
-        Assert.Equal( "Moscow", property.City );
-        Assert.Equal( "Tverskaya Street, 3", property.Address );
-        Assert.Equal( 61.5, property.Latitude );
-        Assert.Equal( 23.76, property.Longitude );
+        // Act
+        sut.Update(
+            "Test name2",
+            "Test country2",
+            "Test city2",
+            "Test address2",
+            30.30,
+            40.40
+        );
+
+        // Assert
+        Assert.Equal( "Test name2", sut.Name );
+        Assert.Equal( "Test country2", sut.Country );
+        Assert.Equal( "Test city2", sut.City );
+        Assert.Equal( "Test address2", sut.Address );
+        Assert.Equal( 30.30, sut.Latitude );
+        Assert.Equal( 40.40, sut.Longitude );
     }
 
     [Fact]
     public void Update_InvalidArguments_DoesNotChangeState()
     {
-        Property property = CreateValidProperty( Guid.NewGuid() );
-        string originalName = property.Name;
+        // Arrange
+        Property sut = new Property(
+            Guid.NewGuid(),
+            "Test name",
+            "Test country",
+            "Test city",
+            "Test address",
+            10.10,
+            20.20
+        );
 
+        string originalName = sut.Name;
+
+        // Act
         Assert.Throws<ArgumentException>( () =>
-            property.Update(
+            sut.Update(
                 "",
-                "Russia",
-                "Moscow",
-                "Tverskaya Street, 3",
-                61.5,
-                23.76
+                "Test country",
+                "Test city",
+                "Test address",
+                10.10,
+                20.20
             )
         );
 
-        Assert.Equal( originalName, property.Name );
+        // Assert
+        Assert.Equal( originalName, sut.Name );
     }
 
     [Fact]
     public void Update_LatitudeOutOfRange_Throws()
     {
-        Property property = CreateValidProperty( Guid.NewGuid() );
+        // Arrange
+        Property sut = new Property(
+            Guid.NewGuid(),
+            "Test name",
+            "Test country",
+            "Test city",
+            "Test address",
+            10.10,
+            20.20
+        );
 
+        // Act, Arrange
         Assert.Throws<ArgumentOutOfRangeException>( () =>
-            property.Update(
-                "Carlton",
-                "Russia",
-                "Moscow",
-                "Tverskaya Street, 3",
-                91.0,
-                23.76
+            sut.Update(
+                "Test name2",
+                "Test country2",
+                "Test city2",
+                "Test address2",
+                91.30,
+                40.40
             )
         );
     }
